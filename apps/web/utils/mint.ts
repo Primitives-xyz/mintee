@@ -91,7 +91,7 @@ export const initTree = async (
     console.log(
       "Successfull created merkle tree for account: " + treeKeypair.publicKey
     );
-    return treeKeypair.publicKey.toString();
+    return treeKeypair.publicKey;
   } catch (e) {
     console.error("Failed to create merkle tree: ", e);
     throw e;

@@ -54,7 +54,7 @@ export default async function hello(req: NextRequest) {
     ownerWallet,
     treeWallet
   );
-
+  console.log("Tree address: " + treeAddress);
   //   const {
   //     collectionMint,
   //     collectionMetadataAccount,
