@@ -6,8 +6,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const secret = req.headers["secret"];
-  console.log("SECRET", secret);
   const { address } = req.query;
   const tokenPK = new PublicKey(address as string);
   if (!tokenPK) return res.status(404).json({ message: "Invalid address" });
