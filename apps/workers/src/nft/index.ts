@@ -14,7 +14,7 @@ import { Env } from "worker-types";
  * Stringified JSON of the NFT info
  * @type string<{nftResponse}>
  */
-export async function getNFTInfoAndWriteToKV({
+export async function getNFTInfo({
   env,
   address,
 }: {
@@ -23,6 +23,6 @@ export async function getNFTInfoAndWriteToKV({
 }) {
   const factoryResponse = await fetch(`${env.factoryUrl}/api/${address}`);
   const tokenInfo = JSON.stringify(await factoryResponse.json());
-  await env.nftInfo.put(address, tokenInfo);
+
   return tokenInfo;
 }
