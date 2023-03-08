@@ -12,7 +12,7 @@ import { Request } from "@cloudflare/workers-types";
 import { Env } from "worker-types";
 import { validateMetadataBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
-import { getNFTInfoAndWriteToKV } from "./nft";
+import { getNFTInfo } from "./nft";
 
 export default {
   async fetch(
@@ -33,7 +33,8 @@ export default {
       }
 
       // if not in KV, get the NFT info from the factory and write it to the KV
-      const tokenInfo = await getNFTInfoAndWriteToKV({ env, address });
+      const tokenInfo = await getNFTInfo({ env, address });
+      ctx.waitUntil(env.nftInfo.put(address, tokenInfo));
       return new Response(tokenInfo);
     }
 
