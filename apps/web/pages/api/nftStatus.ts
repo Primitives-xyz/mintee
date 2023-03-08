@@ -8,18 +8,26 @@ export default async function handler(
 ) {
   // get search params
   const { address } = req.query;
-  const secret = req.headers["secret"];
-  console.log("SECRETT", secret);
-  console.log("req log!", req.headers);
+  if (!address || address === "" || typeof address !== "string")
+    return res.status(404).json({ message: "Invalid token address" });
+
+  // check if valid PublicKey
+  let tokenPK = {} as PublicKey;
+  try {
+    tokenPK = new PublicKey(address);
+  } catch (error) {
+    return res.status(404).json({ message: "Invalid token address" });
+  }
+  if (!tokenPK)
+    return res.status(404).json({ message: "Invalid token address" });
   const url = process.env.rpcUrl;
-  const tokenPK = new PublicKey(address as string);
-  if (!tokenPK) return res.status(404).json({ message: "Invalid address" });
   if (!url) {
     return res.status(404).json({ message: "Error connection Solana node" });
   }
+
+  // grab token data from onchain and load json
   const connection = new Connection(url);
   const mp = Metaplex.make(connection);
-
   const token = await mp
     .nfts()
     .findByMint({ mintAddress: tokenPK })
