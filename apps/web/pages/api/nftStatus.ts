@@ -1,12 +1,7 @@
 import { Metaplex, PublicKey } from "@metaplex-foundation/js";
 import { Connection } from "@solana/web3.js";
 import { NextApiResponse, NextApiRequest } from "next";
-const url = process.env.rpcUrl;
-const connection = new Connection(
-  url ?? "https://api.mainnet-beta.solana.com",
-  "confirmed"
-);
-const mp = Metaplex.make(connection);
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -16,12 +11,15 @@ export default async function handler(
   const secret = req.headers["secret"];
   console.log("SECRETT", secret);
   console.log("req log!", req.headers);
-
+  const url = process.env.rpcUrl;
   const tokenPK = new PublicKey(address as string);
   if (!tokenPK) return res.status(404).json({ message: "Invalid address" });
   if (!url) {
     return res.status(404).json({ message: "Error connection Solana node" });
   }
+  const connection = new Connection(url);
+  const mp = Metaplex.make(connection);
+
   const token = await mp
     .nfts()
     .findByMint({ mintAddress: tokenPK })
