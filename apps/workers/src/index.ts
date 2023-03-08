@@ -40,11 +40,36 @@ export default {
     if (url.pathname.startsWith("/nftStatus/")) {
       // get address from url
       const address = url.pathname.split("/")[2];
-      return await fetch(`${env.factoryUrl}/api/nftStatus?address=${address}`, {
-        headers: {
-          secret: "YO!",
-        },
-      });
+      const fullNftInfo = await fetch(
+        `${env.factoryUrl}/api/nftStatus?address=${address}`,
+        {
+          headers: {
+            secret: "YO!",
+          },
+        }
+      );
+      if (!fullNftInfo.ok) {
+        return new Response("Error getting NFT info", { status: 500 });
+      }
+      const nftInfo = (await fullNftInfo.json()) as any;
+      ctx.waitUntil(
+        env.nftInfo.put(
+          nftInfo.address,
+          JSON.stringify({
+            token: {
+              name: nftInfo.name,
+              symbol: nftInfo.symbol || null,
+              address: nftInfo.address || null,
+              collectionAddress: nftInfo.collection?.address || null,
+              uri: nftInfo.uri || null,
+              editionNonce: nftInfo.editionNonce || null,
+              tokenStandard: nftInfo.tokenStandard || null,
+            },
+            offChain: nftInfo.json || null,
+          })
+        )
+      );
+      return new Response(JSON.stringify(nftInfo));
     }
 
     if (url.pathname === "/uploadMetadata") {

@@ -37,6 +37,5 @@ export default async function handler(
   if (!token) {
     return res.status(404).json({ message: "Token not found" });
   }
-
   return res.status(200).json(token);
 }
