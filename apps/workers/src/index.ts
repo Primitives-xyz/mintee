@@ -9,13 +9,8 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 import { Request } from "@cloudflare/workers-types";
-import {
-  Env,
-  signJWT,
-  uploadMetadata,
-  validateMetadataBody,
-  verifyJWT,
-} from "mintee-utils";
+import { Env } from "worker-types";
+import { uploadMetadata, validateMetadataBody } from "mintee-utils";
 
 export default {
   async fetch(
@@ -25,14 +20,19 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
 
-    if (url.pathname === "/signJWT") {
-      const token = await signJWT(request);
-      return new Response(JSON.stringify({ token }));
-    }
+    if (url.pathname.startsWith("/nftInfo/")) {
+      // after nftInfo/ grab the address
+      const address = url.pathname.split("/")[2];
+      console.log("env", env);
+      const kvResponse = await env.nftInfo.get(address);
+      if (kvResponse) {
+        return new Response(kvResponse);
+      }
 
-    if (url.pathname === "/verifyJWT") {
-      const decoded = await verifyJWT(request);
-      return new Response(JSON.stringify(decoded));
+      const factoryResponse = await fetch(`${env.factoryUrl}/api/${address}`);
+      const tokenInfo = JSON.stringify(await factoryResponse.json()) as any;
+      await env.nftInfo.put(address, tokenInfo);
+      return new Response(tokenInfo);
     }
 
     if (url.pathname === "/uploadMetadata") {

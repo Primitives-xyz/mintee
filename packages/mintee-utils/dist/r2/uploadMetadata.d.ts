@@ -1,5 +1,6 @@
-import { R2Bucket } from "@cloudflare/workers-types";
+import type { Env } from "worker-types";
 import type { metadataInternal } from "mintee-types";
+import { R2Object } from "@cloudflare/workers-types";
 /**
  * Upload metadata to a public bucket
  * @param metadata
@@ -11,10 +12,4 @@ import type { metadataInternal } from "mintee-types";
  * @throws
  * Throws an error if the upload fails
  */
-export declare function uploadMetadata(metadata: metadataInternal, env: Env, key: string): Promise<import("@cloudflare/workers-types").R2Object>;
-export interface Env {
-    rpcUrl: string;
-    r2Url: string;
-    bucket: R2Bucket;
-}
-//# sourceMappingURL=uploadMetadata.d.ts.map
+export declare function uploadMetadata(metadata: metadataInternal, env: Env, key: string): Promise<R2Object>;

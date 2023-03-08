@@ -1,20 +1,24 @@
-name = "workers"
+name = "mintee"
 main = "src/index.ts"
 compatibility_date = "2023-03-04"
 account_id = "6523e349bc2b3b61bc5155528f142bd7"
 workers_dev = true
 node_compat = true
 
-
+kv_namespaces = [
+  { binding = "nftInfo", id = "a6295a350c564a20bbda3bac0362cae4", preview_id = "625f622b85844f4189341a495f81b915" },
+]
 
 [vars]
 rpcUrl = "https://rpc-devnet.helius.xyz/?api-key=f30d6a96-5fa2-4318-b2da-0f6d1deb5c83"
 r2Url = "https://pub-6eda4245a0d642e8afc9136c7e7d15c2.r2.dev"
+factoryUrl = "minte.vercel.app"
 
 
 [[r2_buckets]]
 binding = 'bucket' # <~ valid JavaScript variable name
 bucket_name = 'apollo'
 preview_bucket_name = 'apollo-dev'
+
 
 
