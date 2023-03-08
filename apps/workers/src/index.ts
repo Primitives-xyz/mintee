@@ -37,6 +37,12 @@ export default {
       return new Response(tokenInfo);
     }
 
+    if (url.pathname.startsWith("/nftStatus/")) {
+      // get address from url
+      const address = url.pathname.split("/")[2];
+      return await fetch(`${env.factoryUrl}/api/nftStatus?address=${address}`);
+    }
+
     if (url.pathname === "/uploadMetadata") {
       // validate body using zod
       const body = validateMetadataBody(await request.json());
