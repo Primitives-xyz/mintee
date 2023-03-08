@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { PublicKey } from "@solana/web3.js";
 /**
  * Validate the body of the request using zod
  * @param body
@@ -31,22 +30,4 @@ export function validateJWTInput(body: any) {
     throw new Error("invalid body");
   }
   return result.data;
-}
-
-export function validateSolanaAddress(string: any) {
-  // check if address is Solana public key
-  const address = z.string().refine((address) => {
-    try {
-      new PublicKey(address);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }, "Invalid Solana address");
-
-  const result = address.safeParse(string);
-  if (!result.success) {
-    return false;
-  }
-  return new PublicKey(result);
 }

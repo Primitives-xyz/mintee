@@ -1,8 +1,7 @@
 "use strict";
 exports.__esModule = true;
-exports.validateSolanaAddress = exports.validateJWTInput = exports.validateMetadataBody = void 0;
+exports.validateJWTInput = exports.validateMetadataBody = void 0;
 var zod_1 = require("zod");
-var web3_js_1 = require("@solana/web3.js");
 /**
  * Validate the body of the request using zod
  * @param body
@@ -34,21 +33,3 @@ function validateJWTInput(body) {
     return result.data;
 }
 exports.validateJWTInput = validateJWTInput;
-function validateSolanaAddress(string) {
-    // check if address is Solana public key
-    var address = zod_1.z.string().refine(function (address) {
-        try {
-            new web3_js_1.PublicKey(address);
-            return true;
-        }
-        catch (e) {
-            return false;
-        }
-    }, "Invalid Solana address");
-    var result = address.safeParse(string);
-    if (!result.success) {
-        return false;
-    }
-    return new web3_js_1.PublicKey(result);
-}
-exports.validateSolanaAddress = validateSolanaAddress;
