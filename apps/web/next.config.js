@@ -1,4 +1,8 @@
+/** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  transpilePackages: ["ui"],
+  images: {
+    domains: ["upcdn.io", "replicate.delivery"],
+  },
+  transpilePackages: ["@solana/web3.js"],
 };

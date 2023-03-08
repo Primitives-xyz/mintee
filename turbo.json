@@ -12,5 +12,11 @@
     "dev": {
       "cache": false
     }
-  }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "STRIPE_SECRET_KEY",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+    "rpcUrl"
+  ]
 }
