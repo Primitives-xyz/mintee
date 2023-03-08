@@ -40,7 +40,11 @@ export default {
     if (url.pathname.startsWith("/nftStatus/")) {
       // get address from url
       const address = url.pathname.split("/")[2];
-      return await fetch(`${env.factoryUrl}/api/nftStatus?address=${address}`);
+      return await fetch(`${env.factoryUrl}/api/nftStatus?address=${address}`, {
+        headers: {
+          secret: "YO!",
+        },
+      });
     }
 
     if (url.pathname === "/uploadMetadata") {
