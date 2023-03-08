@@ -1,0 +1,15 @@
+{
+  "name": "mintee-utils",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "description": "Mintee Utils",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.73.3",
+    "mintee-types": "*",
+    "zod": "^3.21.0"
+  }
+}
