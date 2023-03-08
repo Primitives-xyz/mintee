@@ -1,5 +1,7 @@
 // import types from mantee-types
+import type { Env } from "worker-types";
 import type { metadataInternal } from "mintee-types";
+import { R2Object } from "@cloudflare/workers-types";
 /**
  * Upload metadata to a public bucket
  * @param metadata
@@ -15,13 +17,8 @@ export async function uploadMetadata(
   metadata: metadataInternal,
   env: Env,
   key: string
-) {
+): Promise<R2Object> {
   return await env.bucket.put(key, JSON.stringify(metadata)).catch((err) => {
     throw new Error(err);
   });
-}
-export interface Env {
-  rpcUrl: string;
-  r2Url: string;
-  bucket: any;
 }

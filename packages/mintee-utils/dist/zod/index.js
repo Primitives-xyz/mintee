@@ -10,7 +10,7 @@ var web3_js_1 = require("@solana/web3.js");
  */
 function validateMetadataBody(body) {
     var schema = zod_1.z.object({
-        name: zod_1.z.string().max(32),
+        name: zod_1.z.string().min(1).max(32),
         description: zod_1.z.string().optional(),
         symbol: zod_1.z.string().max(10).optional(),
         max_uri_length: zod_1.z.number().max(100).optional()

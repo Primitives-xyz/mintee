@@ -15,4 +15,3 @@ export declare function validateJWTInput(body: any): {
     email: string;
 };
 export declare function validateSolanaAddress(string: any): false | PublicKey;
-//# sourceMappingURL=index.d.ts.map

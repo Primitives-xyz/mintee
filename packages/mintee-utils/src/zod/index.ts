@@ -7,7 +7,7 @@ import { PublicKey } from "@solana/web3.js";
  */
 export function validateMetadataBody(body: any) {
   const schema = z.object({
-    name: z.string().max(32),
+    name: z.string().min(1).max(32),
     description: z.string().optional(),
     symbol: z.string().max(10).optional(),
     max_uri_length: z.number().max(100).optional(),
