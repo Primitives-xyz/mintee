@@ -14,6 +14,8 @@ export default async function handler(
   // get search params
   const { address } = req.query;
 
+  console.log("req log!", req);
+
   const tokenPK = new PublicKey(address as string);
   if (!tokenPK) return res.status(404).json({ message: "Invalid address" });
   if (!url) {
