@@ -10,7 +10,9 @@
  */
 import { Request } from "@cloudflare/workers-types";
 import { Env } from "worker-types";
-import { uploadMetadata, validateMetadataBody } from "mintee-utils";
+import { validateMetadataBody } from "mintee-utils";
+import { uploadMetadata } from "./r2";
+import { getNFTInfoAndWriteToKV } from "./nft";
 
 export default {
   async fetch(
@@ -23,15 +25,15 @@ export default {
     if (url.pathname.startsWith("/nftInfo/")) {
       // after nftInfo/ grab the address
       const address = url.pathname.split("/")[2];
-      console.log("env", env);
+
+      // check if the address is in the KV
       const kvResponse = await env.nftInfo.get(address);
       if (kvResponse) {
         return new Response(kvResponse);
       }
 
-      const factoryResponse = await fetch(`${env.factoryUrl}/api/${address}`);
-      const tokenInfo = JSON.stringify(await factoryResponse.json()) as any;
-      await env.nftInfo.put(address, tokenInfo);
+      // if not in KV, get the NFT info from the factory and write it to the KV
+      const tokenInfo = await getNFTInfoAndWriteToKV({ env, address });
       return new Response(tokenInfo);
     }
 

@@ -1,6 +1,5 @@
 // import types from mantee-types
 import type { Env } from "worker-types";
-import type { metadataInternal } from "mintee-types";
 import { R2Object } from "@cloudflare/workers-types";
 /**
  * Upload metadata to a public bucket
@@ -22,3 +21,9 @@ export async function uploadMetadata(
     throw new Error(err);
   });
 }
+export type metadataInternal = {
+  symbol?: string | undefined;
+  description?: string | undefined;
+  max_uri_length?: number | undefined;
+  name: string;
+};

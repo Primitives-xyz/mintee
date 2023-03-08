@@ -1,4 +1,3 @@
-import { PublicKey } from "@solana/web3.js";
 /**
  * Validate the body of the request using zod
  * @param body
@@ -14,4 +13,3 @@ export declare function validateJWTInput(body: any): {
     name: string;
     email: string;
 };
-export declare function validateSolanaAddress(string: any): false | PublicKey;

@@ -172,18 +172,12 @@ importers:
 
   packages/mintee-utils:
     specifiers:
-      '@cloudflare/workers-types': ^4.20230228.0
-      '@solana/web3.js': ^1.73.3
       '@types/node': ^16.11.6
       mintee-types: '*'
       typescript: ^4.5.2
-      worker-types: '*'
       zod: ^3.21.0
     dependencies:
-      '@cloudflare/workers-types': 4.20230307.0
-      '@solana/web3.js': 1.73.3
       mintee-types: link:../mintee-types
-      worker-types: link:../worker-types
       zod: 3.21.4
     devDependencies:
       '@types/node': 16.18.6
