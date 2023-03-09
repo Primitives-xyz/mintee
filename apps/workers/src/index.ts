@@ -73,7 +73,7 @@ export default {
       return new Response(JSON.stringify(nftInfo));
     }
 
-    if (url.pathname === "/mintCompressed") {
+    if (url.pathname === "/mintCompressedToCollection") {
       const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
       if (!mintTreeResponse.ok) {
         return new Response("Error minting tree", { status: 500 });
@@ -88,17 +88,69 @@ export default {
       if (!createCollectionResponse.ok) {
         return new Response("Error creating collection", { status: 500 });
       }
-
-      console.log("what ?");
       const collectionInfo = (await createCollectionResponse.json()) as any;
 
-      console.log("right before mint", mintTree);
-      const mintResponse = await fetch(
-        `${env.factoryUrl}/api/mintCompressed?collectionMintAddress=${collectionInfo.collectionMint}&collectionMetadataAccountAddress=${collectionInfo.collectionMetadataAccount}&collectionMasterEditionAccountAddress=${collectionInfo.collectionMasterEditionAccount}&treeMintAddress=${mintTree.treeWalletSK}`
-      );
+      const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: mintTree.treeAddress,
+        }),
+      });
+      if (!mintResponse.ok) {
+        return new Response("Error minting NFT", { status: 500 });
+      }
+      const mintInfo = (await mintResponse.json()) as { assetId: string };
 
-      console.log("mintResponse", mintResponse);
-      return new Response("Minted tree and collection");
+      return new Response(
+        JSON.stringify({
+          treeAddress: mintTree.treeAddress,
+          compressedAssetId: mintInfo.assetId,
+          collectionAddress: collectionInfo.collectionMint,
+        })
+      );
+    }
+
+    if (url.pathname === "/mintCompressed") {
+      // if get request, return error
+      if (request.method === "GET") {
+        return new Response("GET not allowed", { status: 405 });
+      }
+      const { name, symbol } = (await request.json()) as {
+        name: string;
+        symbol?: string;
+      };
+      if (!name) {
+        return new Response("Name is required", { status: 400 });
+      }
+      const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          symbol,
+        }),
+      });
+      if (!mintResponse.ok) {
+        return new Response("Error minting NFT", { status: 500 });
+      }
+      const mintInfo = (await mintResponse.json()) as { assetId: string };
+
+      return new Response(
+        JSON.stringify({
+          treeAddress: mintTree.treeAddress,
+          compressedAssetId: mintInfo.assetId,
+          collectionAddress: collectionInfo.collectionMint,
+        })
+      );
+    }
+
+    if (url.pathname === "/createTree") {
+      const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
     }
 
     if (url.pathname === "/uploadMetadata") {

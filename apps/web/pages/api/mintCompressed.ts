@@ -13,6 +13,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // if type get then return error
+  if (req.method === "GET") {
+    return res.status(405).json({ error: "GET not allowed" });
+  }
   const apiKey = process.env["API_KEY"];
   if (!apiKey) {
     throw new Error("Api key must be provided via API_KEY env var");
@@ -24,14 +28,7 @@ export default async function handler(
       "Wallet secret key must be provided via SECRET_KEY env var"
     );
   }
-  console.log("query", req.query);
-  // grab search params
-  const {
-    collectionMintAddress,
-    collectionMetadataAccountAddress,
-    collectionMasterEditionAccountAddress,
-    treeMintAddress,
-  } = req.query;
+
   let decodedSecretKey;
   try {
     decodedSecretKey = base58.decode(secretKey);
@@ -46,11 +43,11 @@ export default async function handler(
     connectionString
   );
 
-  if (!treeMintAddress || typeof treeMintAddress !== "string") {
-    return res.status(500).json({ error: "Invalid tree wallet address" });
+  const treeWalletSK = process.env["TREE_WALLET_SK"];
+  if (!treeWalletSK) {
+    return res.status(500).json({ error: "Invalid tree wallet secret key" });
   }
-
-  const treeWallet58 = base58.decode(treeMintAddress);
+  const treeWallet58 = base58.decode(treeWalletSK);
   const treeWallet = Keypair.fromSecretKey(treeWallet58);
 
   // Mint a compressed NFT
@@ -68,23 +65,11 @@ export default async function handler(
     sellerFeeBasisPoints: 0,
     isMutable: false,
   };
-  const {
-    collectionMint,
-    collectionMetadataAccount,
-    collectionMasterEditionAccount,
-  } = convertCollectionPublicKeys({
-    collectionMintAddress,
-    collectionMetadataAccountAddress,
-    collectionMasterEditionAccountAddress,
-  });
   const sig = await mintCompressedNft(
     connectionWrapper,
     nftArgs,
     ownerWallet,
-    treeWallet,
-    collectionMint,
-    collectionMetadataAccount,
-    collectionMasterEditionAccount
+    treeWallet
   ).catch((e) => {
     console.error(e);
     return res.status(500).json({ error: e.message });
