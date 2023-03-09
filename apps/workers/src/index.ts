@@ -73,6 +73,29 @@ export default {
       return new Response(JSON.stringify(nftInfo));
     }
 
+    if (url.pathname === "/mintCompressed") {
+      const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
+      if (!mintTreeResponse.ok) {
+        return new Response("Error minting tree", { status: 500 });
+      }
+      const createCollectionResponse = await fetch(
+        `${env.factoryUrl}/api/createCollection`
+      );
+      if (!createCollectionResponse.ok) {
+        return new Response("Error creating collection", { status: 500 });
+      }
+      const collectionInfo: {
+        collectionMint: string;
+        collectionMetadataAccount: string;
+        collectionMasterEditionAccount: string;
+      } = await createCollectionResponse.json();
+      const mintResponse = await fetch(
+        `${env.factoryUrl}/api/mintCompressed?collectionMintAddress=${collectionInfo.collectionMint}&collectionMetadataAccountAddress=${collectionInfo.collectionMetadataAccount}&collectionMasterEditionAccountAddress=${collectionInfo.collectionMasterEditionAccount}`
+      );
+      console.log("mintResponse", mintResponse);
+      return new Response("Minted tree and collection");
+    }
+
     if (url.pathname === "/uploadMetadata") {
       // validate body using zod
       const body = validateMetadataBody(await request.json());
