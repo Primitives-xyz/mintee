@@ -29,8 +29,6 @@ export default async function handler(
   }
 
   const ownerWallet = Keypair.fromSecretKey(decodedSecretKey);
-  console.log("Owner wallet: " + ownerWallet.publicKey);
-
   const connectionString = `https://rpc-devnet.helius.xyz?api-key=${apiKey}`;
   const connectionWrapper = new WrappedConnection(
     ownerWallet,

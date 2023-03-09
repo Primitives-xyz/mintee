@@ -14,6 +14,7 @@ import { WrappedConnection } from "./wrappedConnection";
 import {
   createCreateTreeInstruction,
   createMintToCollectionV1Instruction,
+  createMintV1Instruction,
   createRedeemInstruction,
   createTransferInstruction,
   MetadataArgs,
@@ -38,6 +39,7 @@ import {
   getVoucherPDA,
 } from "./helpers";
 import { bs58 } from "@project-serum/anchor/dist/cjs/utils/bytes";
+import { createMintOperationHandler } from "@metaplex-foundation/js";
 
 // Creates a new merkle tree for compression.
 export const initTree = async (
@@ -101,6 +103,11 @@ export const initTree = async (
 // Creates a metaplex collection NFT
 export const initCollection = async (
   connectionWrapper: WrappedConnection,
+  metadata: {
+    name: string;
+    symbol: string;
+    uri: string;
+  },
   payer: Keypair
 ) => {
   const collectionMint = await createMint(
@@ -143,9 +150,9 @@ export const initCollection = async (
     {
       createMetadataAccountArgsV3: {
         data: {
-          name: "Nick's collection",
-          symbol: "NICK",
-          uri: "nicksfancyuri",
+          name: metadata.name,
+          symbol: metadata.symbol,
+          uri: metadata.uri,
           sellerFeeBasisPoints: 100,
           creators: null,
           collection: null,
@@ -258,6 +265,54 @@ export const mintCompressedNft = async (
   connectionWrapper: WrappedConnection,
   nftArgs: MetadataArgs,
   ownerKeypair: Keypair,
+  treeKeypair: Keypair
+) => {
+  const [treeAuthority, _bump] = await PublicKey.findProgramAddressSync(
+    [treeKeypair.publicKey.toBuffer()],
+    BUBBLEGUM_PROGRAM_ID
+  );
+  const [bgumSigner, __] = await PublicKey.findProgramAddressSync(
+    [Buffer.from("collection_cpi", "utf8")],
+    BUBBLEGUM_PROGRAM_ID
+  );
+  const mintIx = createMintV1Instruction(
+    {
+      merkleTree: treeKeypair.publicKey,
+      treeDelegate: ownerKeypair.publicKey,
+      treeAuthority,
+      leafDelegate: ownerKeypair.publicKey,
+      leafOwner: ownerKeypair.publicKey,
+      compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
+      payer: ownerKeypair.publicKey,
+      logWrapper: SPL_NOOP_PROGRAM_ID,
+    },
+    {
+      message: nftArgs,
+    }
+  );
+  const tx = new Transaction().add(mintIx);
+  tx.feePayer = ownerKeypair.publicKey;
+  try {
+    const sig = await sendAndConfirmTransaction(
+      connectionWrapper,
+      tx,
+      [ownerKeypair],
+      {
+        commitment: "confirmed",
+        skipPreflight: true,
+      }
+    );
+    return sig;
+  } catch (e) {
+    console.error("Failed to mint compressed NFT", e);
+    throw e;
+  }
+};
+
+export const mintCompressedNftToCollection = async (
+  connectionWrapper: WrappedConnection,
+  nftArgs: MetadataArgs,
+  ownerKeypair: Keypair,
   treeKeypair: Keypair,
   collectionMint: PublicKey,
   collectionMetadata: PublicKey,
@@ -280,11 +335,11 @@ export const mintCompressedNft = async (
       leafDelegate: ownerKeypair.publicKey,
       leafOwner: ownerKeypair.publicKey,
       compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
-      logWrapper: SPL_NOOP_PROGRAM_ID,
-      collectionAuthority: ownerKeypair.publicKey,
-      collectionAuthorityRecordPda: BUBBLEGUM_PROGRAM_ID,
       collectionMint: collectionMint,
       collectionMetadata: collectionMetadata,
+      collectionAuthority: ownerKeypair.publicKey,
+      collectionAuthorityRecordPda: BUBBLEGUM_PROGRAM_ID,
+      logWrapper: SPL_NOOP_PROGRAM_ID,
       editionAccount: collectionMasterEditionAccount,
       bubblegumSigner: bgumSigner,
       tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,

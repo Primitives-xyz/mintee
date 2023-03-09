@@ -37,7 +37,15 @@ export default async function handler(
     collectionMint,
     collectionMetadataAccount,
     collectionMasterEditionAccount,
-  } = await initCollection(connectionWrapper, ownerWallet);
+  } = await initCollection(
+    connectionWrapper,
+    {
+      name: "Compression Test",
+      symbol: "COMP",
+      uri: "test123",
+    },
+    ownerWallet
+  );
   return res.json({
     collectionMint,
     collectionMetadataAccount,
