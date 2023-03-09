@@ -65,8 +65,6 @@ export default async function handler(
   const leafIndex = treeAccount.tree.rightMostPath.index - 1;
   const assetId = await getCompressedNftId(treeWallet, leafIndex);
 
-  sleep(1000);
-  const asset = await connectionWrapper.getAsset(assetId);
   if (!asset) {
     return res.status(500).json({ error: "Failed to get asset, mint again?" });
   }
