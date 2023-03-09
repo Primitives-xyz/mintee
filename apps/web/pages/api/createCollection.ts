@@ -18,9 +18,16 @@ export default async function handler(
     isCollection: true,
   });
   const { mintAddress } = nftTx.getContext();
-  await mp.rpc().sendAndConfirmTransaction(nftTx);
+  await mp.rpc().sendAndConfirmTransaction(nftTx, {
+    commitment: "finalized",
+  });
   await sleep(1000);
-  const collection = await mp.nfts().findByMint({ mintAddress });
+  const collection = await mp.nfts().findByMint(
+    { mintAddress },
+    {
+      commitment: "finalized",
+    }
+  );
   return res.json({
     collectionMint: collection.mint.address.toString(),
     collectionMetadataAccount: collection.metadataAddress.toString(),
