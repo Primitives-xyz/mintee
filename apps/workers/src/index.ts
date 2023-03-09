@@ -92,7 +92,7 @@ export default {
       console.log("what ?");
       const collectionInfo = (await createCollectionResponse.json()) as any;
 
-      console.log("right before mint");
+      console.log("right before mint", mintTree);
       const mintResponse = await fetch(
         `${env.factoryUrl}/api/mintCompressed?collectionMintAddress=${collectionInfo.collectionMint}&collectionMetadataAccountAddress=${collectionInfo.collectionMetadataAccount}&collectionMasterEditionAccountAddress=${collectionInfo.collectionMasterEditionAccount}&treeMintAddress=${mintTree.treeWalletSK}`
       );
