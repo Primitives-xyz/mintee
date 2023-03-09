@@ -46,7 +46,5 @@ export default async function handler(
     ownerWallet,
     treeWallet
   );
-  console.log("Tree address: " + treeAddress);
-
   return res.json("Hello world! Tree created:" + treeAddress.toString());
 }
