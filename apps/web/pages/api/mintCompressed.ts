@@ -6,6 +6,7 @@ import base58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getCompressedNftId, mintCompressedNft } from "../../utils/mint";
+import { WrappedConnection } from "../../utils/wrappedConnection";
 import { PublicKey } from "@metaplex-foundation/js";
 import { ConcurrentMerkleTreeAccount } from "@solana/spl-account-compression";
 import { getConnectionWrapper } from "../../utils/connectionWrapper";
@@ -28,18 +29,18 @@ export default async function handler(
 
   // Mint a compressed NFT
   const nftArgs = {
-    name: "Compression Test 5",
+    name: "Compression Test",
     symbol: "COMP",
     uri: "https://arweave.net/gfO_TkYttQls70pTmhrdMDz9pfMUXX8hZkaoIivQjGs",
     creators: [],
-    editionNonce: 32423,
+    editionNonce: 253,
     tokenProgramVersion: TokenProgramVersion.Original,
     tokenStandard: TokenStandard.NonFungible,
     uses: null,
     collection: null,
     primarySaleHappened: false,
     sellerFeeBasisPoints: 0,
-    isMutable: true,
+    isMutable: false,
   };
   const sig = await mintCompressedNft(
     connectionWrapper,
@@ -64,13 +65,5 @@ export default async function handler(
   }
   const leafIndex = treeAccount.tree.rightMostPath.index - 1;
   const assetId = await getCompressedNftId(treeWallet, leafIndex);
-
-  if (!assetId) {
-    return res.status(500).json({ error: "Failed to get asset, mint again?" });
-  }
   return res.status(200).json({ assetId });
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
