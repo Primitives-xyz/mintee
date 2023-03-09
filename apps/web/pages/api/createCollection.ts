@@ -28,7 +28,7 @@ export default async function handler(
     }
   );
   return res.json({
-    collectionMint: collection.mint.address.toString(),
+    collectionMint: mintAddress,
     collectionMetadataAccount: collection.metadataAddress.toString(),
     collectionMasterEditionAccount: collection.address.toString(),
   });
