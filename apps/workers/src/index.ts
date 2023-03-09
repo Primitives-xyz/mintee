@@ -172,11 +172,15 @@ export default {
       }
       const assetInfo = await fetch(
         `${env.factoryUrl}/api/asset?assetId=${assetId}`
-      );
-      console.log(assetInfo);
-      if (!assetInfo.ok) {
+      ).catch((e) => {
+        console.log("ERROR", e);
+        return new Response(e.message, { status: 500 });
+      });
+      if (!assetInfo.ok || !assetInfo) {
         return new Response("Error getting asset info", { status: 500 });
       }
+      console.log(assetInfo.status);
+      console.log("here");
       const assetInfoJson = JSON.stringify(await assetInfo.json());
       ctx.waitUntil(env.nftInfo.put(assetId, assetInfoJson));
       return new Response(assetInfoJson);
