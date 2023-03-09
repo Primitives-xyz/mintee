@@ -23,7 +23,6 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/mint") {
-      console.log("any chance");
       // if get request, return error
       if (request.method === "GET") {
         return new Response("GET not allowed", { status: 405 });
@@ -49,7 +48,6 @@ export default {
         return new Response("Error minting NFT", { status: 500 });
       }
       const mintInfo = (await mintResponse.json()) as { assetId: string };
-      console.log("YO");
       return new Response(
         JSON.stringify({
           compressedAssetId: mintInfo.assetId,
@@ -164,7 +162,6 @@ export default {
       return await fetch(`${env.factoryUrl}/api/createTree`);
     }
     if (url.pathname === "/asset") {
-      console.log("URL: ", url);
       const assetId = url.searchParams.get("assetId");
       if (!assetId) {
         return new Response("assetId is required", { status: 400 });
@@ -176,11 +173,9 @@ export default {
       const assetInfo = await fetch(
         `${env.factoryUrl}/api/asset?assetId=${assetId}`
       );
-      console.log("assetInfo: ", assetInfo.body);
       if (!assetInfo.ok) {
         return new Response("Error getting asset info", { status: 500 });
       }
-      console.log(assetInfo);
       const assetInfoJson = JSON.stringify(await assetInfo.json());
       ctx.waitUntil(env.nftInfo.put(assetId, assetInfoJson));
       return new Response(assetInfoJson);
