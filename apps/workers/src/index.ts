@@ -22,6 +22,93 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
 
+    if (url.pathname === "/mint") {
+      console.log("any chance");
+      // if get request, return error
+      if (request.method === "GET") {
+        return new Response("GET not allowed", { status: 405 });
+      }
+      const { name, symbol } = (await request.json()) as {
+        name: string;
+        symbol?: string;
+      };
+      if (!name) {
+        return new Response("Name is required", { status: 400 });
+      }
+      const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          symbol,
+        }),
+      });
+      if (!mintResponse.ok) {
+        return new Response("Error minting NFT", { status: 500 });
+      }
+      const mintInfo = (await mintResponse.json()) as { assetId: string };
+      console.log("YO");
+      return new Response(
+        JSON.stringify({
+          compressedAssetId: mintInfo.assetId,
+        })
+      );
+    }
+
+    if (url.pathname === "/mintCompressedToCollection") {
+      const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
+      if (!mintTreeResponse.ok) {
+        return new Response("Error minting tree", { status: 500 });
+      }
+      const mintTree = (await mintTreeResponse.json()) as {
+        treeAddress: string;
+        treeWalletSK: string;
+      };
+      const createCollectionResponse = await fetch(
+        `${env.factoryUrl}/api/createCollection`
+      );
+      if (!createCollectionResponse.ok) {
+        return new Response("Error creating collection", { status: 500 });
+      }
+      const collectionInfo = (await createCollectionResponse.json()) as any;
+
+      const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: mintTree.treeAddress,
+        }),
+      });
+      if (!mintResponse.ok) {
+        return new Response("Error minting NFT", { status: 500 });
+      }
+      const mintInfo = (await mintResponse.json()) as { assetId: string };
+
+      return new Response(
+        JSON.stringify({
+          treeAddress: mintTree.treeAddress,
+          compressedAssetId: mintInfo.assetId,
+          collectionAddress: collectionInfo.collectionMint,
+        })
+      );
+    }
+
+    if (url.pathname === "/mintCollection") {
+      const createCollectionResponse = await fetch(
+        `${env.factoryUrl}/api/createCollection`
+      );
+      if (!createCollectionResponse.ok) {
+        return new Response("Error creating collection", { status: 500 });
+      }
+      const collectionInfo = (await createCollectionResponse.json()) as any;
+
+      return new Response(JSON.stringify(collectionInfo));
+    }
+
     if (url.pathname.startsWith("/nftInfo/")) {
       // after nftInfo/ grab the address
       const address = url.pathname.split("/")[2];
@@ -73,83 +160,30 @@ export default {
       return new Response(JSON.stringify(nftInfo));
     }
 
-    if (url.pathname === "/mintCompressedToCollection") {
-      const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
-      if (!mintTreeResponse.ok) {
-        return new Response("Error minting tree", { status: 500 });
-      }
-      const mintTree = (await mintTreeResponse.json()) as {
-        treeAddress: string;
-        treeWalletSK: string;
-      };
-      const createCollectionResponse = await fetch(
-        `${env.factoryUrl}/api/createCollection`
-      );
-      if (!createCollectionResponse.ok) {
-        return new Response("Error creating collection", { status: 500 });
-      }
-      const collectionInfo = (await createCollectionResponse.json()) as any;
-
-      const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: mintTree.treeAddress,
-        }),
-      });
-      if (!mintResponse.ok) {
-        return new Response("Error minting NFT", { status: 500 });
-      }
-      const mintInfo = (await mintResponse.json()) as { assetId: string };
-
-      return new Response(
-        JSON.stringify({
-          treeAddress: mintTree.treeAddress,
-          compressedAssetId: mintInfo.assetId,
-          collectionAddress: collectionInfo.collectionMint,
-        })
-      );
-    }
-
-    if (url.pathname === "/mintCompressed") {
-      console.log("any chance");
-      // if get request, return error
-      if (request.method === "GET") {
-        return new Response("GET not allowed", { status: 405 });
-      }
-      const { name, symbol } = (await request.json()) as {
-        name: string;
-        symbol?: string;
-      };
-      if (!name) {
-        return new Response("Name is required", { status: 400 });
-      }
-      const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          symbol,
-        }),
-      });
-      if (!mintResponse.ok) {
-        return new Response("Error minting NFT", { status: 500 });
-      }
-      const mintInfo = (await mintResponse.json()) as { assetId: string };
-      console.log("YO");
-      return new Response(
-        JSON.stringify({
-          compressedAssetId: mintInfo.assetId,
-        })
-      );
-    }
-
     if (url.pathname === "/createTree") {
-      const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
+      return await fetch(`${env.factoryUrl}/api/createTree`);
+    }
+    if (url.pathname === "/asset") {
+      console.log("URL: ", url);
+      const assetId = url.searchParams.get("assetId");
+      if (!assetId) {
+        return new Response("assetId is required", { status: 400 });
+      }
+      const kvResponse = await env.nftInfo.get(assetId);
+      if (kvResponse) {
+        return new Response(kvResponse);
+      }
+      const assetInfo = await fetch(
+        `${env.factoryUrl}/api/asset?assetId=${assetId}`
+      );
+      console.log("assetInfo: ", assetInfo.body);
+      if (!assetInfo.ok) {
+        return new Response("Error getting asset info", { status: 500 });
+      }
+      console.log(assetInfo);
+      const assetInfoJson = JSON.stringify(await assetInfo.json());
+      ctx.waitUntil(env.nftInfo.put(assetId, assetInfoJson));
+      return new Response(assetInfoJson);
     }
 
     if (url.pathname === "/uploadMetadata") {
