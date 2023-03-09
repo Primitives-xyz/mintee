@@ -106,6 +106,7 @@ importers:
     specifiers:
       '@cloudflare/workers-types': ^4.20230228.0
       '@metaplex-foundation/js': ^0.18.3
+      '@noxford1/post': workspace:^1.0.0
       '@planetscale/database': ^1.5.0
       '@prisma/client': 4.11.0
       '@solana/web3.js': ^1.73.3
@@ -119,6 +120,7 @@ importers:
       zod: ^3.21.0
     dependencies:
       '@metaplex-foundation/js': 0.18.3
+      '@noxford1/post': link:../../packages/post
       '@planetscale/database': 1.6.0
       '@solana/web3.js': 1.73.3
       mintee-utils: link:../../packages/mintee-utils
@@ -2479,7 +2481,7 @@ packages:
       '@solana/web3.js': ^1.58.0
     dependencies:
       '@solana/wallet-standard-features': 1.0.1
-      '@solana/web3.js': 1.73.3_encoding@0.1.13
+      '@solana/web3.js': 1.73.3
       '@wallet-standard/base': 1.0.1
       '@wallet-standard/features': 1.0.3
       eventemitter3: 4.0.7
@@ -3285,7 +3287,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: false
@@ -3293,7 +3295,7 @@ packages:
   /axios/0.25.0_debug@4.3.4:
     resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: false
@@ -5100,6 +5102,18 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dev: false
+
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
     dev: false
 
   /for-each/0.3.3:
