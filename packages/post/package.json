@@ -1,7 +1,8 @@
 {
-  "name": "@noxford1/post",
+  "name": "post",
+  "private": false,
   "version": "1.0.0",
-  "description": "",
+  "description": "A fetch like post",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -9,6 +10,6 @@
     "prepublish": "tsc"
   },
   "keywords": [],
-  "author": "",
+  "author": "Nicholas Oxford",
   "license": "ISC"
 }
