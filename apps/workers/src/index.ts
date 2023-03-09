@@ -173,6 +173,7 @@ export default {
       const assetInfo = await fetch(
         `${env.factoryUrl}/api/asset?assetId=${assetId}`
       );
+      console.log(assetInfo);
       if (!assetInfo.ok) {
         return new Response("Error getting asset info", { status: 500 });
       }
