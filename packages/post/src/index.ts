@@ -1,8 +1,4 @@
-export default function post(
-  url: string,
-  data?: BodyInit | null | undefined,
-  authorization?: string
-) {
+export default function post(url: string, data?: any, authorization?: string) {
   return fetch(url, {
     method: "POST",
     headers: {
