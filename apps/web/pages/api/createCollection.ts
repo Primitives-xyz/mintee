@@ -7,7 +7,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const connectionWrapper = getConnectionWrapper();
-
   const mp = Metaplex.make(connectionWrapper);
   mp.use(keypairIdentity(connectionWrapper.payer));
   const nftTx = await mp.nfts().builders().create({
