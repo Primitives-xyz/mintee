@@ -6,7 +6,6 @@ import base58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getCompressedNftId, mintCompressedNft } from "../../utils/mint";
-import { WrappedConnection } from "../../utils/wrappedConnection";
 import { PublicKey } from "@metaplex-foundation/js";
 import { ConcurrentMerkleTreeAccount } from "@solana/spl-account-compression";
 import { getConnectionWrapper } from "../../utils/connectionWrapper";
@@ -29,18 +28,18 @@ export default async function handler(
 
   // Mint a compressed NFT
   const nftArgs = {
-    name: "Compression Test",
+    name: "Compression Test 5",
     symbol: "COMP",
     uri: "https://arweave.net/gfO_TkYttQls70pTmhrdMDz9pfMUXX8hZkaoIivQjGs",
     creators: [],
-    editionNonce: 253,
+    editionNonce: 32423,
     tokenProgramVersion: TokenProgramVersion.Original,
     tokenStandard: TokenStandard.NonFungible,
     uses: null,
     collection: null,
     primarySaleHappened: false,
     sellerFeeBasisPoints: 0,
-    isMutable: false,
+    isMutable: true,
   };
   const sig = await mintCompressedNft(
     connectionWrapper,
@@ -65,45 +64,15 @@ export default async function handler(
   }
   const leafIndex = treeAccount.tree.rightMostPath.index - 1;
   const assetId = await getCompressedNftId(treeWallet, leafIndex);
+
+  const asset = await connectionWrapper.getAsset(assetId);
+  sleep(1000);
+  if (!asset) {
+    return res.status(500).json({ error: "Failed to get asset, mint again?" });
+  }
   return res.status(200).json({ assetId });
 }
 
-function convertCollectionPublicKeys({
-  collectionMintAddress,
-  collectionMetadataAccountAddress,
-  collectionMasterEditionAccountAddress,
-}: {
-  collectionMintAddress: string | string[] | undefined;
-  collectionMetadataAccountAddress: string | string[] | undefined;
-  collectionMasterEditionAccountAddress: string | string[] | undefined;
-}) {
-  // if any of args are undefined throw an error
-  if (
-    !collectionMintAddress ||
-    !collectionMetadataAccountAddress ||
-    !collectionMasterEditionAccountAddress
-  ) {
-    throw new Error("Collection args must be provided");
-  }
-  // if any of args are not strings throw an error
-  if (
-    typeof collectionMintAddress !== "string" ||
-    typeof collectionMetadataAccountAddress !== "string" ||
-    typeof collectionMasterEditionAccountAddress !== "string"
-  ) {
-    throw new Error("Collection args must be strings");
-  }
-
-  const collectionMint = new PublicKey(collectionMintAddress);
-  const collectionMetadataAccount = new PublicKey(
-    collectionMetadataAccountAddress
-  );
-  const collectionMasterEditionAccount = new PublicKey(
-    collectionMasterEditionAccountAddress
-  );
-  return {
-    collectionMint,
-    collectionMetadataAccount,
-    collectionMasterEditionAccount,
-  };
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
