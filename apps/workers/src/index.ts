@@ -82,22 +82,17 @@ export default {
         treeAddress: string;
         treeWalletSK: string;
       };
-      console.log("mintTreeResponse", mintTree);
       const createCollectionResponse = await fetch(
         `${env.factoryUrl}/api/createCollection`
       );
       if (!createCollectionResponse.ok) {
         return new Response("Error creating collection", { status: 500 });
       }
-      console.log(
-        "createCollectionResponse",
-        await createCollectionResponse.json()
-      );
-      const collectionInfo: {
-        collectionMint: string;
-        collectionMetadataAccount: string;
-        collectionMasterEditionAccount: string;
-      } = await createCollectionResponse.json();
+
+      console.log("what ?");
+      const collectionInfo = (await createCollectionResponse.json()) as any;
+
+      console.log("right before mint");
       const mintResponse = await fetch(
         `${env.factoryUrl}/api/mintCompressed?collectionMintAddress=${collectionInfo.collectionMint}&collectionMetadataAccountAddress=${collectionInfo.collectionMetadataAccount}&collectionMasterEditionAccountAddress=${collectionInfo.collectionMasterEditionAccount}&treeMintAddress=${mintTree.treeWalletSK}`
       );
