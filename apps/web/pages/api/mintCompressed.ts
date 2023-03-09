@@ -79,13 +79,22 @@ export default async function handler(
     collectionMint,
     collectionMetadataAccount,
     collectionMasterEditionAccount
-  );
+  ).catch((e) => {
+    console.error(e);
+    return res.status(500).json({ error: e.message });
+  });
   const treeAccount = await ConcurrentMerkleTreeAccount.fromAccountAddress(
     connectionWrapper,
     treeWallet.publicKey
-  );
+  ).catch((e) => {
+    console.error(e);
+    return res.status(500).json({ error: e.message });
+  });
   // Get the most rightmost leaf index, which will be the most recently minted compressed NFT.
   // Alternatively you can keep a counter that is incremented on each mint.
+  if (!treeAccount) {
+    return res.status(500).json({ error: "Failed to get tree account" });
+  }
   const leafIndex = treeAccount.tree.rightMostPath.index - 1;
   const assetId = await getCompressedNftId(treeWallet, leafIndex);
   return res.status(200).json({ assetId });
