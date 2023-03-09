@@ -3,7 +3,6 @@ import base58 from "bs58";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getConnectionWrapper } from "../../utils/connectionWrapper";
 import { initTree } from "../../utils/mint";
-import { WrappedConnection } from "../../utils/wrappedConnection";
 
 export default async function handler(
   req: NextApiRequest,
