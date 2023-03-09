@@ -114,6 +114,7 @@ export default {
     }
 
     if (url.pathname === "/mintCompressed") {
+      console.log("any chance");
       // if get request, return error
       if (request.method === "GET") {
         return new Response("GET not allowed", { status: 405 });
@@ -139,12 +140,10 @@ export default {
         return new Response("Error minting NFT", { status: 500 });
       }
       const mintInfo = (await mintResponse.json()) as { assetId: string };
-
+      console.log("YO");
       return new Response(
         JSON.stringify({
-          treeAddress: mintTree.treeAddress,
           compressedAssetId: mintInfo.assetId,
-          collectionAddress: collectionInfo.collectionMint,
         })
       );
     }
