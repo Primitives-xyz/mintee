@@ -166,10 +166,12 @@ export default {
       if (!assetId) {
         return new Response("assetId is required", { status: 400 });
       }
+      console.log("yo?");
       const kvResponse = await env.nftInfo.get(assetId);
       if (kvResponse) {
         return new Response(kvResponse);
       }
+      console.log("post log", assetId);
       const assetInfo = await fetch(
         `${env.factoryUrl}/api/asset?assetId=${assetId}`
       ).catch((e) => {
