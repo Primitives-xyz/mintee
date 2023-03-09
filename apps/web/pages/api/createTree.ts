@@ -36,15 +36,15 @@ export default async function handler(
     ownerWallet,
     connectionString
   );
-
   // Fixed wallet to manage the merkle tree used to store the collection.
   const treeWallet = Keypair.generate();
-  console.log("Tree wallet: " + treeWallet.publicKey);
-  console.log("Creating merkle tree.");
   const treeAddress = await initTree(
     connectionWrapper,
     ownerWallet,
     treeWallet
   );
-  return res.json("Hello world! Tree created:" + treeAddress.toString());
+  return res.json({
+    treeAddress: treeAddress,
+    treeWalletAddress: treeWallet.secretKey.toString(),
+  });
 }
