@@ -43,9 +43,8 @@ export default async function handler(
     ownerWallet,
     treeWallet
   );
-
   return res.json({
     treeAddress: treeAddress,
-    treeWalletSK: treeWallet.secretKey.toString(),
+    treeWalletSK: base58.encode(treeWallet.secretKey),
   });
 }
