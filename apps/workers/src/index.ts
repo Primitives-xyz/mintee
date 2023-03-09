@@ -78,7 +78,11 @@ export default {
       if (!mintTreeResponse.ok) {
         return new Response("Error minting tree", { status: 500 });
       }
-      console.log("mintTreeResponse", await mintTreeResponse.json());
+      const mintTree = (await mintTreeResponse.json()) as {
+        treeAddress: string;
+        treeWalletSK: string;
+      };
+      console.log("mintTreeResponse", mintTree);
       const createCollectionResponse = await fetch(
         `${env.factoryUrl}/api/createCollection`
       );
@@ -95,7 +99,7 @@ export default {
         collectionMasterEditionAccount: string;
       } = await createCollectionResponse.json();
       const mintResponse = await fetch(
-        `${env.factoryUrl}/api/mintCompressed?collectionMintAddress=${collectionInfo.collectionMint}&collectionMetadataAccountAddress=${collectionInfo.collectionMetadataAccount}&collectionMasterEditionAccountAddress=${collectionInfo.collectionMasterEditionAccount}`
+        `${env.factoryUrl}/api/mintCompressed?collectionMintAddress=${collectionInfo.collectionMint}&collectionMetadataAccountAddress=${collectionInfo.collectionMetadataAccount}&collectionMasterEditionAccountAddress=${collectionInfo.collectionMasterEditionAccount}&treeMintAddress=${mintTree.treeWalletSK}`
       );
 
       console.log("mintResponse", mintResponse);
