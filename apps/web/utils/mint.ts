@@ -20,18 +20,8 @@ import {
   MetadataArgs,
   PROGRAM_ID as BUBBLEGUM_PROGRAM_ID,
 } from "@metaplex-foundation/mpl-bubblegum";
-import {
-  PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
-  createCreateMetadataAccountV3Instruction,
-  createCreateMasterEditionV3Instruction,
-  createSetCollectionSizeInstruction,
-} from "@metaplex-foundation/mpl-token-metadata";
-import {
-  createAccount,
-  createMint,
-  mintTo,
-  TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
+import { PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
+import { createMint } from "@solana/spl-token";
 import { BN } from "@project-serum/anchor";
 import {
   bufferToArray,
@@ -39,7 +29,6 @@ import {
   getVoucherPDA,
 } from "./helpers";
 import { bs58 } from "@project-serum/anchor/dist/cjs/utils/bytes";
-import { createMintOperationHandler } from "@metaplex-foundation/js";
 
 // Creates a new merkle tree for compression.
 export const initTree = async (
@@ -96,130 +85,6 @@ export const initTree = async (
     return treeKeypair.publicKey;
   } catch (e) {
     console.error("Failed to create merkle tree: ", e);
-    throw e;
-  }
-};
-
-// Creates a metaplex collection NFT
-export const initCollection = async (
-  connectionWrapper: WrappedConnection,
-  metadata: {
-    name: string;
-    symbol: string;
-    uri: string;
-  },
-  payer: Keypair
-) => {
-  const collectionMint = await createMint(
-    connectionWrapper,
-    payer,
-    payer.publicKey,
-    payer.publicKey,
-    0
-  );
-  const collectionTokenAccount = await createAccount(
-    connectionWrapper,
-    payer,
-    collectionMint,
-    payer.publicKey
-  );
-  await mintTo(
-    connectionWrapper,
-    payer,
-    collectionMint,
-    collectionTokenAccount,
-    payer,
-    1
-  );
-  const [collectionMetadataAccount, _b] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("metadata", "utf8"),
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      collectionMint.toBuffer(),
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  );
-  const collectionMeatadataIX = createCreateMetadataAccountV3Instruction(
-    {
-      metadata: collectionMetadataAccount,
-      mint: collectionMint,
-      mintAuthority: payer.publicKey,
-      payer: payer.publicKey,
-      updateAuthority: payer.publicKey,
-    },
-    {
-      createMetadataAccountArgsV3: {
-        data: {
-          name: metadata.name,
-          symbol: metadata.symbol,
-          uri: metadata.uri,
-          sellerFeeBasisPoints: 100,
-          creators: null,
-          collection: null,
-          uses: null,
-        },
-        isMutable: false,
-        collectionDetails: null,
-      },
-    }
-  );
-  const [collectionMasterEditionAccount, _b2] =
-    await PublicKey.findProgramAddress(
-      [
-        Buffer.from("metadata", "utf8"),
-        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-        collectionMint.toBuffer(),
-        Buffer.from("edition", "utf8"),
-      ],
-      TOKEN_METADATA_PROGRAM_ID
-    );
-  const collectionMasterEditionIX = createCreateMasterEditionV3Instruction(
-    {
-      edition: collectionMasterEditionAccount,
-      mint: collectionMint,
-      mintAuthority: payer.publicKey,
-      payer: payer.publicKey,
-      updateAuthority: payer.publicKey,
-      metadata: collectionMetadataAccount,
-    },
-    {
-      createMasterEditionArgs: {
-        maxSupply: 0,
-      },
-    }
-  );
-
-  const sizeCollectionIX = createSetCollectionSizeInstruction(
-    {
-      collectionMetadata: collectionMetadataAccount,
-      collectionAuthority: payer.publicKey,
-      collectionMint: collectionMint,
-    },
-    {
-      setCollectionSizeArgs: { size: 50 },
-    }
-  );
-
-  let tx = new Transaction()
-    .add(collectionMeatadataIX)
-    .add(collectionMasterEditionIX)
-    .add(sizeCollectionIX);
-  try {
-    await sendAndConfirmTransaction(connectionWrapper, tx, [payer], {
-      commitment: "confirmed",
-      skipPreflight: true,
-    });
-    console.log(
-      "Successfull created NFT collection with collection address: " +
-        collectionMint.toBase58()
-    );
-    return {
-      collectionMint,
-      collectionMetadataAccount,
-      collectionMasterEditionAccount,
-    };
-  } catch (e) {
-    console.error("Failed to init collection: ", e);
     throw e;
   }
 };
