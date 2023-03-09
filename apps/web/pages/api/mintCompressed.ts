@@ -30,6 +30,7 @@ export default async function handler(
     collectionMintAddress,
     collectionMetadataAccountAddress,
     collectionMasterEditionAccountAddress,
+    treeWalletAddress,
   } = req.query;
   let decodedSecretKey;
   try {
@@ -45,7 +46,12 @@ export default async function handler(
     connectionString
   );
 
-  const treeWallet = Keypair.generate();
+  if (!treeWalletAddress || typeof treeWalletAddress !== "string") {
+    return res.status(500).json({ error: "Invalid tree wallet address" });
+  }
+
+  const treeWallet58 = base58.decode(treeWalletAddress);
+  const treeWallet = Keypair.fromSecretKey(treeWallet58);
 
   // Mint a compressed NFT
   const nftArgs = {
