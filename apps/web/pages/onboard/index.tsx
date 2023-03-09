@@ -4,11 +4,8 @@ import { checkEnvironment } from "../../utils/api-helpers";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
-  console.log(userId);
   const url = checkEnvironment() + "/api/onboard";
-  console.log(url);
   const res = await fetch(url);
-  console.log(res);
   return { props: { userId } };
 };
 

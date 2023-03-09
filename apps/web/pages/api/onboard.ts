@@ -33,7 +33,6 @@ export default async function handler(
   req: ExtendedNextApiRequest,
   res: NextApiResponse<GenerateResponseData>
 ) {
-  console.log("body", req.body);
   const { userId } = req.body;
 
   NextResponse.json({ isOnboarded: "true" });
