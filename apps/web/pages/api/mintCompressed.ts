@@ -9,6 +9,7 @@ import { getCompressedNftId, mintCompressedNft } from "../../utils/mint";
 import { WrappedConnection } from "../../utils/wrappedConnection";
 import { PublicKey } from "@metaplex-foundation/js";
 import { ConcurrentMerkleTreeAccount } from "@solana/spl-account-compression";
+import { getConnectionWrapper } from "../../utils/connectionWrapper";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -17,31 +18,7 @@ export default async function handler(
   if (req.method === "GET") {
     return res.status(405).json({ error: "GET not allowed" });
   }
-  const apiKey = process.env["API_KEY"];
-  if (!apiKey) {
-    throw new Error("Api key must be provided via API_KEY env var");
-  }
-  const connectionString = `https://rpc-devnet.helius.xyz?api-key=${apiKey}`;
-  const secretKey = process.env["SECRET_KEY"];
-  if (!secretKey) {
-    throw new Error(
-      "Wallet secret key must be provided via SECRET_KEY env var"
-    );
-  }
-
-  let decodedSecretKey;
-  try {
-    decodedSecretKey = base58.decode(secretKey);
-  } catch {
-    throw new Error(
-      "Invalid secret key provided. Must be a base 58 encoded string."
-    );
-  }
-  const ownerWallet = Keypair.fromSecretKey(decodedSecretKey);
-  const connectionWrapper = new WrappedConnection(
-    ownerWallet,
-    connectionString
-  );
+  const connectionWrapper = getConnectionWrapper();
 
   const treeWalletSK = process.env["TREE_WALLET_SK"];
   if (!treeWalletSK) {
@@ -68,7 +45,7 @@ export default async function handler(
   const sig = await mintCompressedNft(
     connectionWrapper,
     nftArgs,
-    ownerWallet,
+    connectionWrapper.payer,
     treeWallet
   ).catch((e) => {
     console.error(e);
