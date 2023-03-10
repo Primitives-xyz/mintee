@@ -44,7 +44,7 @@ importers:
       bs58: ^5.0.0
       encoding: ^0.1.13
       framer-motion: ^8.2.4
-      mintee-nft: ^1.0.0
+      mintee-nft: ^1.0.1
       mintee-utils: '*'
       next: latest
       postcss: ^8.4.18
@@ -80,7 +80,7 @@ importers:
       axios: 1.3.4
       bs58: 5.0.0
       framer-motion: 8.5.5_biqbaboplfbrettd7655fr4n2y
-      mintee-nft: 1.0.0
+      mintee-nft: 1.0.1
       mintee-utils: link:../../packages/mintee-utils
       next: 13.2.4_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
@@ -3277,7 +3277,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: false
@@ -3285,7 +3285,7 @@ packages:
   /axios/0.25.0_debug@4.3.4:
     resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: false
@@ -3293,7 +3293,7 @@ packages:
   /axios/1.3.4:
     resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -5097,7 +5097,7 @@ packages:
   /flatted/3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
 
-  /follow-redirects/1.15.2:
+  /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
     peerDependencies:
@@ -5105,6 +5105,8 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dependencies:
+      debug: 4.3.4
     dev: false
 
   /for-each/0.3.3:
@@ -6073,8 +6075,8 @@ packages:
   /minimist/1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
-  /mintee-nft/1.0.0:
-    resolution: {integrity: sha512-5i7bBXqGAFFS/LbXuUxuKUuxfx0BsCSsIEJxgYaIffmxuqq3GXLrxrPnMLtJoPTxa9428O4bkYY2SLtxt3yczg==}
+  /mintee-nft/1.0.1:
+    resolution: {integrity: sha512-uPI2qPAsG9X/4LSB3/60ghB8W2PlZ9qpAg1V4yGQXp3G6+T4d70uz6YYFCug7P2OR+2ZyLptVCg+Y63OD1VvLg==}
     dev: false
 
   /mkdirp-classic/0.5.3:
