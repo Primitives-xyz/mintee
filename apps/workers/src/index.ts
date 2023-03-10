@@ -116,7 +116,7 @@ export default {
       // check if the address is in the KV
       const kvResponse = await env.nftInfo.get(address);
       if (kvResponse) {
-        return new Response(kvResponse);
+        return new Response(kvResponse, { headers: corsHeaders });
       }
 
       // if not in KV, get the NFT info from the factory and write it to the KV
@@ -168,12 +168,10 @@ export default {
       if (!assetId) {
         return new Response("assetId is required", { status: 400 });
       }
-      console.log("yo?");
       const kvResponse = await env.nftInfo.get(assetId);
       if (kvResponse) {
         return new Response(kvResponse);
       }
-      console.log("post log", assetId);
       const assetInfo = await fetch(
         `${env.factoryUrl}/api/asset?assetId=${assetId}`
       ).catch((e) => {
@@ -183,8 +181,6 @@ export default {
       if (!assetInfo.ok || !assetInfo) {
         return new Response("Error getting asset info", { status: 500 });
       }
-      console.log(assetInfo.status);
-      console.log("here");
       const assetInfoJson = JSON.stringify(await assetInfo.json());
       ctx.waitUntil(env.nftInfo.put(assetId, assetInfoJson));
       return new Response(assetInfoJson);
@@ -207,4 +203,9 @@ export default {
     // return error response saying path noth found
     return new Response("Path not found", { status: 404 });
   },
+};
+const corsHeaders = {
+  "Access-Control-Allow-Headers": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Origin": "*",
 };

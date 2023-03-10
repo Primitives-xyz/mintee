@@ -17,7 +17,7 @@ export class Mintee {
     this.apiUrl = `https://api.noxford1.workers.dev/`;
   }
 
-  static make(apiKey: string) {
+  static make({ apiKey }: { apiKey: string }) {
     return new this({ apiKey });
   }
 

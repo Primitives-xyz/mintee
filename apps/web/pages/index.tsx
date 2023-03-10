@@ -1,7 +1,5 @@
-import { useAuth } from "@clerk/nextjs";
-import { User } from "@clerk/nextjs/dist/api";
-import { buildClerkProps, clerkClient, getAuth } from "@clerk/nextjs/server";
-import { GetServerSideProps, NextPage } from "next";
+import { getAuth } from "@clerk/nextjs/server";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,16 +8,23 @@ import Header from "../components/Header";
 import SquigglyLines from "../components/SquigglyLines";
 import { Testimonials } from "../components/Testimonials";
 import { Mintee } from "mintee-nft";
+import { useEffect } from "react";
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
-
   return { props: { userId } };
 };
 export default function Page(props: { userId: string }) {
   const mintee = Mintee.make("");
-  const tokenAddress = "GQkeW1uCe9Gpv4Bmk893Q84uFQo3g13M1dg2EVkmuEkR";
-  const data = mintee.nftInfo({ tokenAddress });
-  console.log("data", data);
+
+  useEffect(() => {
+    async function fetchData() {
+      const tokenAddress = "GQkeW1uCe9Gpv4Bmk893Q84uFQo3g13M1dg2EVkmuEkR";
+      const data = await mintee.nftInfo({ tokenAddress });
+      console.log("data", data);
+    }
+    fetchData();
+  }, [mintee]);
+
   return (
     <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
       <Head>
