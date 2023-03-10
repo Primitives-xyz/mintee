@@ -7,6 +7,7 @@ node_compat = true
 
 kv_namespaces = [
   { binding = "nftInfo", id = "a6295a350c564a20bbda3bac0362cae4", preview_id = "625f622b85844f4189341a495f81b915" },
+  { binding = "apiTokens", id = "2b8d92ceb3384ffba9ae21a1f70db3d3", preview_id="72a383cd3f0a4609b9db72968579ba13" }
 ]
 
 [vars]
