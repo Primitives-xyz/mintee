@@ -2,9 +2,6 @@ import { clerkClient, getAuth } from "@clerk/nextjs/server";
 import { connect } from "@planetscale/database";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
-export const config = {
-  runtime: "experimental-edge",
-};
 export const getServerSideProps: GetServerSideProps<{
   userId: string;
   isNew: boolean;
