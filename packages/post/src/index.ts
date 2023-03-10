@@ -1,4 +1,4 @@
-export default async function post(
+const func = async function post(
   url: string,
   data?: any,
   authorization?: string
@@ -11,4 +11,6 @@ export default async function post(
     },
     body: data ? JSON.stringify(data) : undefined,
   });
-}
+};
+export { func };
+export default func;
