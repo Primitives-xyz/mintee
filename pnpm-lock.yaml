@@ -44,7 +44,7 @@ importers:
       bs58: ^5.0.0
       encoding: ^0.1.13
       framer-motion: ^8.2.4
-      mintee-nft: ^1.0.1
+      mintee-nft: ^1.0.2
       mintee-utils: '*'
       next: latest
       postcss: ^8.4.18
@@ -80,7 +80,7 @@ importers:
       axios: 1.3.4
       bs58: 5.0.0
       framer-motion: 8.5.5_biqbaboplfbrettd7655fr4n2y
-      mintee-nft: 1.0.1
+      mintee-nft: 1.0.2
       mintee-utils: link:../../packages/mintee-utils
       next: 13.2.4_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
@@ -6075,8 +6075,8 @@ packages:
   /minimist/1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
-  /mintee-nft/1.0.1:
-    resolution: {integrity: sha512-uPI2qPAsG9X/4LSB3/60ghB8W2PlZ9qpAg1V4yGQXp3G6+T4d70uz6YYFCug7P2OR+2ZyLptVCg+Y63OD1VvLg==}
+  /mintee-nft/1.0.2:
+    resolution: {integrity: sha512-qXWzTvAv0+paTP4b9LWdvrjOukj57nQwfcEF+0/qUSrPR3eU0B6AJ3AT4/iaFlkWu62a6abkf6aubDB8UVy/Ug==}
     dev: false
 
   /mkdirp-classic/0.5.3:

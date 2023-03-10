@@ -5,6 +5,7 @@ export type Env = {
     factoryUrl: string;
     bucket: R2Bucket;
     nftInfo: KVNamespace;
+    apiTokens: KVNamespace;
 };
 export declare function isWorker(): boolean;
 //# sourceMappingURL=index.d.ts.map

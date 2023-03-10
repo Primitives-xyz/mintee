@@ -7,24 +7,11 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import SquigglyLines from "../components/SquigglyLines";
 import { Testimonials } from "../components/Testimonials";
-import { Mintee } from "mintee-nft";
 import { useEffect } from "react";
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { userId } = getAuth(ctx.req);
-  return { props: { userId } };
-};
+
+import { Mintee } from "mintee-nft";
+
 export default function Page(props: { userId: string }) {
-  const mintee = Mintee.make("");
-
-  useEffect(() => {
-    async function fetchData() {
-      const tokenAddress = "GQkeW1uCe9Gpv4Bmk893Q84uFQo3g13M1dg2EVkmuEkR";
-      const data = await mintee.nftInfo({ tokenAddress });
-      console.log("data", data);
-    }
-    fetchData();
-  }, [mintee]);
-
   return (
     <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
       <Head>
@@ -77,7 +64,7 @@ export default function Page(props: { userId: string }) {
                 <h3 className="mb-1 font-medium text-lg">Easy to use API</h3>
                 <Image
                   alt="Original photo of a room with roomGPT.io"
-                  src="/carbon.png"
+                  src="/img/carbon.png"
                   className="w-full object-cover h-96 rounded-2xl"
                   width={400}
                   height={400}
@@ -87,11 +74,12 @@ export default function Page(props: { userId: string }) {
                 <h3 className="mb-1 font-medium text-lg">
                   Globally Distrubuted Mint Nodes
                 </h3>
+
                 <Image
                   alt="Generated photo of a room with roomGPT.io"
                   width={400}
                   height={400}
-                  src="/cf.png"
+                  src="/img/cf.png"
                   className="w-full object-cover h-96 rounded-2xl sm:mt-0 mt-2"
                 />
               </div>
@@ -104,3 +92,7 @@ export default function Page(props: { userId: string }) {
     </div>
   );
 }
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { userId } = getAuth(ctx.req);
+  return { props: { userId } };
+};

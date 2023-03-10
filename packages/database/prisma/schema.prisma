@@ -20,24 +20,35 @@ model NFT {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  firstName String?
-  lastName  String?
-  social    Json?
-  tokens    Token[]
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  firstName  String?
+  lastName   String?
+  social     Json?
+  tokens     Token[]
+  externalId String?   @unique(length: 100)
+  planType   PlanType? @default(FREE)
+
+  @@index([externalId], type: )
 }
 
 model Token {
   id         Int       @id @default(autoincrement())
   createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  updatedAt  DateTime  @default(now()) @updatedAt
   type       TokenType
   emailToken String?   @unique // Only used for short lived email tokens
   valid      Boolean   @default(true)
-  expiration DateTime
-  user       User      @relation(fields: [userId], references: [id])
-  userId     Int
+
+  user              User      @relation(fields: [userId], references: [id])
+  userId            Int
+  active            Boolean   @default(false)
+  planType          PlanType? @default(FREE)
+  nftInfoCallsCount Int       @default(0)
+  nftInfoCallsLimit Int       @default(0)
+  canMint           Boolean   @default(false)
+  mintCallsCount    Int       @default(0)
+  mintCallsLimit    Int       @default(0)
 
   @@index([userId])
 }
@@ -45,4 +56,11 @@ model Token {
 enum TokenType {
   EMAIL // used as a short-lived token sent to the user's email
   API
+}
+
+enum PlanType {
+  FREE
+  PRO
+  PREMIUM
+  ENTERPRISE
 }
