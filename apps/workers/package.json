@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@metaplex-foundation/js": "^0.18.3",
-    "@noxford1/post": "workspace:^1.0.3",
+    "@noxford1/post": "^1.0.3",
     "@planetscale/database": "^1.5.0",
     "@solana/web3.js": "^1.73.3",
     "mintee-utils": "*",

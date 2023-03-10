@@ -6,21 +6,25 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // parse the query for token address
   const { address } = req.query;
   const tokenPK = new PublicKey(address as string);
+
+  // init metaplex
   if (!tokenPK) return res.status(404).json({ message: "Invalid address" });
-  const url = process.env.rpcUrl;
-  if (!url) {
+  const mp = initMetaplex(res);
+  if (!mp)
     return res.status(404).json({ message: "Error connection Solana node" });
-  }
-  const connection = new Connection(url, "confirmed");
-  const mp = Metaplex.make(connection);
+
+  // fetch token
   const token = await mp
     .nfts()
     .findByMint({ mintAddress: tokenPK })
     .catch((e) => {
       console.log("Error", e);
+      res.status(404).json({ message: "Error fetching token" + e });
     });
+
   if (!token) {
     return res.status(404).json({ message: "Token not found" });
   }
@@ -38,6 +42,15 @@ export default async function handler(
     offChain: token.json,
   };
   return res.status(200).json(response);
+}
+
+function initMetaplex(res: NextApiResponse) {
+  const url = process.env.rpcUrl;
+  if (!url) {
+    return res.status(404).json({ message: "Error connection Solana node" });
+  }
+  const connection = new Connection(url, "confirmed");
+  return Metaplex.make(connection);
 }
 
 type nftResponse = {
