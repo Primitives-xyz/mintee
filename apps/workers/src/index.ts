@@ -14,8 +14,6 @@ import { validateMetadataBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
 import { getNFTInfo } from "./nft";
 
-import post from "@noxford1/post";
-
 export default {
   async fetch(
     request: Request,

@@ -9,12 +9,17 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import SquigglyLines from "../components/SquigglyLines";
 import { Testimonials } from "../components/Testimonials";
+import { Mintee } from "mintee-nft";
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
 
   return { props: { userId } };
 };
 export default function Page(props: { userId: string }) {
+  const mintee = Mintee.make("");
+  const tokenAddress = "GQkeW1uCe9Gpv4Bmk893Q84uFQo3g13M1dg2EVkmuEkR";
+  const data = mintee.nftInfo({ tokenAddress });
+  console.log("data", data);
   return (
     <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
       <Head>

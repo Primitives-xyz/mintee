@@ -1,11 +1,8 @@
-import post from "@noxford1/post";
 export class Mintee {
   /** The connection object from Solana's SDK. */
   public readonly apiKey: string;
-
   /** The cluster in which the connection endpoint belongs to. */
   public readonly network: "mainnet" | "testnet" | "devnet";
-
   public readonly apiUrl: string;
 
   constructor({
@@ -25,14 +22,19 @@ export class Mintee {
   }
 
   async nftInfo({ tokenAddress }: { tokenAddress: string }) {
-    const url = `${this.apiUrl}/nftInfo/${tokenAddress}`;
-    const response = await fetch(url);
+    const url = `${this.apiUrl}nftInfo/${tokenAddress}`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+    });
     const token: nftResponse = await response.json().catch((e) => {
       throw new Error(e);
     });
     return token;
   }
 }
+
 declare enum TokenStandard {
   NonFungible = 0,
   FungibleAsset = 1,
