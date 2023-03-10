@@ -29,7 +29,7 @@ model User {
   externalId String?   @unique(length: 100)
   planType   PlanType? @default(FREE)
 
-  @@index([externalId], type: )
+  @@index([externalId])
 }
 
 model Token {
