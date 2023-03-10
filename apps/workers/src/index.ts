@@ -13,7 +13,9 @@ import { Env } from "worker-types";
 import { validateMetadataBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
 import { getNFTInfo } from "./nft";
+
 import post from "@noxford1/post";
+
 export default {
   async fetch(
     request: Request,
@@ -46,10 +48,6 @@ export default {
         }),
       });
 
-      const mintResponse2 = post(`${env.factoryUrl}/api/mintCompressed`, {
-        name,
-        symbol,
-      });
       if (!mintResponse.ok) {
         return new Response("Error minting NFT", { status: 500 });
       }

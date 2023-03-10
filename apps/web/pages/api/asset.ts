@@ -13,7 +13,6 @@ export default async function handler(
     console.error(e);
     return res.status(500).json({ error: e.message });
   });
-  console.log("IDKKK", result);
   if (!result) {
     return res.status(500).json({ error: "Failed to get asset" });
   }
