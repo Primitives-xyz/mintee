@@ -51,9 +51,11 @@ export default {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
-      const response = await apiTokenLookup(external_id, env).catch((e) => {
+      const response = (await apiTokenLookup(external_id, env).catch((e) => {
         console.log("Error in apiTokenLookup", e);
-      });
+      })) as apiTokenStatus;
+
+      console.log("response here", response);
 
       if (!response || !response.id) {
         // return a 401 if no response or no id
@@ -78,17 +80,21 @@ export default {
           headers: corsHeaders,
         });
       }
-
-      const { name, symbol } = (await request.json()) as {
+      const t = request;
+      const { name, symbol } = (await request.json().catch((e) => {
+        console.log("Error parsing body", e);
+      })) as {
         name: string;
         symbol?: string;
       };
+
       if (!name) {
         return new Response("Name is required", {
           status: 400,
           headers: corsHeaders,
         });
       }
+      console.log("right berfore call");
       const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
         method: "POST",
         headers: {
@@ -100,11 +106,16 @@ export default {
           symbol,
         }),
       }).catch((e) => {
-        return new Response("Error minting NFT " + e, {
-          status: 500,
-        });
+        console.log("Error minting NFT " + e);
       });
-      if (!mintResponse.ok) {
+
+      if (!mintResponse || !mintResponse.ok) {
+        console.log(
+          "Error minting NFT, error from factory.",
+          mintResponse.status,
+          mintResponse.statusText,
+          await mintResponse.text()
+        );
         return new Response("Error minting NFT, error from factory.", {
           status: 500,
           headers: corsHeaders,
@@ -349,13 +360,16 @@ async function apiTokenLookup(external_id: string, env: Env) {
     throw new Error("Unauthorized");
   }
   // grab the token
-  // check if the token is in the KV
-  const response = (await Promise.any([
+  // check if the token is in the KVawait
+  console.log("LOOKING UP KV and DB");
+  const response = await Promise.any([
     lookUserUpKV(external_id, env),
     lookUserUpDB(external_id),
   ]).catch((e) => {
+    console.log("ERROR lookin", e);
     throw new Error(e);
-  })) as apiTokenStatus;
+  });
+  console.log("ANOTHER RESPONSE", response);
   if (!response.id) {
     throw new Error("Unauthorized");
   }
@@ -363,26 +377,40 @@ async function apiTokenLookup(external_id: string, env: Env) {
 }
 
 function lookUserUpKV(external_id: string, env: Env) {
-  return env.apiTokens.get(external_id);
+  return new Promise(async (resolve, reject) => {
+    const response = await env.apiTokens.get(external_id);
+    if (response) {
+      const userInfo: apiTokenStatus = JSON.parse(response);
+      resolve(userInfo);
+    }
+    reject();
+  });
 }
 
 function lookUserUpDB(external_id: string) {
-  return new Promise(async (resolve, reject) => {
-    const response = await conn.execute(
-      "SELECT id, can_mint, active FROM Token WHERE externalKey = ?",
-      [external_id]
-    );
-    if (response.rows.length > 0) {
+  console.log("LOOKING UP DB");
+  const response = new Promise(async (resolve, reject) => {
+    const response = await conn
+      .execute("SELECT id, canMint, active FROM Token WHERE externalKey = ?", [
+        external_id,
+      ])
+      .catch((e) => {
+        console.log("ERROR", e);
+      });
+
+    if (response && response.rows.length > 0) {
       const row = response.rows[0] as apiTokenStatus;
       const userInfo: apiTokenStatus = {
         id: row.id,
         canMint: row.canMint,
         active: row.active,
       };
+      console.log("USER INFO", userInfo);
       resolve(userInfo);
     }
     reject();
   });
+  return response;
 }
 
 function updateUserTokenStatusPostCall(
