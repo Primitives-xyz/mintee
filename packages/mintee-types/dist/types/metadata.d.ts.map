@@ -1,1 +1,0 @@
-{"version":3,"file":"metadata.d.ts","sourceRoot":"","sources":["../../src/types/metadata.ts"],"names":[],"mappings":"AAAA;;;;;;;GAOG;AACH,MAAM,MAAM,gBAAgB,GAAG;IAC7B,MAAM,CAAC,EAAE,MAAM,GAAG,SAAS,CAAC;IAC5B,WAAW,CAAC,EAAE,MAAM,GAAG,SAAS,CAAC;IACjC,cAAc,CAAC,EAAE,MAAM,GAAG,SAAS,CAAC;IACpC,IAAI,EAAE,MAAM,CAAC;CACd,CAAC"}
