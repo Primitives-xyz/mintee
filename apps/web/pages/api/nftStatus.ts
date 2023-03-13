@@ -20,7 +20,7 @@ export default async function handler(
   }
   if (!tokenPK)
     return res.status(404).json({ message: "Invalid token address" });
-  const url = process.env.rpcUrl;
+  const url = process.env.RPC_URl;
   if (!url) {
     return res.status(404).json({ message: "Error connection Solana node" });
   }

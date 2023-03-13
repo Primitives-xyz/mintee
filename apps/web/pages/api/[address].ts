@@ -45,7 +45,7 @@ export default async function handler(
 }
 
 function initMetaplex(res: NextApiResponse) {
-  const url = process.env.rpcUrl;
+  const url = process.env.RPC_URl;
   if (!url) {
     return res.status(404).json({ message: "Error connection Solana node" });
   }
