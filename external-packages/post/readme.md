@@ -2,6 +2,28 @@
 
 Post is a TypeScript library that provides a convenient and type-safe way to make HTTP POST requests, modeled after the web API fetch function. It simplifies the process of making HTTP POST requests by providing a single function with an easy-to-use API.
 
+```typescript
+type userType = {
+  name: string;
+  email: string;
+};
+async function createUserWithPost(user: userType) {
+  const url = "https://example.com/api/users";
+
+  // Using Post
+  const response = await post<userType>(url, user);
+
+  // vs using fetch
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  };
+}
+```
+
 ## Installation
 
 Post can be installed via npm or yarn:
