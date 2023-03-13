@@ -113,3 +113,13 @@ export type JsonMetadata<Uri = string> = {
   };
   [key: string]: unknown;
 };
+
+async function getNftInfo() {
+  // initialize mintee with your api key
+  const mintee = Mintee.make({
+    apiKey: "${props.apiKey}",
+  });
+
+  // get the nft info
+  return await mintee.mintNft({ name: "test_nft", symbol: "test" });
+}

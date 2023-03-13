@@ -34,14 +34,13 @@ export default function Onboard(
         >
           {`import { Mintee } from "mintee-nft"
 
-async function getNftInfo() {
+async function mintNFT() {
   // initialize mintee with your api key
   const mintee = Mintee.make({
   apiKey: "${props.apiKey}"});
 
-  // get the nft info
-  const tokenAddress = "FFp2bKJ1Byd1AWPGFw1vTzVywSqjs1PLMkrwVvPiy6Wk";
-  return await mintee.nftInfo({ tokenAddress }
+  // mint nft 
+  return await mintee.mintNft({ name: "test_nft", symbol: "test" });
 )} `}
         </SyntaxHighlighter>
       </div>
