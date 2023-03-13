@@ -17,6 +17,7 @@ export default async function handler(
   if (req.method === "GET") {
     return res.status(405).json({ error: "GET not allowed" });
   }
+  console.log("req.headers", req.headers);
   // check header for key cloudflare-worker-key
   const key = req.headers["cloudflare-worker-key"];
   if (!key || key != process.env["WORKER_KEY"]) {
