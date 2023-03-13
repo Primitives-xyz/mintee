@@ -42,14 +42,43 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/mint") {
-      const response = apiTokenLookup(request, env).catch((e) => {
-        return new Response("Error", { status: 500 });
-      });
-
-      // if get request, return error
       if (request.method === "GET") {
+        // if get request, return error
         return new Response("GET not allowed", { status: 405 });
       }
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const response = await apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      });
+
+      if (!response || !response.id) {
+        // return a 401 if no response or no id
+        return new Response("Unauthorized", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      if (!response.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      if (!response.canMint) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not allowed to mint", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
       const { name, symbol } = (await request.json()) as {
         name: string;
         symbol?: string;
@@ -82,6 +111,7 @@ export default {
         });
       }
       const mintInfo = (await mintResponse.json()) as { assetId: string };
+      ctx.waitUntil(updateUserTokenStatusPostCall(external_id, env, response));
       return new Response(
         JSON.stringify({
           compressedAssetId: mintInfo.assetId,
@@ -175,13 +205,18 @@ export default {
 
     if (url.pathname.startsWith("/nftStatus/")) {
       // get address from url
-      const address = url.pathname.split("/")[2];
-      const apiKeyLookup = apiTokenLookup(request, env).catch(() => {
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const apiKeyLookup = apiTokenLookup(external_id, env).catch(() => {
         return new Response("Unauthorized", {
           status: 401,
           headers: corsHeaders,
         });
       });
+      const address = url.pathname.split("/")[2];
 
       const nftInfoLookup = fetch(
         `${env.factoryUrl}/api/nftStatus?address=${address}`,
@@ -307,28 +342,40 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
 };
 
-async function apiTokenLookup(request: Request, env: Env) {
+async function apiTokenLookup(external_id: string, env: Env) {
   // grab auth header
-  const auth = request.headers.get("x-api-key");
   // check if auth header starts with bearer and has a token
-  if (!auth) {
+  if (!external_id) {
     throw new Error("Unauthorized");
   }
   // grab the token
   // check if the token is in the KV
-  const kvLookup = env.apiTokens.get(auth);
+  const response = (await Promise.any([
+    lookUserUpKV(external_id, env),
+    lookUserUpDB(external_id),
+  ]).catch((e) => {
+    throw new Error(e);
+  })) as apiTokenStatus;
+  if (!response.id) {
+    throw new Error("Unauthorized");
+  }
+  return response;
+}
 
-  const psLookup = new Promise(async (resolve, reject) => {
+function lookUserUpKV(external_id: string, env: Env) {
+  return env.apiTokens.get(external_id);
+}
+
+function lookUserUpDB(external_id: string) {
+  return new Promise(async (resolve, reject) => {
     const response = await conn.execute(
-      "SELECT can_mint, active FROM Token WHERE externalKey = ?",
-      [auth]
+      "SELECT id, can_mint, active FROM Token WHERE externalKey = ?",
+      [external_id]
     );
     if (response.rows.length > 0) {
-      const row = response.rows[0] as {
-        canMint: boolean;
-        active: boolean;
-      };
+      const row = response.rows[0] as apiTokenStatus;
       const userInfo: apiTokenStatus = {
+        id: row.id,
         canMint: row.canMint,
         active: row.active,
       };
@@ -336,14 +383,33 @@ async function apiTokenLookup(request: Request, env: Env) {
     }
     reject();
   });
-  const response = await Promise.any([kvLookup, psLookup]).catch((e) => {
-    throw new Error(e);
+}
+
+function updateUserTokenStatusPostCall(
+  external_id: string,
+  env: Env,
+  tokenInfo: any
+) {
+  return new Promise(async (resolve, reject) => {
+    const response = await conn.execute(
+      `UPDATE Token SET mintCallsCount = mintCallsCount + 1,
+      canMint = (mintCallsCount + 1) <= nftInfoCallsLimit
+      WHERE id = ?;`,
+      [tokenInfo.id]
+    );
+    const row = response.rows[0] as apiTokenStatus;
+    const tokenInfoKV = {
+      id: tokenInfo.id,
+      canMint: row.canMint,
+      active: row.active,
+    };
+    env.apiTokens.put(external_id, JSON.stringify(tokenInfoKV));
+    resolve(response);
   });
-  if (!response) throw new Error("Unauthorized");
-  return response;
 }
 
 type apiTokenStatus = {
+  id: number;
   canMint: boolean;
   active: boolean;
 };
