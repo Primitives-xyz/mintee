@@ -20,7 +20,7 @@ export default function Onboard(
             borderRadius: "10px",
           }}
         >
-          {`npm install @noxford1/post`}
+          {`npm install mintee-nft`}
         </SyntaxHighlighter>
       </div>
       <h1 className="text-lg font-bold mt-2">Mint your first NFT</h1>
@@ -32,7 +32,7 @@ export default function Onboard(
             borderRadius: "10px",
           }}
         >
-          {`import { post } from "@noxford1/post"
+          {`import { Mintee } from "mintee-nft"
 
 async function getNftInfo() {
   // initialize mintee with your api key
