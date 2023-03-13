@@ -1,15 +1,50 @@
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 import { connect } from "@planetscale/database";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 export default function Onboard(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-20 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold">Onboard Flow</h1>
+      <h1 className="text-2xl font-bold">Welcome to Mintee!</h1>
       <h2 className="mt-4">Your api key:</h2>
       <p className="text-xl bg-slate-500/50 p-2 rounded-2xl">{props.apiKey}</p>
+      <h1 className="text-lg font-bold mt-2">Install our npm package</h1>
+      <div className="mt-4">
+        <SyntaxHighlighter
+          language="bash"
+          style={docco}
+          customStyle={{
+            borderRadius: "10px",
+          }}
+        >
+          {`npm install @noxford1/post`}
+        </SyntaxHighlighter>
+      </div>
+      <h1 className="text-lg font-bold mt-2">Mint your first NFT</h1>
+      <div className="mt-4">
+        <SyntaxHighlighter
+          language="typescipt"
+          style={docco}
+          customStyle={{
+            borderRadius: "10px",
+          }}
+        >
+          {`import { post } from "@noxford1/post"
+
+async function getNftInfo() {
+  // initialize mintee with your api key
+  const mintee = Mintee.make({
+  apiKey: "${props.apiKey}"});
+
+  // get the nft info
+  const tokenAddress = "FFp2bKJ1Byd1AWPGFw1vTzVywSqjs1PLMkrwVvPiy6Wk";
+  return await mintee.nftInfo({ tokenAddress }
+)} `}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 }
@@ -69,7 +104,7 @@ export const getServerSideProps: GetServerSideProps<{
       const apiKey = generateExternalApiToken(
         user.emailAddresses[0].emailAddress
       );
-      const apiTokenInsertResult = await trx.execute(
+      await trx.execute(
         "INSERT INTO Token (userId, active, nftInfoCallsLimit, mintCallsLimit, canMint, type, externalKey) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [userInsertResult.insertId, true, 1000, 25, true, "API", apiKey]
       );

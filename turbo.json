@@ -17,7 +17,8 @@
     "NODE_ENV",
     "STRIPE_SECRET_KEY",
     "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-    "rpcUrl",
-    "SECRET_COOKIE_KEY"
+    "RPC_URl",
+    "SECRET_COOKIE_KEY",
+    "WORKER_KEY"
   ]
 }

@@ -6,7 +6,6 @@ import base58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getCompressedNftId, mintCompressedNft } from "../../utils/mint";
-import { WrappedConnection } from "../../utils/wrappedConnection";
 import { PublicKey } from "@metaplex-foundation/js";
 import { ConcurrentMerkleTreeAccount } from "@solana/spl-account-compression";
 import { getConnectionWrapper } from "../../utils/connectionWrapper";
@@ -18,6 +17,12 @@ export default async function handler(
   if (req.method === "GET") {
     return res.status(405).json({ error: "GET not allowed" });
   }
+  // check header for key cloudflare-worker-key
+  const key = req.headers["cloudflare-worker-key"];
+  if (!key || key != process.env["WORKER_KEY"]) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   const connectionWrapper = getConnectionWrapper();
 
   const treeWalletSK = process.env["TREE_WALLET_SK"];

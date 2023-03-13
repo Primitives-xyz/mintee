@@ -21,6 +21,34 @@ export class Mintee {
     return new this({ apiKey });
   }
 
+  async mintNft({
+    tokenAddress,
+    recipient,
+    metadata,
+  }: {
+    tokenAddress: string;
+    recipient: string;
+    metadata: JsonMetadata;
+  }) {
+    const url = `${this.apiUrl}mintNft`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "api-key-x": `${this.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tokenAddress,
+        recipient,
+        metadata,
+      }),
+    });
+    const token: nftResponse = await response.json().catch((e) => {
+      throw new Error(e);
+    });
+    return token;
+  }
+
   async nftInfo({ tokenAddress }: { tokenAddress: string }) {
     const url = `${this.apiUrl}nftInfo/${tokenAddress}`;
     const response = await fetch(url, {

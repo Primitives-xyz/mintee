@@ -13,15 +13,25 @@ import { Request } from "@cloudflare/workers-types";
 import { validateMetadataBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
 import { getNFTInfo } from "./nft";
+import { connect } from "@planetscale/database";
 
 export type Env = {
   rpcUrl: string;
   r2Url: string;
   factoryUrl: string;
+  workerKey: string;
   bucket: R2Bucket;
   nftInfo: KVNamespace;
   apiTokens: KVNamespace;
 };
+
+const psConfig = {
+  host: "aws.connect.psdb.cloud",
+  username: "g3s67laml1b4smxqc239",
+  password: "pscale_pw_RdHk3l4bhvrREUaPkIykgVoRBdJGJLgQp5frEdNi82i",
+};
+
+const conn = connect(psConfig);
 
 export default {
   async fetch(
@@ -32,6 +42,10 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/mint") {
+      const response = apiTokenLookup(request, env).catch((e) => {
+        return new Response("Error", { status: 500 });
+      });
+
       // if get request, return error
       if (request.method === "GET") {
         return new Response("GET not allowed", { status: 405 });
@@ -46,20 +60,23 @@ export default {
           headers: corsHeaders,
         });
       }
-
       const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "cloudflare-worker-key": env.workerKey,
         },
         body: JSON.stringify({
           name,
           symbol,
         }),
+      }).catch((e) => {
+        return new Response("Error minting NFT " + e, {
+          status: 500,
+        });
       });
-
       if (!mintResponse.ok) {
-        return new Response("Error minting NFT", {
+        return new Response("Error minting NFT, error from factory.", {
           status: 500,
           headers: corsHeaders,
         });
@@ -290,16 +307,43 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
 };
 
-function apiTokenLookup(request: Request, env: Env) {
+async function apiTokenLookup(request: Request, env: Env) {
   // grab auth header
-  const auth = request.headers.get("Authorization");
+  const auth = request.headers.get("x-api-key");
   // check if auth header starts with bearer and has a token
-  if (!auth || !auth.startsWith("Bearer ")) {
+  if (!auth) {
     throw new Error("Unauthorized");
   }
   // grab the token
-  const token = auth.split(" ")[1];
-  if (!token) throw new Error("Unauthorized");
   // check if the token is in the KV
-  return env.apiTokens.get(token);
+  const kvLookup = env.apiTokens.get(auth);
+
+  const psLookup = new Promise(async (resolve, reject) => {
+    const response = await conn.execute(
+      "SELECT can_mint, active FROM Token WHERE externalKey = ?",
+      [auth]
+    );
+    if (response.rows.length > 0) {
+      const row = response.rows[0] as {
+        canMint: boolean;
+        active: boolean;
+      };
+      const userInfo: apiTokenStatus = {
+        canMint: row.canMint,
+        active: row.active,
+      };
+      resolve(userInfo);
+    }
+    reject();
+  });
+  const response = await Promise.any([kvLookup, psLookup]).catch((e) => {
+    throw new Error(e);
+  });
+  if (!response) throw new Error("Unauthorized");
+  return response;
 }
+
+type apiTokenStatus = {
+  canMint: boolean;
+  active: boolean;
+};
