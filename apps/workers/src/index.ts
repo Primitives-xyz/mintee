@@ -19,7 +19,7 @@ export type Env = {
   rpcUrl: string;
   r2Url: string;
   factoryUrl: string;
-  workerKey: string;
+  WORKER_KEY: string;
   bucket: R2Bucket;
   nftInfo: KVNamespace;
   apiTokens: KVNamespace;
@@ -55,8 +55,6 @@ export default {
         console.log("Error in apiTokenLookup", e);
       })) as apiTokenStatus;
 
-      console.log("response here", response);
-
       if (!response || !response.id) {
         // return a 401 if no response or no id
         return new Response("Unauthorized", {
@@ -80,7 +78,6 @@ export default {
           headers: corsHeaders,
         });
       }
-      const t = request;
       const { name, symbol } = (await request.json().catch((e) => {
         console.log("Error parsing body", e);
       })) as {
@@ -94,12 +91,13 @@ export default {
           headers: corsHeaders,
         });
       }
-      console.log("right berfore call");
+
+      // call the NFT factory to mint
       const mintResponse = await fetch(`${env.factoryUrl}/api/mintCompressed`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "cloudflare-worker-key": env.workerKey,
+          "cloudflare-worker-key": env.WORKER_KEY,
         },
         body: JSON.stringify({
           name,
@@ -109,7 +107,16 @@ export default {
         console.log("Error minting NFT " + e);
       });
 
-      if (!mintResponse || !mintResponse.ok) {
+      // if void response, return error
+      if (!mintResponse) {
+        return new Response("Error minting NFT", {
+          status: 500,
+          headers: corsHeaders,
+        });
+      }
+
+      // we got a repsonse, but the status is not ok
+      if (mintResponse && !mintResponse.ok) {
         console.log(
           "Error minting NFT, error from factory.",
           mintResponse.status,
@@ -121,8 +128,34 @@ export default {
           headers: corsHeaders,
         });
       }
+
       const mintInfo = (await mintResponse.json()) as { assetId: string };
-      ctx.waitUntil(updateUserTokenStatusPostCall(external_id, env, response));
+      // after response update database and tell KV is api is active
+      ctx.waitUntil(
+        Promise.all([
+          await conn
+            .transaction(async (trx) => {
+              trx.execute(
+                `UPDATE Token SET mintCallsCount = mintCallsCount + 1,
+                 canMint = (mintCallsCount + 1) <= mintCallsLimit
+                 WHERE externalKey = ?;`,
+                [external_id]
+              );
+              const token = trx.execute(
+                "SELECT id, canMint, active FROM Token WHERE externalKey = ?;",
+                [external_id]
+              );
+              return token;
+            })
+            .then((res) => {
+              const row = res.rows[0] as apiTokenStatus;
+
+              env.apiTokens.put(external_id, JSON.stringify(row));
+            }),
+        ])
+      );
+
+      // return compressed asset id
       return new Response(
         JSON.stringify({
           compressedAssetId: mintInfo.assetId,
@@ -361,16 +394,14 @@ async function apiTokenLookup(external_id: string, env: Env) {
   }
   // grab the token
   // check if the token is in the KVawait
-  console.log("LOOKING UP KV and DB");
-  const response = await Promise.any([
+  const response = (await Promise.any([
     lookUserUpKV(external_id, env),
     lookUserUpDB(external_id),
   ]).catch((e) => {
-    console.log("ERROR lookin", e);
+    console.log("ERROR looking up user", e);
     throw new Error(e);
-  });
-  console.log("ANOTHER RESPONSE", response);
-  if (!response.id) {
+  })) as apiTokenStatus;
+  if (!response || !response.id) {
     throw new Error("Unauthorized");
   }
   return response;
@@ -388,7 +419,6 @@ function lookUserUpKV(external_id: string, env: Env) {
 }
 
 function lookUserUpDB(external_id: string) {
-  console.log("LOOKING UP DB");
   const response = new Promise(async (resolve, reject) => {
     const response = await conn
       .execute("SELECT id, canMint, active FROM Token WHERE externalKey = ?", [
@@ -405,35 +435,11 @@ function lookUserUpDB(external_id: string) {
         canMint: row.canMint,
         active: row.active,
       };
-      console.log("USER INFO", userInfo);
       resolve(userInfo);
     }
     reject();
   });
   return response;
-}
-
-function updateUserTokenStatusPostCall(
-  external_id: string,
-  env: Env,
-  tokenInfo: any
-) {
-  return new Promise(async (resolve, reject) => {
-    const response = await conn.execute(
-      `UPDATE Token SET mintCallsCount = mintCallsCount + 1,
-      canMint = (mintCallsCount + 1) <= nftInfoCallsLimit
-      WHERE id = ?;`,
-      [tokenInfo.id]
-    );
-    const row = response.rows[0] as apiTokenStatus;
-    const tokenInfoKV = {
-      id: tokenInfo.id,
-      canMint: row.canMint,
-      active: row.active,
-    };
-    env.apiTokens.put(external_id, JSON.stringify(tokenInfoKV));
-    resolve(response);
-  });
 }
 
 type apiTokenStatus = {
