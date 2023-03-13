@@ -21,6 +21,7 @@ async function createUserWithPost(user: userType) {
     },
     body: JSON.stringify(user),
   };
+  const response = await fetch(url, options);
 }
 ```
 
