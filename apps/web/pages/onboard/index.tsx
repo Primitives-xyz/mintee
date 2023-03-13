@@ -2,9 +2,34 @@ import { clerkClient, getAuth } from "@clerk/nextjs/server";
 import { connect } from "@planetscale/database";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
+export default function Onboard(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-20 sm:px-6 lg:px-8">
+      <h1 className="text-2xl font-bold">Onboard Flow</h1>
+      <h2 className="mt-4">Your api key:</h2>
+      <p className="text-xl bg-slate-500/50 p-2 rounded-2xl">{props.apiKey}</p>
+    </div>
+  );
+}
+const psConfig = {
+  host: "aws.connect.psdb.cloud",
+  username: "g3s67laml1b4smxqc239",
+  password: "pscale_pw_RdHk3l4bhvrREUaPkIykgVoRBdJGJLgQp5frEdNi82i",
+};
+
+const conn = connect(psConfig);
+
+function generateExternalApiToken(email: string) {
+  const timestamp = Date.now().toString();
+  return Buffer.from(`${email}:${timestamp}`).toString("base64");
+}
+
 export const getServerSideProps: GetServerSideProps<{
   userId: string;
   isNew: boolean;
+  apiKey: string;
 }> = async (ctx) => {
   const usert = getAuth(ctx.req);
   const userId = usert.userId;
@@ -20,13 +45,7 @@ export const getServerSideProps: GetServerSideProps<{
   // check if userId is in the database as externalId
   // if not, create a new user
   // if so, return the user
-  const psConfig = {
-    host: "aws.connect.psdb.cloud",
-    username: "yfgnb57g8feo7sh7yb8q",
-    password: "pscale_pw_YyixwuZiYxIGFapRolNyJjI4H2nR4pLSym1HhA1ZE2S",
-  };
 
-  const conn = connect(psConfig);
   const userTableResult = await conn.execute(
     "SELECT * FROM User WHERE externalId = ?",
     [userId]
@@ -36,7 +55,7 @@ export const getServerSideProps: GetServerSideProps<{
     const user = await clerkClient.users.getUser(userId);
     // insert user into database including externalId, email, and first name and last name
     // also insert api Token with field active set to true
-    const newUser = await conn.transaction(async (trx) => {
+    const [newUser, apiKey] = await conn.transaction(async (trx) => {
       const userInsertResult = await trx.execute(
         "INSERT INTO User (externalId, email, firstName, lastName) VALUES (?, ?, ?, ?)",
         [
@@ -46,33 +65,33 @@ export const getServerSideProps: GetServerSideProps<{
           user.lastName,
         ]
       );
-
-      const apiTokenInsertResult = await trx.execute(
-        "INSERT INTO Token (userId, active, nftInfoCallsLimit, mintCallsLimit, canMint, type) VALUES (?, ?, ?, ?, ?, ?)",
-        [userInsertResult.insertId, true, 1000, 25, true, "API"]
+      // generate a new externalKey for our api
+      const apiKey = generateExternalApiToken(
+        user.emailAddresses[0].emailAddress
       );
-      return userInsertResult;
+      const apiTokenInsertResult = await trx.execute(
+        "INSERT INTO Token (userId, active, nftInfoCallsLimit, mintCallsLimit, canMint, type, externalKey) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [userInsertResult.insertId, true, 1000, 25, true, "API", apiKey]
+      );
+      return [userInsertResult, apiKey];
     });
 
     return {
       props: {
         userId: newUser.insertId,
         isNew: true,
+        apiKey,
       },
     };
   }
   const user = userTableResult.rows[0] as { id: string };
-  // get the user's id from the database
-  return { props: { userId: user.id, isNew: false } };
-};
-
-export default function Onboard(
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
-) {
-  console.log(props);
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-20 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold">Onboard</h1>
-    </div>
+  const tokensRes = await conn.execute(
+    "SELECT * FROM Token WHERE userId = ? AND type = ?",
+    [user.id, "API"]
   );
-}
+
+  const { externalKey } = tokensRes.rows[0] as { externalKey: string };
+
+  // get the user's id from the database
+  return { props: { userId: user.id, isNew: false, apiKey: externalKey } };
+};

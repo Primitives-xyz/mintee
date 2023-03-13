@@ -33,13 +33,13 @@ model User {
 }
 
 model Token {
-  id         Int       @id @default(autoincrement())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @default(now()) @updatedAt
-  type       TokenType
-  emailToken String?   @unique // Only used for short lived email tokens
-  valid      Boolean   @default(true)
-
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
+  type              TokenType
+  emailToken        String?   @unique // Only used for short lived email tokens
+  valid             Boolean   @default(true)
+  externalKey       String?   @unique(length: 100)
   user              User      @relation(fields: [userId], references: [id])
   userId            Int
   active            Boolean   @default(false)
