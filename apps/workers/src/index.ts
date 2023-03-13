@@ -9,10 +9,19 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 import { Request } from "@cloudflare/workers-types";
-import { Env } from "worker-types";
+
 import { validateMetadataBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
 import { getNFTInfo } from "./nft";
+
+export type Env = {
+  rpcUrl: string;
+  r2Url: string;
+  factoryUrl: string;
+  bucket: R2Bucket;
+  nftInfo: KVNamespace;
+  apiTokens: KVNamespace;
+};
 
 export default {
   async fetch(
