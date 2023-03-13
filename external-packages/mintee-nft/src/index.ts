@@ -22,25 +22,24 @@ export class Mintee {
   }
 
   async mintNft({
-    tokenAddress,
-    recipient,
+    name,
+    symbol,
     metadata,
   }: {
-    tokenAddress: string;
-    recipient: string;
-    metadata: JsonMetadata;
+    name: string;
+    symbol: string;
+    metadata?: JsonMetadata;
   }) {
     const url = `${this.apiUrl}mintNft`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "api-key-x": `${this.apiKey}`,
+        "x-api-key": `${this.apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        tokenAddress,
-        recipient,
-        metadata,
+        name,
+        symbol,
       }),
     });
     const token: nftResponse = await response.json().catch((e) => {
