@@ -136,6 +136,20 @@ export default {
                 "SELECT id, canMint, active FROM Token WHERE externalKey = ?;",
                 [external_id]
               );
+              const nft = trx.execute(
+                "INSERT INTO NFT (name, symbol, offChainUrl, description, creaturUserId, blockchain, blockchainAddress, isCompress, treeId",
+                [
+                  name,
+                  symbol,
+                  "",
+                  "",
+                  response.id,
+                  "SOLANA",
+                  mintInfo.assetId,
+                  true,
+                  "",
+                ]
+              );
               return token;
             })
             .then((res) => {
@@ -273,17 +287,21 @@ export default {
     }
     if (url.pathname.includes("/nftInfo/")) {
       const external_id = request.headers.get("x-api-key");
+
       if (!external_id) {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
 
-      const body = await request.clone().text();
+      const body = (await request.clone().text()) + external_id;
+
       // Hash the request body to use it as a part of the cache key
       const hash = await sha256(body);
       const cacheUrl = new URL(request.url);
+
       // Store the URL in cache by prepending the body's hash
       cacheUrl.pathname = "/nft" + cacheUrl.pathname + hash;
+
       // Convert to a GET to be able to cache
       const cacheKey = new Request(cacheUrl.toString(), {
         headers: request.headers,
@@ -292,6 +310,7 @@ export default {
       const cache = caches.default;
       // Find the cache key in the cache
       let response = await cache.match(cacheKey);
+
       // Otherwise, fetch response to POST request from origin
       if (!response) {
         const address = url.pathname.split("/")[2];
@@ -313,7 +332,6 @@ export default {
           .then(async (response) => {
             console.log("nftInfoPromise", response);
             if (!response) {
-              console.log("factory");
               throw new Error("factory responds with nothing");
             }
             if (response) {
@@ -321,17 +339,24 @@ export default {
             }
           })
           .catch((e) => {
-            console.log("factory error", e);
             throw new Error("factory responds with nothing");
           });
 
-        const anyTokenPromise = await Promise.any([kvPromise, nftInfoPromise]);
+        const anyTokenPromise = Promise.any([kvPromise, nftInfoPromise]);
         const [tokenInfoResponse, tokenLookupResponse] = await Promise.all([
           anyTokenPromise,
           tokenLookup,
         ]);
         const tokenInfo = tokenInfoResponse as string | undefined;
-
+        if (!tokenLookupResponse) {
+          return new Response(
+            "x-api-key incorrect, if you think this is a mistake contact support@mintee.io",
+            {
+              status: 500,
+              headers: corsHeaders,
+            }
+          );
+        }
         if (!tokenLookupResponse.active) {
           // api is not active, go to mintee.io to activate
           return new Response(
@@ -362,6 +387,7 @@ export default {
         );
         return responseInfo.clone();
       }
+      console.log("cache hit", response);
       return response;
     }
 
@@ -586,14 +612,11 @@ async function apiTokenLookup(external_id: string, env: Env) {
   const response = (await Promise.any([
     lookUserUpKV(external_id, env),
     lookUserUpDB(external_id),
-    LookUpUserCache(external_id, env),
   ]).catch((e) => {
     console.log("ERROR looking up user", e);
     throw new Error(e);
   })) as apiTokenStatus;
-  if (!response || !response.id) {
-    throw new Error("Unauthorized");
-  }
+
   return response;
 }
 
@@ -605,19 +628,6 @@ function lookUserUpKV(external_id: string, env: Env) {
       resolve(userInfo);
     }
     reject();
-  });
-}
-
-function LookUpUserCache(external_id: string, env: Env) {
-  return new Promise(async (resolve, reject) => {
-    let cache = caches.default;
-    cache.match(external_id).then(async (response) => {
-      if (response) {
-        const userInfo: apiTokenStatus = await response.json();
-        resolve(userInfo);
-      }
-      reject();
-    });
   });
 }
 
