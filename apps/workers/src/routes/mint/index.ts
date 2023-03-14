@@ -7,7 +7,11 @@ import {
   Env,
 } from "../../utils";
 
-export async function t(request: Request, ctx: ExecutionContext, env: Env) {
+export async function mintRoute(
+  request: Request,
+  ctx: ExecutionContext,
+  env: Env
+) {
   // if get request, return error
   if (request.method === "GET") {
     return new Response("GET not allowed", { status: 405 });
