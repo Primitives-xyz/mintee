@@ -331,6 +331,7 @@ export default {
           tokenLookup,
         ]);
         const tokenInfo = tokenInfoResponse as string | undefined;
+
         if (!tokenLookupResponse.active) {
           // api is not active, go to mintee.io to activate
           return new Response(
@@ -551,6 +552,13 @@ export default {
       return new Response(JSON.stringify({ dbUrl: url }), {
         headers: corsHeaders,
       });
+    }
+
+    if (url.pathname === "/") {
+      return new Response(
+        `Hello world! Welcome to Mintee's NFT API. Learn more at <a src="https://mintee.io">https://mintee.io</a>`,
+        { headers: corsHeaders }
+      );
     }
 
     // return error response saying path noth found
