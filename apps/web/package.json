@@ -15,6 +15,7 @@
     "@metaplex-foundation/mpl-token-metadata": "^2.9.0",
     "@planetscale/database": "^1.6.0",
     "@project-serum/anchor": "^0.26.0",
+    "@sentry/nextjs": "^7.43.0",
     "@solana/spl-account-compression": "^0.1.6",
     "@solana/spl-token": "^0.3.7",
     "@stripe/stripe-js": "^1.48.0",

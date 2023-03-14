@@ -28,7 +28,6 @@ export async function getNFTInfo({
       throw new Error("Error fetching token" + e);
     }
   );
-  console.log("FACTORYU RESPONSE", factoryResponse);
   const tokenInfo = JSON.stringify(await factoryResponse.json());
 
   return tokenInfo;

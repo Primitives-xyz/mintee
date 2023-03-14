@@ -22,6 +22,7 @@ model NFT {
   blockchainAddress String?     @db.VarChar(255)
   blockchain        Blockchain?
   minteeMinted      Boolean     @default(false)
+  isCompressed      Boolean     @default(false)
   Tree              Tree?       @relation(fields: [treeId], references: [id])
   treeId            Int?
 
