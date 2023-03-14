@@ -6,13 +6,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const network = req.headers.network as string | undefined;
   // parse the query for token address
   const { address } = req.query;
   const tokenPK = new PublicKey(address as string);
 
   // init metaplex
   if (!tokenPK) return res.status(404).json({ message: "Invalid address" });
-  const mp = initMetaplex(res);
+  const mp = initMetaplex(network);
   if (!mp)
     return res.status(404).json({ message: "Error connection Solana node" });
 
@@ -43,8 +44,11 @@ export default async function handler(
   return res.status(200).json(response);
 }
 
-function initMetaplex(res: NextApiResponse) {
-  const url = process.env.RPC_URL;
+function initMetaplex(network?: string) {
+  const url =
+    !network || network !== "mainnet"
+      ? process.env.RPC_URL_DEVNET
+      : process.env.RPC_URL;
   if (!url) {
     throw new Error("RPC_URL not set");
   }

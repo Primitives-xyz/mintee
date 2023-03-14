@@ -6,6 +6,7 @@ import {
   getNFTInfo,
   sha256,
 } from "../../utils";
+import { networkStringLiteral } from "../../utils/nft";
 
 export async function nftInfoRoute(
   request: Request,
@@ -14,7 +15,9 @@ export async function nftInfoRoute(
   url: URL
 ) {
   const external_id = request.headers.get("x-api-key");
-
+  const network = request.headers.get("network") as
+    | networkStringLiteral
+    | undefined;
   if (!external_id) {
     // if no external_id, return error
     return new Response("x-api-key header is required", { status: 400 });
@@ -55,7 +58,11 @@ export async function nftInfoRoute(
       }
     });
     // promise for looking up in factory, should taken longest
-    const nftInfoPromise = getNFTInfo({ env, address })
+    const nftInfoPromise = getNFTInfo({
+      env,
+      address,
+      network: network ? network : undefined,
+    })
       .then(async (response) => {
         console.log("nftInfoPromise", response);
         if (!response) {

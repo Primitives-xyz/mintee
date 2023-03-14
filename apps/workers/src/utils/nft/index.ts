@@ -4,7 +4,7 @@
 // The tokenInfo is returned so that it can be used in the caller function.
 
 import { Env } from "..";
-
+export type networkStringLiteral = "mainnet" | "testnet" | "devnet";
 /**
  *
  * @param env
@@ -18,16 +18,20 @@ import { Env } from "..";
 export async function getNFTInfo({
   env,
   address,
+  network,
 }: {
   env: Env;
   address: string;
+  network?: networkStringLiteral;
 }) {
-  const factoryResponse = await fetch(`${env.factoryUrl}/api/${address}`).catch(
-    (e) => {
-      console.log("Error", e);
-      throw new Error("Error fetching token" + e);
-    }
-  );
+  const factoryResponse = await fetch(`${env.factoryUrl}/api/${address}`, {
+    headers: {
+      network: network ? network : "mainnet",
+    },
+  }).catch((e) => {
+    console.log("Error", e);
+    throw new Error("Error fetching token" + e);
+  });
   const tokenInfo = JSON.stringify(await factoryResponse.json());
 
   return tokenInfo;

@@ -1,13 +1,16 @@
 import { z } from "zod";
 import { TokenProgramVersion, TokenStandard, UseMethod } from "../types";
 
-export async function validateMintCompressBody(json: any) {
-  if (!json.body) {
+export async function validateMintCompressBody(json: {
+  data: any;
+  options: any;
+}) {
+  if (!json.data) {
     throw new Error(
       "The body is null, try using our npm package instead: https://www.npmjs.com/package/mintee-nft"
     );
   }
-  const body = mintCompressBodySchema.parseAsync(json.body);
+  const body = mintCompressBodySchema.parseAsync(json.data);
   const options = mintCompressOptionsSchema.parseAsync(json.options);
 
   return await Promise.all([body, options]);
@@ -45,3 +48,4 @@ export const mintCompressBodySchema = z.object({
     })
   ),
 });
+export type mintCompressBody = z.infer<typeof mintCompressBodySchema>;

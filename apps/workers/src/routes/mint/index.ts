@@ -45,18 +45,26 @@ export async function mintRoute(
     });
   }
 
-  const json = await request.json().catch((e) => {
+  const json = (await request.json().catch((e) => {
     console.log("Error parsing json", e);
-  });
+  })) as { data: any; options: any };
   if (!json) {
     return new Response("Error parsing body", {
+      status: 400,
+      headers: corsHeaders,
+    });
+  } else if (!json.data) {
+    return new Response("data is required", {
       status: 400,
       headers: corsHeaders,
     });
   }
 
   // validate metadata
-  const bodyParsePromise = await validateMintCompressBody(json).catch((e) => {
+  const bodyParsePromise = await validateMintCompressBody({
+    data: json.data,
+    options: json.options,
+  }).catch((e) => {
     console.log("Error validating body", e);
   });
   if (!bodyParsePromise) {
@@ -141,7 +149,7 @@ export async function mintRoute(
           // create response with userInfo
           const cache = caches.default;
           cache.put(external_id, new Response(JSON.stringify(row)));
-          env.apiTokens.put(external_id, JSON.stringify(row));
+          env.apiTokens.put(mintInfo.assetId, JSON.stringify(row));
         }),
     ])
   );
