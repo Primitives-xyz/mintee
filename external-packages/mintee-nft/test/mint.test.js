@@ -35,53 +35,56 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
-exports.mintCompressBodySchema = exports.mintCompressOptionsSchema = exports.validateMintCompressBody = void 0;
-var zod_1 = require("zod");
-var types_1 = require("../types");
-function validateMintCompressBody(json) {
-    return __awaiter(this, void 0, void 0, function () {
-        var body, options;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!json.data) {
-                        throw new Error("The body is null, try using our npm package instead: https://www.npmjs.com/package/mintee-nft");
-                    }
-                    body = exports.mintCompressBodySchema.parseAsync(json.data);
-                    options = exports.mintCompressOptionsSchema.parseAsync(json.options);
-                    return [4 /*yield*/, Promise.all([body, options])];
-                case 1: return [2 /*return*/, _a.sent()];
-            }
-        });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var vitest_1 = require("vitest");
+var src_1 = require("../src");
+var sinon_1 = __importDefault(require("sinon"));
+(0, vitest_1.test)("Mintee initializes with apiKey and options", function () {
+    var apiKey = "test-api-key";
+    var network = "devnet";
+    var options = { network: network };
+    var mintee = new src_1.Mintee({ apiKey: apiKey, options: options });
+    vitest_1.assert.equal(mintee.apiKey, apiKey);
+    vitest_1.assert.equal(mintee.network, network);
+});
+(0, vitest_1.test)("Mintee initializes with apiKey only", function () {
+    var apiKey = "test-api-key";
+    var mintee = src_1.Mintee.make({ apiKey: apiKey });
+    vitest_1.assert.equal(mintee.apiKey, apiKey);
+    vitest_1.assert.equal(mintee.network, "devnet");
+});
+(0, vitest_1.test)("Mintee nftInfo method calls fetch with correct arguments", function () { return __awaiter(void 0, void 0, void 0, function () {
+    var apiKey, tokenAddress, apiUrl, onChainResponse, fetchSpy, mintee, infoReponse;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                apiKey = "am9obm55d29vZHRrZUBnbWFpbC5jb206MTY3ODc2NDgwODQyNA==";
+                tokenAddress = "2dVeNCGjQp4atVDW7ASLyaed4rzZ3wEKevFFQuh8Yn6C";
+                apiUrl = "https://api.mintee.io//";
+                onChainResponse = {
+                    name: "testavatar",
+                    symbol: "PRIM",
+                    address: tokenAddress,
+                    uri: "https://dw2h1frcjb7pw.cloudfront.net/6cf6bf512b7b0d5c.json",
+                    editionNonce: 255,
+                    tokenStandard: 0,
+                };
+                fetchSpy = sinon_1.default.spy(globalThis, "fetch");
+                fetchSpy.withArgs("".concat(apiUrl, "nftInfo/").concat(tokenAddress), {
+                    headers: {
+                        Authorization: "Bearer ".concat(apiKey),
+                    },
+                });
+                mintee = new src_1.Mintee({ apiKey: apiKey });
+                return [4 /*yield*/, mintee.nftInfo({ tokenAddress: tokenAddress })];
+            case 1:
+                infoReponse = _a.sent();
+                (0, vitest_1.expect)(infoReponse.token).toContain(onChainResponse);
+                sinon_1.default.restore();
+                return [2 /*return*/];
+        }
     });
-}
-exports.validateMintCompressBody = validateMintCompressBody;
-// combine zode schemas
-exports.mintCompressOptionsSchema = zod_1.z.object({
-    toWalletAddress: zod_1.z.string().min(1).max(200).optional(),
-    network: zod_1.z.string().min(1).max(200).optional()
-});
-exports.mintCompressBodySchema = zod_1.z.object({
-    name: zod_1.z.string().min(1).max(32),
-    symbol: zod_1.z.string().min(1).max(10)["default"](""),
-    uri: zod_1.z.string().max(200)["default"](""),
-    sellerFeeBasisPoints: zod_1.z.number().min(0).max(10000)["default"](0),
-    primarySaleHappened: zod_1.z.boolean()["default"](false),
-    isMutable: zod_1.z.boolean()["default"](true),
-    editionNonce: zod_1.z.number().nullable(),
-    tokenStandard: zod_1.z.nativeEnum(types_1.TokenStandard)["default"](0),
-    collection: zod_1.z
-        .object({
-        verified: zod_1.z.boolean().optional(),
-        key: zod_1.z.string().min(1).max(200).optional()
-    })
-        .optional(),
-    uses: zod_1.z.nativeEnum(types_1.UseMethod).nullable(),
-    tokenProgramVersion: zod_1.z.nativeEnum(types_1.TokenProgramVersion)["default"](0),
-    creators: zod_1.z.array(zod_1.z.object({
-        address: zod_1.z.string().min(1).max(200),
-        verified: zod_1.z.boolean().optional(),
-        share: zod_1.z.number().min(0).max(100)
-    }))
-});
+}); });

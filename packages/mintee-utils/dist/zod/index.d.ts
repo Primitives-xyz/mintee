@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { TokenProgramVersion, TokenStandard, UseMethod } from "../types";
-export declare function validateMintCompressBody(json: any): Promise<[{
+export declare function validateMintCompressBody(json: {
+    data: any;
+    options: any;
+}): Promise<[{
     symbol: string;
     name: string;
     uri: string;
@@ -109,3 +112,4 @@ export declare const mintCompressBodySchema: z.ZodObject<{
     } | undefined;
     tokenProgramVersion?: TokenProgramVersion | undefined;
 }>;
+export type mintCompressBody = z.infer<typeof mintCompressBodySchema>;

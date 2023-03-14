@@ -1,24 +1,32 @@
+import { mintCompressBody } from "mintee-utils";
+import { mintCompressBodySchema } from "mintee-utils/dist/zod";
 export class Mintee {
   /** The connection object from Solana's SDK. */
   public readonly apiKey: string;
   /** The cluster in which the connection endpoint belongs to. */
   public readonly network: "mainnet" | "testnet" | "devnet";
-  public readonly apiUrl: string;
+  private readonly apiUrl: string;
 
   constructor({
     apiKey,
     options,
   }: {
     apiKey: string;
-    options?: { network: "mainnet" | "testnet" | "devnet" };
+    options?: minteeOptions;
   }) {
     this.apiKey = apiKey;
     this.network = options?.network || "mainnet";
     this.apiUrl = `https://api.noxford1.workers.dev/`;
   }
 
-  static make({ apiKey }: { apiKey: string }) {
-    return new this({ apiKey });
+  static make({
+    apiKey,
+    options,
+  }: {
+    apiKey: string;
+    options?: minteeOptions;
+  }) {
+    return new this({ apiKey, options });
   }
 
   /**
@@ -33,10 +41,15 @@ export class Mintee {
     metadata,
     toWallet,
   }: {
-    metadata: JsonMetadata;
+    metadata: mintCompressBody;
     toWallet?: string;
   }) {
-    const url = `${this.apiUrl}mintNft`;
+    const data = await mintCompressBodySchema
+      .parseAsync(metadata)
+      .catch((e) => {
+        throw new Error(e);
+      });
+    const url = `${this.apiUrl}mint`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -44,8 +57,10 @@ export class Mintee {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: metadata.name,
-        symbol: metadata.symbol,
+        data,
+        options: {
+          toWallet: toWallet ? toWallet : undefined,
+        },
       }),
     });
     const token = await response.json().catch((e) => {
@@ -58,10 +73,12 @@ export class Mintee {
     const url = `${this.apiUrl}nftInfo/${tokenAddress}`;
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${this.apiKey}`,
+        "x-api-key": `${this.apiKey}`,
+        network: this.network,
       },
     });
     const token: nftResponse = await response.json().catch((e) => {
+      console.log("error", e);
       throw new Error(e);
     });
     return token;
@@ -119,3 +136,8 @@ export type JsonMetadata<Uri = string> = {
   };
   [key: string]: unknown;
 };
+type minteeOptions = {
+  network: networkStringLiteral;
+};
+
+export type networkStringLiteral = "mainnet" | "testnet" | "devnet";

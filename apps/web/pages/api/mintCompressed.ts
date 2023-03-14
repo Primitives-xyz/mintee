@@ -1,8 +1,4 @@
-import {
-  MetadataArgs,
-  TokenProgramVersion,
-  TokenStandard,
-} from "@metaplex-foundation/mpl-bubblegum";
+import { MetadataArgs } from "@metaplex-foundation/mpl-bubblegum";
 import base58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { NextApiRequest, NextApiResponse } from "next";
