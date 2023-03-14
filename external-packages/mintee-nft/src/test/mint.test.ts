@@ -1,6 +1,6 @@
 import { assert, describe, expect, test } from "vitest";
-import { Mintee } from "../src";
 import sinon from "sinon";
+import { Mintee } from "..";
 describe("Mintee", () => {
   test("Mintee initializes with apiKey and options", () => {
     const apiKey = "test-api-key";
@@ -37,14 +37,17 @@ describe("Mintee", () => {
       tokenStandard: 0,
     };
 
+    const mintee = new Mintee({
+      apiKey,
+    });
     const fetchSpy = sinon.spy(globalThis, "fetch");
     fetchSpy.withArgs(`${apiUrl}nftInfo/${tokenAddress}`, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
+        network: mintee.network,
       },
     });
 
-    const mintee = new Mintee({ apiKey });
     const infoReponse = await mintee.nftInfo({ tokenAddress });
     expect(infoReponse.token).toContain(onChainResponse);
 

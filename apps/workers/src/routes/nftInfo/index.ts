@@ -22,6 +22,7 @@ export async function nftInfoRoute(
     // if no external_id, return error
     return new Response("x-api-key header is required", { status: 400 });
   }
+  console.log("NETWORK HERE", network);
 
   const body = (await request.clone().text()) + external_id;
 
