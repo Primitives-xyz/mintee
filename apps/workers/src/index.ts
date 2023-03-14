@@ -74,7 +74,15 @@ export default {
         });
       }
 
-      const json = await request.json();
+      const json = await request.json().catch((e) => {
+        console.log("Error parsing json", e);
+      });
+      if (!json) {
+        return new Response("Error parsing body", {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
 
       // validate metadata
       const bodyParsePromise = await validateMintCompressBody(json).catch(

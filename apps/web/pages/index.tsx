@@ -40,7 +40,7 @@ export default function Page() {
           as possible.
         </h2>
         <div className="flex sm:flex-row flex-col  mt-6 justify-center items-center sm:space-x-4">
-          {user.userId && (
+          {!user.userId && (
             <Link
               className="bg-blue-500 rounded-xl text-white font-medium w-52 px-4 py-3 sm:mt-10 mt-8  hover:bg-blue-400 transition"
               href="/"
