@@ -55,14 +55,6 @@ export default {
         console.log("Error in apiTokenLookup", e);
       })) as apiTokenStatus;
 
-      if (!response || !response.id) {
-        // return a 401 if no response or no id
-        return new Response("Unauthorized", {
-          status: 401,
-          headers: corsHeaders,
-        });
-      }
-
       if (!response.active) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not active, go to mintee.io to activate", {
@@ -149,7 +141,9 @@ export default {
             })
             .then((res) => {
               const row = res.rows[0] as apiTokenStatus;
-
+              // create response with userInfo
+              const cache = caches.default;
+              cache.put(external_id, new Response(JSON.stringify(row)));
               env.apiTokens.put(external_id, JSON.stringify(row));
             }),
         ])
@@ -165,6 +159,30 @@ export default {
     }
 
     if (url.pathname === "/mintCompressedToCollection") {
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      })) as apiTokenStatus;
+
+      if (!response.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      if (!response.canMint) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not allowed to mint", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
       const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
       if (!mintTreeResponse.ok) {
         return new Response("Error minting tree", {
@@ -215,6 +233,30 @@ export default {
     }
 
     if (url.pathname === "/mintCollection") {
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      })) as apiTokenStatus;
+
+      if (!response.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      if (!response.canMint) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not allowed to mint", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
       const createCollectionResponse = await fetch(
         `${env.factoryUrl}/api/createCollection`
       );
@@ -232,6 +274,22 @@ export default {
     }
 
     if (url.pathname.startsWith("/nftInfo/")) {
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      })) as apiTokenStatus;
+
+      if (!response.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
       // after nftInfo/ grab the address
       const address = url.pathname.split("/")[2];
 
@@ -254,12 +312,10 @@ export default {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
-      const apiKeyLookup = apiTokenLookup(external_id, env).catch(() => {
-        return new Response("Unauthorized", {
-          status: 401,
-          headers: corsHeaders,
-        });
-      });
+      const response = apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      }) as Promise<apiTokenStatus>;
+
       const address = url.pathname.split("/")[2];
 
       const nftInfoLookup = fetch(
@@ -271,11 +327,11 @@ export default {
         }
       );
       // resolve promises
-      const [kv, fullNftInfo] = await Promise.all([
-        apiKeyLookup,
+      const [userAPITokenInfo, fullNftInfo] = await Promise.all([
+        response,
         nftInfoLookup,
       ]);
-      if (!kv) {
+      if (!userAPITokenInfo) {
         return new Response("Unauthorized", {
           status: 401,
           headers: corsHeaders,
@@ -284,6 +340,13 @@ export default {
       if (!fullNftInfo.ok) {
         return new Response("Error getting NFT info", {
           status: 500,
+          headers: corsHeaders,
+        });
+      }
+      if (!userAPITokenInfo.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
           headers: corsHeaders,
         });
       }
@@ -310,20 +373,63 @@ export default {
     }
 
     if (url.pathname === "/createTree") {
-      const response = await fetch(`${env.factoryUrl}/api/createTree`);
-      if (!response.ok) {
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      })) as apiTokenStatus;
+
+      if (!response.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      if (!response.canMint) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not allowed to mint", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      const responseCreateTree = await fetch(
+        `${env.factoryUrl}/api/createTree`
+      );
+      if (!responseCreateTree.ok) {
         return new Response("Error creating tree", {
           status: 500,
           headers: corsHeaders,
         });
       }
-      const treeInfo = (await response.json()) as {
+      const treeInfo = (await responseCreateTree.json()) as {
         treeAddress: string;
         treeWalletSK: string;
       };
       return new Response(JSON.stringify(treeInfo), { headers: corsHeaders });
     }
     if (url.pathname === "/asset") {
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      })) as apiTokenStatus;
+
+      if (!response.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
       const assetId = url.searchParams.get("assetId");
       if (!assetId) {
         return new Response("assetId is required", {
@@ -357,6 +463,22 @@ export default {
     }
 
     if (url.pathname === "/uploadMetadata") {
+      const external_id = request.headers.get("x-api-key");
+      if (!external_id) {
+        // if no external_id, return error
+        return new Response("x-api-key header is required", { status: 400 });
+      }
+      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+        console.log("Error in apiTokenLookup", e);
+      })) as apiTokenStatus;
+
+      if (!response.active) {
+        // api is not active, go to mintee.io to activate
+        return new Response("api is not active, go to mintee.io to activate", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
       // validate body using zod
       const body = validateMetadataBody(await request.json());
       const key = crypto.randomUUID();
@@ -397,6 +519,7 @@ async function apiTokenLookup(external_id: string, env: Env) {
   const response = (await Promise.any([
     lookUserUpKV(external_id, env),
     lookUserUpDB(external_id),
+    LookUpUserCache(external_id, env),
   ]).catch((e) => {
     console.log("ERROR looking up user", e);
     throw new Error(e);
@@ -415,6 +538,19 @@ function lookUserUpKV(external_id: string, env: Env) {
       resolve(userInfo);
     }
     reject();
+  });
+}
+
+function LookUpUserCache(external_id: string, env: Env) {
+  return new Promise(async (resolve, reject) => {
+    let cache = caches.default;
+    cache.match(external_id).then(async (response) => {
+      if (response) {
+        const userInfo: apiTokenStatus = await response.json();
+        resolve(userInfo);
+      }
+      reject();
+    });
   });
 }
 
