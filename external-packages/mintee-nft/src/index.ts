@@ -21,14 +21,20 @@ export class Mintee {
     return new this({ apiKey });
   }
 
+  /**
+   * Mint a new NFT
+   *
+   * @param name,
+   * @param symbol,
+   * @param metadata,
+   * @returns
+   */
   async mintNft({
-    name,
-    symbol,
     metadata,
+    toWallet,
   }: {
-    name: string;
-    symbol: string;
-    metadata?: JsonMetadata;
+    metadata: JsonMetadata;
+    toWallet?: string;
   }) {
     const url = `${this.apiUrl}mintNft`;
     const response = await fetch(url, {
@@ -38,11 +44,11 @@ export class Mintee {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name,
-        symbol,
+        name: metadata.name,
+        symbol: metadata.symbol,
       }),
     });
-    const token: nftResponse = await response.json().catch((e) => {
+    const token = await response.json().catch((e) => {
       throw new Error(e);
     });
     return token;
@@ -113,13 +119,3 @@ export type JsonMetadata<Uri = string> = {
   };
   [key: string]: unknown;
 };
-
-async function getNftInfo() {
-  // initialize mintee with your api key
-  const mintee = Mintee.make({
-    apiKey: "${props.apiKey}",
-  });
-
-  // get the nft info
-  return await mintee.mintNft({ name: "test_nft", symbol: "test" });
-}

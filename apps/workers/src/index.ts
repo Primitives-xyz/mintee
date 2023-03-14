@@ -8,7 +8,7 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-
+import { z } from "zod";
 import { validateMetadataBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
 import { getNFTInfo } from "./nft";
@@ -41,15 +41,19 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/mint") {
+      // if get request, return error
       if (request.method === "GET") {
-        // if get request, return error
         return new Response("GET not allowed", { status: 405 });
       }
+
+      // parse pass in api key
       const external_id = request.headers.get("x-api-key");
       if (!external_id) {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
+
+      // check if api key is active / canMint
       const response = (await apiTokenLookup(external_id, env).catch((e) => {
         console.log("Error in apiTokenLookup", e);
       })) as apiTokenStatus;
@@ -69,14 +73,15 @@ export default {
           headers: corsHeaders,
         });
       }
-      const { name, symbol } = (await request.json().catch((e) => {
-        console.log("Error parsing body", e);
-      })) as {
-        name: string;
-        symbol?: string;
-      };
 
-      if (!name) {
+      const json = await request.json();
+
+      // validate metadata
+      const body = await validateMintBody(json).catch((e) => {
+        console.log("Error validating body", e);
+      });
+
+      if (!body || !body.metadata.name) {
         return new Response("Name is required", {
           status: 400,
           headers: corsHeaders,
@@ -91,8 +96,8 @@ export default {
           "cloudflare-worker-key": env.WORKER_KEY,
         },
         body: JSON.stringify({
-          name,
-          symbol,
+          metadata: body.metadata,
+          toWalletAddress: body.toWalletAddress,
         }),
       }).catch((e) => {
         console.log("Error minting NFT " + e);
@@ -139,8 +144,8 @@ export default {
               const nft = trx.execute(
                 "INSERT INTO NFT (name, symbol, offChainUrl, description, creaturUserId, blockchain, blockchainAddress, isCompress, treeId",
                 [
-                  name,
-                  symbol,
+                  body.metadata.name,
+                  body.metadata.symbol,
                   "",
                   "",
                   response.id,
@@ -670,4 +675,26 @@ async function sha256(message: any) {
   return [...new Uint8Array(hashBuffer)]
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+}
+
+function validateMintBody(json: any) {
+  const mintSchema = z.object({
+    metadata: z.object({
+      name: z.string().min(1).max(32),
+      symbol: z.string().min(1).max(10).optional(),
+      uri: z.string().max(200).optional(),
+      creators: z
+        .array(
+          z.object({
+            address: z.string().min(1).max(200),
+            verified: z.boolean().optional(),
+            share: z.number().min(0).max(100),
+          })
+        )
+        .max(5)
+        .optional(),
+    }),
+    toWalletAddress: z.string().min(1).max(200).optional(),
+  });
+  return mintSchema.parseAsync(json);
 }
