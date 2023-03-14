@@ -556,7 +556,7 @@ export default {
 
     if (url.pathname === "/") {
       return new Response(
-        `Hello world! Welcome to Mintee's NFT API. Learn more at <a src="https://mintee.io">https://mintee.io</a>`,
+        `Hello world! Welcome to Mintee's NFT API. Learn more at https://mintee.io`,
         { headers: corsHeaders }
       );
     }

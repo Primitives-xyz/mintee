@@ -27,18 +27,19 @@ export default function Page() {
           Get 25 free mints a month{"  "}
           <span className="text-blue-600">using our API</span>
         </a>
-        <h1 className="mx-auto max-w-4xl font-display sm:text-5xl font-bold tracking-normal text-gray-300 text-2xl">
+        <h1 className="mx-auto max-w-4xl font-display sm:text-5xl font-bold tracking-normal text-gray-300 text-3xl">
           Minting as a service,
           <span className="relative whitespace-nowrap text-yellow-300">
             <SquigglyLines />
+            <br className="visible md:hidden" />
             <span className="relative">at the speed of light.</span>
           </span>
         </h1>
-        <h2 className="mx-auto mt-12 max-w-xl text-lg sm:text-gray-400  text-gray-500 leading-7">
+        <h2 className="mx-auto mt-6 md:mt-12 max-w-lg text-lg sm:text-gray-400  text-gray-500 leading-7">
           Thousands of NFTs a month, minted directly into users wallets, as fast
           as possible.
         </h2>
-        <div className="flex sm:flex-row flex-col  mt-6 justify-center items-center md:space-x-4">
+        <div className="flex sm:flex-row flex-col  mt-6 justify-center items-center sm:space-x-4">
           {user.userId && (
             <Link
               className="bg-blue-500 rounded-xl text-white font-medium w-52 px-4 py-3 sm:mt-10 mt-8  hover:bg-blue-400 transition"
