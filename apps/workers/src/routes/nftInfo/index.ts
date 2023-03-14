@@ -24,7 +24,7 @@ export async function nftInfoRoute(
   }
   console.log("NETWORK HERE", network);
 
-  const body = (await request.clone().text()) + external_id;
+  const body = (await request.clone().text()) + external_id + network;
 
   // Hash the request body to use it as a part of the cache key
   const hash = await sha256(body);
@@ -50,14 +50,16 @@ export async function nftInfoRoute(
       console.log("Error in apiTokenLookup", e);
     }) as Promise<apiTokenStatus>;
     // promise for looking up in KV
-    const kvPromise = env.nftInfo.get(address).then(async (response) => {
-      if (!response) {
-        throw new Error("not in kv");
-      }
-      if (response) {
-        return response;
-      }
-    });
+    const kvPromise = env.nftInfo
+      .get(address + network)
+      .then(async (response) => {
+        if (!response) {
+          throw new Error("not in kv");
+        }
+        if (response) {
+          return response;
+        }
+      });
     // promise for looking up in factory, should taken longest
     const nftInfoPromise = getNFTInfo({
       env,
@@ -113,7 +115,7 @@ export async function nftInfoRoute(
     });
 
     ctx.waitUntil(
-      env.nftInfo.put(address, tokenInfo).then(async () => {
+      env.nftInfo.put(address + network, tokenInfo).then(async () => {
         await cache.put(cacheKey, responseInfo.clone());
       })
     );
