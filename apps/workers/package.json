@@ -23,7 +23,6 @@
     "@planetscale/database": "^1.5.0",
     "@solana/web3.js": "^1.73.3",
     "mintee-utils": "*",
-    "worker-types": "*",
     "zod": "^3.21.0"
   }
 }
