@@ -24,6 +24,7 @@ export type Env = {
   apiTokens: KVNamespace;
 };
 
+// Planetscale connection
 const psConfig = {
   host: "aws.connect.psdb.cloud",
   username: "g3s67laml1b4smxqc239",
@@ -54,19 +55,19 @@ export default {
       }
 
       // check if api key is active / canMint
-      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+      const response = await apiTokenLookup(external_id, env).catch((e) => {
         console.log("Error in apiTokenLookup", e);
-      })) as apiTokenStatus;
+      });
 
-      if (!response.active) {
+      if (!response) {
+        return new Response("api key not found", { status: 401 });
+      } else if (!response.active) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not active, go to mintee.io to activate", {
           status: 401,
           headers: corsHeaders,
         });
-      }
-
-      if (!response.canMint) {
+      } else if (!response.canMint) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not allowed to mint", {
           status: 401,
@@ -81,7 +82,7 @@ export default {
         console.log("Error validating body", e);
       });
 
-      if (!body || !body.metadata.name) {
+      if (!body || !body.data.name) {
         return new Response("Name is required", {
           status: 400,
           headers: corsHeaders,
@@ -96,7 +97,7 @@ export default {
           "cloudflare-worker-key": env.WORKER_KEY,
         },
         body: JSON.stringify({
-          metadata: body.metadata,
+          metadata: body.data,
           toWalletAddress: body.toWalletAddress,
         }),
       }).catch((e) => {
@@ -113,12 +114,6 @@ export default {
 
       // we got a repsonse, but the status is not ok
       if (mintResponse && !mintResponse.ok) {
-        console.log(
-          "Error minting NFT, error from factory.",
-          mintResponse.status,
-          mintResponse.statusText,
-          await mintResponse.text()
-        );
         return new Response("Error minting NFT, error from factory.", {
           status: 500,
           headers: corsHeaders,
@@ -138,19 +133,19 @@ export default {
                 [external_id]
               );
               const token = trx.execute(
-                "SELECT id, canMint, active FROM Token WHERE externalKey = ?;",
+                "SELECT id, canMint, active, userId FROM Token WHERE externalKey = ?;",
                 [external_id]
               );
-              const nft = trx.execute(
+              trx.execute(
                 "INSERT INTO NFT (name, symbol, offChainUrl, description, creaturUserId, blockchain, blockchainAddress, isCompress, treeId",
                 [
-                  body.metadata.name,
-                  body.metadata.symbol,
-                  "",
-                  "",
+                  body.data.name,
+                  body.data.symbol,
+                  body.data.uri,
+                  body.data.description,
+                  response.userId,
+                  "Solana",
                   response.id,
-                  "SOLANA",
-                  mintInfo.assetId,
                   true,
                   "",
                 ]
@@ -617,6 +612,7 @@ async function apiTokenLookup(external_id: string, env: Env) {
   const response = (await Promise.any([
     lookUserUpKV(external_id, env),
     lookUserUpDB(external_id),
+    LookUpUserCache(external_id, env),
   ]).catch((e) => {
     console.log("ERROR looking up user", e);
     throw new Error(e);
@@ -636,12 +632,26 @@ function lookUserUpKV(external_id: string, env: Env) {
   });
 }
 
+function LookUpUserCache(external_id: string, env: Env) {
+  return new Promise(async (resolve, reject) => {
+    let cache = caches.default;
+    cache.match(external_id).then(async (response) => {
+      if (response) {
+        const userInfo: apiTokenStatus = await response.json();
+        resolve(userInfo);
+      }
+      reject();
+    });
+  });
+}
+
 function lookUserUpDB(external_id: string) {
   const response = new Promise(async (resolve, reject) => {
     const response = await conn
-      .execute("SELECT id, canMint, active FROM Token WHERE externalKey = ?", [
-        external_id,
-      ])
+      .execute(
+        "SELECT id, canMint, active, userId FROM Token WHERE externalKey = ?",
+        [external_id]
+      )
       .catch((e) => {
         console.log("ERROR", e);
       });
@@ -651,6 +661,7 @@ function lookUserUpDB(external_id: string) {
       const userInfo: apiTokenStatus = {
         id: row.id,
         canMint: row.canMint,
+        userId: row.userId,
         active: row.active,
       };
       resolve(userInfo);
@@ -664,6 +675,7 @@ type apiTokenStatus = {
   id: number;
   canMint: boolean;
   active: boolean;
+  userId: number;
 };
 
 async function sha256(message: any) {
@@ -679,10 +691,11 @@ async function sha256(message: any) {
 
 function validateMintBody(json: any) {
   const mintSchema = z.object({
-    metadata: z.object({
+    data: z.object({
       name: z.string().min(1).max(32),
       symbol: z.string().min(1).max(10).optional(),
       uri: z.string().max(200).optional(),
+      description: z.string().max(1000).optional(),
       creators: z
         .array(
           z.object({
