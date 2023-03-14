@@ -6,9 +6,10 @@ import base58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getCompressedNftId, mintCompressedNft } from "../../utils/mint";
-import { PublicKey } from "@metaplex-foundation/js";
 import { ConcurrentMerkleTreeAccount } from "@solana/spl-account-compression";
 import { getConnectionWrapper } from "../../utils/connectionWrapper";
+import { z } from "zod";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -17,7 +18,7 @@ export default async function handler(
   if (req.method === "GET") {
     return res.status(405).json({ error: "GET not allowed" });
   }
-  console.log("req.headers", req.headers);
+
   // check header for key cloudflare-worker-key
   const key = req.headers["cloudflare-worker-key"];
   if (!key || key != process.env["WORKER_KEY"]) {
@@ -26,12 +27,13 @@ export default async function handler(
 
   const connectionWrapper = getConnectionWrapper();
 
-  const treeWalletSK = process.env["TREE_WALLET_SK"];
-  if (!treeWalletSK) {
-    return res.status(500).json({ error: "Invalid tree wallet secret key" });
+  const treeWallet = getTreeKP();
+
+  if (!treeWallet) {
+    return res.status(500).json({ error: "No tree wallet" });
   }
-  const treeWallet58 = base58.decode(treeWalletSK);
-  const treeWallet = Keypair.fromSecretKey(treeWallet58);
+
+  const json = req.body();
 
   // Mint a compressed NFT
   const nftArgs = {
@@ -72,4 +74,32 @@ export default async function handler(
   const leafIndex = treeAccount.tree.rightMostPath.index - 1;
   const assetId = await getCompressedNftId(treeWallet, leafIndex);
   return res.status(200).json({ assetId });
+}
+
+function getTreeKP() {
+  const treeWalletSK = process.env["TREE_WALLET_SK"];
+  if (!treeWalletSK) {
+    return null;
+  }
+  const treeWallet58 = base58.decode(treeWalletSK);
+  return Keypair.fromSecretKey(treeWallet58);
+}
+
+function validateMintBody(json: any) {
+  const mintSchema = z.object({
+    name: z.string().min(1).max(32),
+    symbol: z.string().min(1).max(10).optional(),
+    uri: z.string().max(200).optional(),
+    creators: z
+      .array(
+        z.object({
+          address: z.string().min(1).max(200),
+          verified: z.boolean().optional(),
+          share: z.number().min(0).max(100),
+        })
+      )
+      .max(5)
+      .optional(),
+  });
+  return mintSchema.parse(json);
 }
