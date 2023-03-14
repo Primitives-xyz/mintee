@@ -18,7 +18,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@utils": "file: /utils/index",
     "@noxford1/post": "^1.0.3",
     "@planetscale/database": "^1.5.0",
     "mintee-utils": "*",
