@@ -7,6 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const network = req.headers.network as string | undefined;
+  console.log("NETWORKS here", network);
   // parse the query for token address
   const { address } = req.query;
   const tokenPK = new PublicKey(address as string);
