@@ -294,10 +294,12 @@ export default {
       let response = await cache.match(cacheKey);
       // Otherwise, fetch response to POST request from origin
       if (!response) {
+        const address = url.pathname.split("/")[2];
+        // promise for looking up user token in API
         const tokenLookup = apiTokenLookup(external_id, env).catch((e) => {
           console.log("Error in apiTokenLookup", e);
         }) as Promise<apiTokenStatus>;
-        const address = url.pathname.split("/")[2];
+        // promise for looking up in KV
         const kvPromise = env.nftInfo.get(address).then(async (response) => {
           if (!response) {
             throw new Error("not in kv");
@@ -306,6 +308,7 @@ export default {
             return response;
           }
         });
+        // promise for looking up in factory, should taken longest
         const nftInfoPromise = getNFTInfo({ env, address })
           .then(async (response) => {
             console.log("nftInfoPromise", response);
@@ -323,8 +326,11 @@ export default {
           });
 
         const anyTokenPromise = await Promise.any([kvPromise, nftInfoPromise]);
-        const tokenLookupResponse = await tokenLookup;
-        const tokenInfo = anyTokenPromise as string | undefined;
+        const [tokenInfoResponse, tokenLookupResponse] = await Promise.all([
+          anyTokenPromise,
+          tokenLookup,
+        ]);
+        const tokenInfo = tokenInfoResponse as string | undefined;
         if (!tokenLookupResponse.active) {
           // api is not active, go to mintee.io to activate
           return new Response(
