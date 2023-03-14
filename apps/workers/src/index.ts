@@ -1,16 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `wrangler dev src/index.ts` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `wrangler publish src/index.ts --name my-worker` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
 
 import { corsHeaders, Env } from "./utils";
 import {
+  helloRoute,
   mintRoute,
   mintTreeRoutes,
   nftInfoRoute,
@@ -47,10 +39,7 @@ export default {
     }
 
     if (url.pathname === "/") {
-      return new Response(
-        `Hello world! Welcome to Mintee's NFT API. Learn more at https://mintee.io`,
-        { headers: corsHeaders }
-      );
+      return helloRoute();
     }
 
     // return error response saying path noth found
