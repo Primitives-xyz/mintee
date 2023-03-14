@@ -1,9 +1,10 @@
-import { Env } from "worker-types";
-
 // This function gets the NFT info on chain and writes it to the KV.
 // The address is used as the key in the KV.
 // The tokenInfo is the value.
 // The tokenInfo is returned so that it can be used in the caller function.
+
+import { Env } from "..";
+
 /**
  *
  * @param env
@@ -21,7 +22,12 @@ export async function getNFTInfo({
   env: Env;
   address: string;
 }) {
-  const factoryResponse = await fetch(`${env.factoryUrl}/api/${address}`);
+  const factoryResponse = await fetch(`${env.factoryUrl}/api/${address}`).catch(
+    (e) => {
+      console.log("Error", e);
+      throw new Error("Error fetching token" + e);
+    }
+  );
   const tokenInfo = JSON.stringify(await factoryResponse.json());
 
   return tokenInfo;

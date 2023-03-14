@@ -272,37 +272,68 @@ export default {
         headers: corsHeaders,
       });
     }
-
-    if (url.pathname.startsWith("/nftInfo/")) {
+    if (url.pathname.includes("/nftInfo/")) {
       const external_id = request.headers.get("x-api-key");
       if (!external_id) {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
-      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+      const tokenLookup = apiTokenLookup(external_id, env).catch((e) => {
         console.log("Error in apiTokenLookup", e);
-      })) as apiTokenStatus;
+      }) as Promise<apiTokenStatus>;
+      var cache = caches.default;
 
-      if (!response.active) {
+      const address = url.pathname.split("/")[2];
+      const kvPromise = env.nftInfo.get(address).then(async (response) => {
+        console.log("kvPromise", response);
+        if (!response) {
+          console.log("not in kv");
+          throw new Error("not in kv");
+        }
+        if (response) {
+          return response;
+        }
+      });
+      const cacheHit = cache.match(address).then(async (response) => {
+        console.log("cacheHit", response);
+        if (!response) {
+          throw new Error("not in cache");
+        }
+        if (response) {
+          return await response.json();
+        }
+
+        throw new Error("not in cache");
+      });
+      const anyTokenPromise = await Promise.any([kvPromise, cacheHit]);
+      console.log("YOULO", anyTokenPromise);
+      const tokenLookupResponse = await tokenLookup;
+      const tokenInfo = anyTokenPromise as string | undefined;
+      if (!tokenLookupResponse.active) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not active, go to mintee.io to activate", {
           status: 401,
           headers: corsHeaders,
         });
       }
-      // after nftInfo/ grab the address
-      const address = url.pathname.split("/")[2];
-
-      // check if the address is in the KV
-      const kvResponse = await env.nftInfo.get(address);
-      if (kvResponse) {
-        return new Response(kvResponse, { headers: corsHeaders });
-      }
+      console.log("HEllo?");
+      const nftInfoPromise = await getNFTInfo({ env, address });
+      console.log("t", nftInfoPromise);
 
       // if not in KV, get the NFT info from the factory and write it to the KV
-      const tokenInfo = await getNFTInfo({ env, address });
-      ctx.waitUntil(env.nftInfo.put(address, tokenInfo));
-      return new Response(tokenInfo, { headers: corsHeaders });
+      const responseInfo = new Response(tokenInfo, {
+        headers: corsHeaders,
+      });
+
+      ctx.waitUntil(
+        env.nftInfo
+          .put(address, JSON.stringify(nftInfoPromise))
+          .then(async () => {
+            await cache.put(address, responseInfo);
+          })
+      );
+      console.log("RESPONSE", tokenInfo);
+      return responseInfo;
     }
 
     if (url.pathname.startsWith("/nftStatus/")) {

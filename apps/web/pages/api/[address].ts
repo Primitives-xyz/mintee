@@ -22,7 +22,6 @@ export default async function handler(
     .findByMint({ mintAddress: tokenPK })
     .catch((e) => {
       console.log("Error", e);
-      res.status(404).json({ message: "Error fetching token" + e });
     });
 
   if (!token) {
@@ -47,7 +46,7 @@ export default async function handler(
 function initMetaplex(res: NextApiResponse) {
   const url = process.env.RPC_URl;
   if (!url) {
-    return res.status(404).json({ message: "Error connection Solana node" });
+    throw new Error("RPC_URL not set");
   }
   const connection = new Connection(url, "confirmed");
   return Metaplex.make(connection);
