@@ -130,7 +130,8 @@ export const mintCompressedNft = async (
   connectionWrapper: WrappedConnection,
   nftArgs: MetadataArgs,
   ownerKeypair: Keypair,
-  treeKeypair: Keypair
+  treeKeypair: Keypair,
+  toWalletAddress?: PublicKey
 ) => {
   const [treeAuthority, _bump] = await PublicKey.findProgramAddressSync(
     [treeKeypair.publicKey.toBuffer()],
@@ -146,7 +147,7 @@ export const mintCompressedNft = async (
       treeDelegate: ownerKeypair.publicKey,
       treeAuthority,
       leafDelegate: ownerKeypair.publicKey,
-      leafOwner: ownerKeypair.publicKey,
+      leafOwner: toWalletAddress ? toWalletAddress : ownerKeypair.publicKey,
       compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
       payer: ownerKeypair.publicKey,
       logWrapper: SPL_NOOP_PROGRAM_ID,

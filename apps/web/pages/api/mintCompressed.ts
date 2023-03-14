@@ -1,4 +1,5 @@
 import {
+  MetadataArgs,
   TokenProgramVersion,
   TokenStandard,
 } from "@metaplex-foundation/mpl-bubblegum";
@@ -8,7 +9,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getCompressedNftId, mintCompressedNft } from "../../utils/mint";
 import { ConcurrentMerkleTreeAccount } from "@solana/spl-account-compression";
 import { getConnectionWrapper } from "../../utils/connectionWrapper";
-import { z } from "zod";
+import { validateMintCompressBody } from "mintee-utils";
+import { PublicKey } from "@metaplex-foundation/js";
 
 export default async function handler(
   req: NextApiRequest,
@@ -34,30 +36,41 @@ export default async function handler(
   }
 
   const json = req.body();
-
+  // validate metadata
+  const bodyParsePromise = await validateMintCompressBody(json).catch((e) => {
+    console.log("Error validating body", e);
+  });
+  if (!bodyParsePromise) {
+    return res.status(500).json({ error: "Error validating body" });
+  }
+  const [body, options] = bodyParsePromise;
   // Mint a compressed NFT
-  const nftArgs = {
-    name: "Compression Test",
-    symbol: "COMP",
-    uri: "https://arweave.net/gfO_TkYttQls70pTmhrdMDz9pfMUXX8hZkaoIivQjGs",
-    creators: [],
-    editionNonce: 253,
-    tokenProgramVersion: TokenProgramVersion.Original,
-    tokenStandard: TokenStandard.NonFungible,
-    uses: null,
-    collection: null,
-    primarySaleHappened: false,
-    sellerFeeBasisPoints: 0,
-    isMutable: false,
-  };
+
+  const mintCompressedNftPK = body.collection?.key
+    ? new PublicKey(body.collection?.key)
+    : undefined;
+
   const sig = await mintCompressedNft(
     connectionWrapper,
-    nftArgs,
+    {
+      ...body,
+      collection: mintCompressedNftPK
+        ? {
+            key: mintCompressedNftPK,
+            verified: body.collection!.verified,
+          }
+        : null,
+      creators: body.creators.map((c) => ({
+        address: new PublicKey(c.address),
+        share: c.share,
+        verified: c.verified,
+      })),
+    } as MetadataArgs,
     connectionWrapper.payer,
-    treeWallet
+    treeWallet,
+    options.toWalletAddress ? new PublicKey(options.toWalletAddress) : undefined
   ).catch((e) => {
     console.error(e);
-    return res.status(500).json({ error: e.message });
   });
   const treeAccount = await ConcurrentMerkleTreeAccount.fromAccountAddress(
     connectionWrapper,
@@ -83,23 +96,4 @@ function getTreeKP() {
   }
   const treeWallet58 = base58.decode(treeWalletSK);
   return Keypair.fromSecretKey(treeWallet58);
-}
-
-function validateMintBody(json: any) {
-  const mintSchema = z.object({
-    name: z.string().min(1).max(32),
-    symbol: z.string().min(1).max(10).optional(),
-    uri: z.string().max(200).optional(),
-    creators: z
-      .array(
-        z.object({
-          address: z.string().min(1).max(200),
-          verified: z.boolean().optional(),
-          share: z.number().min(0).max(100),
-        })
-      )
-      .max(5)
-      .optional(),
-  });
-  return mintSchema.parse(json);
 }

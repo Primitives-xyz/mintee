@@ -1,33 +1,47 @@
 import { z } from "zod";
-/**
- * Validate the body of the request using zod
- * @param body
- * @returns
- */
-export function validateMetadataBody(body: any) {
-  const schema = z.object({
-    name: z.string().min(1).max(32),
-    description: z.string().optional(),
-    symbol: z.string().max(10).optional(),
-    max_uri_length: z.number().max(100).optional(),
-  });
+import { TokenProgramVersion, TokenStandard, UseMethod } from "../types";
 
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw new Error("invalid body");
+export async function validateMintCompressBody(json: any) {
+  if (!json.body) {
+    throw new Error(
+      "The body is null, try using our npm package instead: https://www.npmjs.com/package/mintee-nft"
+    );
   }
-  return result.data;
+  const body = mintCompressBodySchema.parseAsync(json.body);
+  const options = mintCompressOptionsSchema.parseAsync(json.options);
+
+  return await Promise.all([body, options]);
 }
 
-export function validateJWTInput(body: any) {
-  const schema = z.object({
-    name: z.string().max(32),
-    email: z.string().email("wrong"),
-  });
+// combine zode schemas
 
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw new Error("invalid body");
-  }
-  return result.data;
-}
+export const mintCompressOptionsSchema = z.object({
+  toWalletAddress: z.string().min(1).max(200).optional(),
+  network: z.string().min(1).max(200).optional(),
+});
+
+export const mintCompressBodySchema = z.object({
+  name: z.string().min(1).max(32),
+  symbol: z.string().min(1).max(10).default(""),
+  uri: z.string().max(200).default(""),
+  sellerFeeBasisPoints: z.number().min(0).max(10000).default(0),
+  primarySaleHappened: z.boolean().default(false),
+  isMutable: z.boolean().default(true),
+  editionNonce: z.number().nullable(),
+  tokenStandard: z.nativeEnum(TokenStandard).default(0),
+  collection: z
+    .object({
+      verified: z.boolean().optional(),
+      key: z.string().min(1).max(200).optional(),
+    })
+    .optional(),
+  uses: z.nativeEnum(UseMethod).nullable(),
+  tokenProgramVersion: z.nativeEnum(TokenProgramVersion).default(0),
+  creators: z.array(
+    z.object({
+      address: z.string().min(1).max(200),
+      verified: z.boolean().optional(),
+      share: z.number().min(0).max(100),
+    })
+  ),
+});

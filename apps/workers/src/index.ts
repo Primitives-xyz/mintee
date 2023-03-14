@@ -8,8 +8,7 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-import { z } from "zod";
-import { validateMetadataBody } from "mintee-utils";
+import { validateMintCompressBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
 import { getNFTInfo } from "./nft";
 import { connect } from "@planetscale/database";
@@ -78,11 +77,19 @@ export default {
       const json = await request.json();
 
       // validate metadata
-      const body = await validateMintBody(json).catch((e) => {
-        console.log("Error validating body", e);
-      });
-
-      if (!body || !body.data.name) {
+      const bodyParsePromise = await validateMintCompressBody(json).catch(
+        (e) => {
+          console.log("Error validating body", e);
+        }
+      );
+      if (!bodyParsePromise) {
+        return new Response("Error validating body", {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+      const [body, options] = bodyParsePromise;
+      if (!body || !body.name) {
         return new Response("Name is required", {
           status: 400,
           headers: corsHeaders,
@@ -97,8 +104,8 @@ export default {
           "cloudflare-worker-key": env.WORKER_KEY,
         },
         body: JSON.stringify({
-          metadata: body.data,
-          toWalletAddress: body.toWalletAddress,
+          metadata: body,
+          toWalletAddress: options.toWalletAddress,
         }),
       }).catch((e) => {
         console.log("Error minting NFT " + e);
@@ -139,10 +146,10 @@ export default {
               trx.execute(
                 "INSERT INTO NFT (name, symbol, offChainUrl, description, creaturUserId, blockchain, blockchainAddress, isCompress, treeId",
                 [
-                  body.data.name,
-                  body.data.symbol,
-                  body.data.uri,
-                  body.data.description,
+                  body.name,
+                  body.symbol,
+                  body.uri,
+                  "",
                   response.userId,
                   "Solana",
                   response.id,
@@ -177,25 +184,26 @@ export default {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
-      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+      const response = await apiTokenLookup(external_id, env).catch((e) => {
         console.log("Error in apiTokenLookup", e);
-      })) as apiTokenStatus;
+      });
 
-      if (!response.active) {
+      if (!response) {
+        return new Response("api key not found", { status: 401 });
+      } else if (!response.active) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not active, go to mintee.io to activate", {
           status: 401,
           headers: corsHeaders,
         });
-      }
-
-      if (!response.canMint) {
+      } else if (!response.canMint) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not allowed to mint", {
           status: 401,
           headers: corsHeaders,
         });
       }
+
       const mintTreeResponse = await fetch(`${env.factoryUrl}/api/createTree`);
       if (!mintTreeResponse.ok) {
         return new Response("Error minting tree", {
@@ -458,25 +466,28 @@ export default {
       return new Response(JSON.stringify(nftInfo), { headers: corsHeaders });
     }
 
-    if (url.pathname === "/createTree") {
+    if (url.pathname === "/mintTree") {
       const external_id = request.headers.get("x-api-key");
       if (!external_id) {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
-      const response = (await apiTokenLookup(external_id, env).catch((e) => {
+      const response = await apiTokenLookup(external_id, env).catch((e) => {
         console.log("Error in apiTokenLookup", e);
-      })) as apiTokenStatus;
+      });
 
-      if (!response.active) {
+      if (!response) {
+        return new Response("Unauthorized", {
+          status: 401,
+          headers: corsHeaders,
+        });
+      } else if (!response.active) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not active, go to mintee.io to activate", {
           status: 401,
           headers: corsHeaders,
         });
-      }
-
-      if (!response.canMint) {
+      } else if (!response.canMint) {
         // api is not active, go to mintee.io to activate
         return new Response("api is not allowed to mint", {
           status: 401,
@@ -499,54 +510,6 @@ export default {
       };
       return new Response(JSON.stringify(treeInfo), { headers: corsHeaders });
     }
-    if (url.pathname === "/asset") {
-      const external_id = request.headers.get("x-api-key");
-      if (!external_id) {
-        // if no external_id, return error
-        return new Response("x-api-key header is required", { status: 400 });
-      }
-      const response = (await apiTokenLookup(external_id, env).catch((e) => {
-        console.log("Error in apiTokenLookup", e);
-      })) as apiTokenStatus;
-
-      if (!response.active) {
-        // api is not active, go to mintee.io to activate
-        return new Response("api is not active, go to mintee.io to activate", {
-          status: 401,
-          headers: corsHeaders,
-        });
-      }
-      const assetId = url.searchParams.get("assetId");
-      if (!assetId) {
-        return new Response("assetId is required", {
-          status: 400,
-          headers: corsHeaders,
-        });
-      }
-      const kvResponse = await env.nftInfo.get(assetId);
-      if (kvResponse) {
-        return new Response(kvResponse, {
-          headers: corsHeaders,
-        });
-      }
-      const assetInfo = await fetch(
-        `${env.factoryUrl}/api/asset?assetId=${assetId}`
-      ).catch((e) => {
-        console.log("ERROR", e);
-        return new Response(e.message, { status: 500, headers: corsHeaders });
-      });
-      if (!assetInfo.ok || !assetInfo) {
-        return new Response("Error getting asset info", {
-          status: 500,
-          headers: corsHeaders,
-        });
-      }
-      const assetInfoJson = JSON.stringify(await assetInfo.json());
-      ctx.waitUntil(env.nftInfo.put(assetId, assetInfoJson));
-      return new Response(assetInfoJson, {
-        headers: corsHeaders,
-      });
-    }
 
     if (url.pathname === "/uploadMetadata") {
       const external_id = request.headers.get("x-api-key");
@@ -566,12 +529,12 @@ export default {
         });
       }
       // validate body using zod
-      const body = validateMetadataBody(await request.json());
+      const body = await request.json();
       const key = crypto.randomUUID();
       // upload metadata to bucket
       const url = `${env.r2Url}${key}`;
       // insert metadata into database
-      await Promise.all([uploadMetadata(body, env, key)]).catch((e) => {
+      await Promise.all([uploadMetadata(body as any, env, key)]).catch((e) => {
         // if any of the promises fail, return error response
         return new Response(e.message, { status: 500, headers: corsHeaders });
       });
@@ -687,27 +650,4 @@ async function sha256(message: any) {
   return [...new Uint8Array(hashBuffer)]
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
-}
-
-function validateMintBody(json: any) {
-  const mintSchema = z.object({
-    data: z.object({
-      name: z.string().min(1).max(32),
-      symbol: z.string().min(1).max(10).optional(),
-      uri: z.string().max(200).optional(),
-      description: z.string().max(1000).optional(),
-      creators: z
-        .array(
-          z.object({
-            address: z.string().min(1).max(200),
-            verified: z.boolean().optional(),
-            share: z.number().min(0).max(100),
-          })
-        )
-        .max(5)
-        .optional(),
-    }),
-    toWalletAddress: z.string().min(1).max(200).optional(),
-  });
-  return mintSchema.parseAsync(json);
 }
