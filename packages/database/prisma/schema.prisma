@@ -10,13 +10,43 @@ generator client {
 }
 
 model NFT {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-  name        String   @db.VarChar(255)
-  symbol      String?  @db.VarChar(255)
-  offChainUrl String?  @db.VarChar(255)
-  description String?  @db.VarChar(255)
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now()) @updatedAt
+  name              String      @db.VarChar(255)
+  symbol            String?     @db.VarChar(255)
+  offChainUrl       String?     @db.VarChar(255)
+  description       String?     @db.VarChar(255)
+  creatorUser       User        @relation(fields: [creatorUserId], references: [id])
+  creatorUserId     Int
+  blockchainAddress String?     @db.VarChar(255)
+  blockchain        Blockchain?
+  minteeMinted      Boolean     @default(false)
+  Tree              Tree?       @relation(fields: [treeId], references: [id])
+  treeId            Int?
+
+  @@index([creatorUserId])
+  @@index([treeId])
+}
+
+model Tree {
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now()) @updatedAt
+  name              String      @db.VarChar(255)
+  description       String?     @db.VarChar(255)
+  creatorUser       User        @relation(fields: [creatorUserId], references: [id])
+  creatorUserId     Int
+  blockchain        Blockchain?
+  blockchainAddress String?     @db.VarChar(255)
+  nfts              NFT[]
+  minteeMinted      Boolean     @default(false)
+
+  @@index([creatorUserId])
+}
+
+enum Blockchain {
+  Solana
 }
 
 model User {
@@ -28,6 +58,8 @@ model User {
   tokens     Token[]
   externalId String?   @unique(length: 100)
   planType   PlanType? @default(FREE)
+  NFT        NFT[]
+  Tree       Tree[]
 
   @@index([externalId])
 }

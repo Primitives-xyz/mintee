@@ -1,38 +1,47 @@
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 import { connect } from "@planetscale/database";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 export default function Onboard(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-20 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold">Welcome to Mintee!</h1>
-      <h2 className="mt-4">Your api key:</h2>
-      <p className="text-xl bg-slate-500/50 p-2 rounded-2xl">{props.apiKey}</p>
-      <h1 className="text-lg font-bold mt-2">Install our npm package</h1>
-      <div className="mt-4">
-        <SyntaxHighlighter
-          language="bash"
-          style={docco}
-          customStyle={{
-            borderRadius: "10px",
-          }}
-        >
-          {`npm install mintee-nft`}
-        </SyntaxHighlighter>
-      </div>
-      <h1 className="text-lg font-bold mt-2">Mint your first NFT</h1>
-      <div className="mt-4">
-        <SyntaxHighlighter
-          language="typescipt"
-          style={docco}
-          customStyle={{
-            borderRadius: "10px",
-          }}
-        >
-          {`import { Mintee } from "mintee-nft"
+    <div className="">
+      <Head>
+        <title>Mintee</title>
+      </Head>
+
+      <div>
+        <div className="flex flex-col items-center justify-center  mt-10 sm:px-6 lg:px-8">
+          <h1 className="text-2xl font-bold">Welcome to Mintee!</h1>
+          <h2 className="mt-4">Your api key:</h2>
+          <p className="text-xl bg-slate-500/50 p-2 rounded-2xl">
+            {props.apiKey}
+          </p>
+          <h1 className="text-lg font-bold mt-2">Install our npm package</h1>
+          <div className="mt-4">
+            <SyntaxHighlighter
+              language="bash"
+              style={docco}
+              customStyle={{
+                borderRadius: "10px",
+              }}
+            >
+              {`npm install mintee-nft`}
+            </SyntaxHighlighter>
+          </div>
+          <h1 className="text-lg font-bold mt-2">Mint your first NFT</h1>
+          <div className="mt-4">
+            <SyntaxHighlighter
+              language="typescipt"
+              style={docco}
+              customStyle={{
+                borderRadius: "10px",
+              }}
+            >
+              {`import { Mintee } from "mintee-nft"
 
 async function mintNFT() {
   // initialize mintee with your api key
@@ -42,7 +51,9 @@ async function mintNFT() {
   // mint nft 
   return await mintee.mintNft({ name: "test_nft", symbol: "test" });
 )} `}
-        </SyntaxHighlighter>
+            </SyntaxHighlighter>
+          </div>
+        </div>
       </div>
     </div>
   );
