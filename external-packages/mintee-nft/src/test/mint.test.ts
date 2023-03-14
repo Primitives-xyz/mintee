@@ -26,29 +26,28 @@ describe("Mintee", () => {
 
   test("Mintee nftInfo method calls fetch with correct arguments", async () => {
     const apiKey = "am9obm55d29vZHRrZUBnbWFpbC5jb206MTY3ODc2NDgwODQyNA==";
-    const tokenAddress = "2dVeNCGjQp4atVDW7ASLyaed4rzZ3wEKevFFQuh8Yn6C";
+    const tokenAddress = "FTmkz9oN5PDx1sZ6uHqN7CgMCZYkFH9C86UPGqCQn3SM";
     const apiUrl = "https://api.mintee.io/";
     const onChainResponse = {
-      name: "testavatar",
-      symbol: "PRIM",
-      address: tokenAddress,
-      uri: "https://dw2h1frcjb7pw.cloudfront.net/6cf6bf512b7b0d5c.json",
-      editionNonce: 255,
-      tokenStandard: 0,
+      name: "nick 2",
     };
 
     const mintee = new Mintee({
       apiKey,
+      // options: {
+      //   network: "devnet",
+      // },
     });
     const fetchSpy = sinon.spy(globalThis, "fetch");
     fetchSpy.withArgs(`${apiUrl}nftInfo/${tokenAddress}`, {
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        "x-api-key": apiKey,
         network: mintee.network,
       },
     });
 
     const infoReponse = await mintee.nftInfo({ tokenAddress });
+    console.log("infoReponse", infoReponse);
     expect(infoReponse.token).toContain(onChainResponse);
 
     sinon.restore();
