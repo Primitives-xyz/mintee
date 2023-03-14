@@ -4,10 +4,13 @@ import {
   SignedIn,
   SignedOut,
   RedirectToSignIn,
+  useAuth,
+  useUser,
 } from "@clerk/nextjs";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import "../styles/globals.css";
+import Header from "../components/Header";
 
 //  List pages you want to be publicly accessible, or leave empty if
 //  every page requires authentication. Use this naming strategy:
@@ -40,7 +43,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         ) : (
           <>
             <SignedIn>
-              <Component {...pageProps} />
+              <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2">
+                <Header />
+
+                <Component {...pageProps} />
+              </div>
             </SignedIn>
             <SignedOut>
               <RedirectToSignIn />
