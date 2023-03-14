@@ -1,2 +1,2 @@
-import { validateMetadataBody } from "./zod";
-export { validateMetadataBody };
+import { validateMintCompressBody } from "./zod";
+export { validateMintCompressBody };
