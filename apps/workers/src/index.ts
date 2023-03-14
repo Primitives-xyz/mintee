@@ -8,7 +8,6 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-import { Request } from "@cloudflare/workers-types";
 
 import { validateMetadataBody } from "mintee-utils";
 import { uploadMetadata } from "./r2";
@@ -278,62 +277,85 @@ export default {
         // if no external_id, return error
         return new Response("x-api-key header is required", { status: 400 });
       }
-      const tokenLookup = apiTokenLookup(external_id, env).catch((e) => {
-        console.log("Error in apiTokenLookup", e);
-      }) as Promise<apiTokenStatus>;
-      var cache = caches.default;
 
-      const address = url.pathname.split("/")[2];
-      const kvPromise = env.nftInfo.get(address).then(async (response) => {
-        console.log("kvPromise", response);
-        if (!response) {
-          console.log("not in kv");
-          throw new Error("not in kv");
-        }
-        if (response) {
-          return response;
-        }
+      const body = await request.clone().text();
+      // Hash the request body to use it as a part of the cache key
+      const hash = await sha256(body);
+      const cacheUrl = new URL(request.url);
+      // Store the URL in cache by prepending the body's hash
+      cacheUrl.pathname = "/nft" + cacheUrl.pathname + hash;
+      // Convert to a GET to be able to cache
+      const cacheKey = new Request(cacheUrl.toString(), {
+        headers: request.headers,
+        method: "GET",
       });
-      const cacheHit = cache.match(address).then(async (response) => {
-        console.log("cacheHit", response);
-        if (!response) {
-          throw new Error("not in cache");
-        }
-        if (response) {
-          return await response.json();
+      const cache = caches.default;
+      // Find the cache key in the cache
+      let response = await cache.match(cacheKey);
+      // Otherwise, fetch response to POST request from origin
+      if (!response) {
+        const tokenLookup = apiTokenLookup(external_id, env).catch((e) => {
+          console.log("Error in apiTokenLookup", e);
+        }) as Promise<apiTokenStatus>;
+        const address = url.pathname.split("/")[2];
+        const kvPromise = env.nftInfo.get(address).then(async (response) => {
+          if (!response) {
+            throw new Error("not in kv");
+          }
+          if (response) {
+            return response;
+          }
+        });
+        const nftInfoPromise = getNFTInfo({ env, address })
+          .then(async (response) => {
+            console.log("nftInfoPromise", response);
+            if (!response) {
+              console.log("factory");
+              throw new Error("factory responds with nothing");
+            }
+            if (response) {
+              return response;
+            }
+          })
+          .catch((e) => {
+            console.log("factory error", e);
+            throw new Error("factory responds with nothing");
+          });
+
+        const anyTokenPromise = await Promise.any([kvPromise, nftInfoPromise]);
+        const tokenLookupResponse = await tokenLookup;
+        const tokenInfo = anyTokenPromise as string | undefined;
+        if (!tokenLookupResponse.active) {
+          // api is not active, go to mintee.io to activate
+          return new Response(
+            "api is not active, go to mintee.io to activate",
+            {
+              status: 401,
+              headers: corsHeaders,
+            }
+          );
         }
 
-        throw new Error("not in cache");
-      });
-      const anyTokenPromise = await Promise.any([kvPromise, cacheHit]);
-      console.log("YOULO", anyTokenPromise);
-      const tokenLookupResponse = await tokenLookup;
-      const tokenInfo = anyTokenPromise as string | undefined;
-      if (!tokenLookupResponse.active) {
-        // api is not active, go to mintee.io to activate
-        return new Response("api is not active, go to mintee.io to activate", {
-          status: 401,
+        if (!tokenInfo) {
+          return new Response("NFT not found", {
+            status: 404,
+            headers: corsHeaders,
+          });
+        }
+
+        // if not in KV, get the NFT info from the factory and write it to the KV
+        const responseInfo = new Response(tokenInfo, {
           headers: corsHeaders,
         });
-      }
-      console.log("HEllo?");
-      const nftInfoPromise = await getNFTInfo({ env, address });
-      console.log("t", nftInfoPromise);
 
-      // if not in KV, get the NFT info from the factory and write it to the KV
-      const responseInfo = new Response(tokenInfo, {
-        headers: corsHeaders,
-      });
-
-      ctx.waitUntil(
-        env.nftInfo
-          .put(address, JSON.stringify(nftInfoPromise))
-          .then(async () => {
-            await cache.put(address, responseInfo);
+        ctx.waitUntil(
+          env.nftInfo.put(address, tokenInfo).then(async () => {
+            await cache.put(cacheKey, responseInfo.clone());
           })
-      );
-      console.log("RESPONSE", tokenInfo);
-      return responseInfo;
+        );
+        return responseInfo.clone();
+      }
+      return response;
     }
 
     if (url.pathname.startsWith("/nftStatus/")) {
@@ -614,3 +636,14 @@ type apiTokenStatus = {
   canMint: boolean;
   active: boolean;
 };
+
+async function sha256(message: any) {
+  // encode as UTF-8
+  const msgBuffer = await new TextEncoder().encode(message);
+  // hash the message
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  // convert bytes to hex string
+  return [...new Uint8Array(hashBuffer)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}

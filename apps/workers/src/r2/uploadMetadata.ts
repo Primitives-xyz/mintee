@@ -1,5 +1,4 @@
 // import types from mantee-types
-import type { Env } from "worker-types";
 import { R2Object } from "@cloudflare/workers-types";
 /**
  * Upload metadata to a public bucket

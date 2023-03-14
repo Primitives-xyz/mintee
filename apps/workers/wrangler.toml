@@ -3,7 +3,6 @@ main = "src/index.ts"
 compatibility_date = "2023-03-04"
 account_id = "6523e349bc2b3b61bc5155528f142bd7"
 workers_dev = true
-node_compat = true
 
 kv_namespaces = [
   { binding = "nftInfo", id = "a6295a350c564a20bbda3bac0362cae4", preview_id = "625f622b85844f4189341a495f81b915" },
