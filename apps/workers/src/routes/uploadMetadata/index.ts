@@ -1,5 +1,10 @@
-import { uploadMetadata } from "../../r2";
-import { Env, apiTokenLookup, apiTokenStatus, corsHeaders } from "../../utils";
+import {
+  Env,
+  apiTokenLookup,
+  apiTokenStatus,
+  corsHeaders,
+  uploadMetadata,
+} from "../../utils";
 
 export async function uploadMetadataRoute(request: Request, env: Env) {
   const external_id = request.headers.get("x-api-key");
