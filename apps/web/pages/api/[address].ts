@@ -44,7 +44,7 @@ export default async function handler(
 }
 
 function initMetaplex(res: NextApiResponse) {
-  const url = process.env.RPC_URl;
+  const url = process.env.RPC_URL;
   if (!url) {
     throw new Error("RPC_URL not set");
   }
