@@ -1,10 +1,9 @@
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
-import { GetServerSideProps } from "next";
+// import { UserButton } from "@clerk/nextjs";
+import { auth, UserButton } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
 
 export default function Header() {
-  const auth = useAuth();
-  auth.userId;
+  const { userId } = auth();
 
   return (
     <header className="flex flex-col xs:flex-row justify-between items-center w-full mt-3 border-b pb-7 sm:px-4 px-2 border-gray-500 gap-2">
@@ -15,7 +14,7 @@ export default function Header() {
         </h1>
       </Link>
       <div className="flex space-x-2">
-        {!auth.userId ? (
+        {!userId ? (
           <>
             <a
               className="flex max-w-fit items-center justify-center  rounded-full border border-blue-600 text-white px-5 py-2 text-sm shadow-md hover:bg-gray-800 font-medium transition"
@@ -49,7 +48,7 @@ export default function Header() {
           </>
         )}
         <div className="flex justify-center items-center">
-          {auth.userId && <UserButton />}
+          {userId && <UserButton />}
         </div>
       </div>
     </header>
