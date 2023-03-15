@@ -1,0 +1,56 @@
+# Retrieve info about your NFTs
+
+## Args
+
+**`tokenAddress`**:
+A required string that specifies the address of the NFT token you want to retrieve information about.
+
+**`options`**: An optional object of type minteeOptions that specifies the network to use when retrieving the NFT information. If options is not provided, the function will default to mainnet.
+
+## Post
+
+It is not necessary to install the npm package to easily interact with our api.
+
+```typescript {6} copy
+const tokenAddress = "EtNfhjfpP8N71YVFFRvMn9iFzDG1PKaSwKUcBH6LzJVR";
+const url = `https://api.mintee.io/nftInfo/${tokenAddress}`;
+const response = fetch(url, {
+  method: "GET",
+  headers: {
+    "x-api-key": "YOUR_API_KEY",
+  },
+});
+
+const nftInfo = await response.json();
+```
+
+If you using a GET call, pass in the address of your compressed or uncompressed NFT in the URL.
+
+You can pass in the network as a header:
+
+```typescript {7} copy
+const tokenAddress = "FzLVJJG5WSHyuHWP1YXHCJ3xB7snVEEA9XTEsX5Yc6fq";
+const url = `https://api.mintee.io/nftInfo/${tokenAddress}`;
+const response = fetch(url, {
+  method: "GET",
+  headers: {
+    "x-api-key": "YOUR_API_KEY",
+    network: "devnet",
+  },
+});
+
+const nftInfo = await response.json();
+```
+
+## Using mintee.js
+
+```typescript filename="typescript" {4} copy
+import { Mintee } from "mintee-nft";
+
+const apiKey = "YOUR_API_KEY";
+const mintee = Mintee.make({ apiKey });
+
+const tokenAddress = "5SvFwK7MX3t5FR8k5rcM8eRfuBeAchFQaSxS7r3CnnXz";
+const nftInfo = await mintee.nftInfo({ tokenAddress });
+console.log(nftInfo);
+```

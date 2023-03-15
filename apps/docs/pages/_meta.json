@@ -1,0 +1,17 @@
+{
+  "index": "Introduction",
+  "installation": "Getting Started",
+  "nftInfo": "nftInfo ⚡️",
+  "mint": "mint 🎉",
+  "nftStatus": "nftStatus",
+  "about": {
+    "title": "About",
+    "type": "page"
+  },
+  "contact": {
+    "title": "Contact ↗",
+    "type": "page",
+    "href": "https://twitter.com/shuding_",
+    "newWindow": true
+  }
+}

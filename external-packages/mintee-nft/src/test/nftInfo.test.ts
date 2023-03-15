@@ -102,4 +102,33 @@ describe("Mintee", () => {
       sinon.restore();
     }
   });
+  test("Mintee nft info doesn't return token with invalid api key", async () => {
+    const apiKey = "badkey";
+    const apiUrl = "https://api.mintee.io/";
+
+    const mintee = new Mintee({
+      apiKey,
+    });
+
+    for (const [key, value] of Object.entries(mainnetTestTokens)) {
+      const fetchSpy = sinon.spy(globalThis, "fetch");
+
+      fetchSpy.withArgs(`${apiUrl}nftInfo/${key}`, {
+        headers: {
+          "x-api-key": apiKey,
+          network: mintee.network,
+        },
+      });
+
+      // in vitest, expect the function to throw an
+      const infoReponse = await mintee
+        .nftInfo({ tokenAddress: key })
+        .catch((e) => {
+          console.log("error", e);
+        });
+      expect(infoReponse).toBeUndefined();
+
+      sinon.restore();
+    }
+  });
 });
