@@ -1,22 +1,14 @@
-import Head from "next/head";
-import Image from "next/image";
+import { auth, SignedOut } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
 import SquigglyLines from "../components/SquigglyLines";
-import { Testimonials } from "../components/Testimonials";
-
-import { useAuth } from "@clerk/nextjs";
-
-export default function Page() {
-  const user = useAuth();
+import Image from "next/image";
+import { cookies, headers } from "next/headers";
+export default async function Page() {
+  // Fetch data directly in a Server Component
+  // Forward fetched data to your Client Component
+  const { userId } = auth();
   return (
-    <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
-      <Head>
-        <title>Mintee</title>
-      </Head>
-
-      <Header />
+    <>
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 sm:mt-10 mt-10 background-gradient">
         <a
           href="/"
@@ -40,7 +32,7 @@ export default function Page() {
           as possible.
         </h2>
         <div className="flex sm:flex-row flex-col  mt-6 justify-center items-center sm:space-x-4">
-          {!user.userId && (
+          {!userId && (
             <Link
               className="bg-blue-500 rounded-xl text-white font-medium w-52 px-4 py-3 sm:mt-10 mt-8  hover:bg-blue-400 transition"
               href="/"
@@ -51,7 +43,7 @@ export default function Page() {
 
           <Link
             className="bg-gray-500 rounded-xl text-white font-medium   w-52 px-4 py-3 sm:mt-10 mt-8 hover:bg-gray-400 transition"
-            href="/"
+            href=""
           >
             Read our docs
           </Link>
@@ -86,8 +78,6 @@ export default function Page() {
           </div>
         </div>
       </main>
-      <Testimonials />
-      <Footer />
-    </div>
+    </>
   );
 }
