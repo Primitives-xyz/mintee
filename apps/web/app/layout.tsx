@@ -2,8 +2,18 @@ import { ClerkProvider } from "@clerk/nextjs/app-beta";
 import Header from "../components/Header";
 import "../styles/globals.css";
 export const metadata = {
-  title: "Mintee API",
-  description: "Welcome to Mintee",
+  title: "Fastest NFT minting service",
+  description: "Mintee is the fastest NFT minting service.",
+  ogImage: "https://minte.vercel.app/warp.jpeg",
+  siteName: "Mintee",
+  "og:site_name": "Mintee",
+  "og:description": "Mintee is the fastest NFT minting service.",
+  "og:title": "Fastest NFT minting service",
+  "twitter:card": "summary_large_image",
+  "twitter:title": "Fastest NFT minting service",
+  "twitter:description": "Mintee is the fastest NFT minting service.",
+  "og:image": "https://minte.vercel.app/warp.jpeg",
+  "twitter:image": "https://minte.vercel.app/warp.jpeg",
 };
 
 export default function RootLayout({
