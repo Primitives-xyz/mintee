@@ -1,4 +1,4 @@
-import { auth, SignedOut } from "@clerk/nextjs/app-beta";
+import { auth } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
 import SquigglyLines from "../components/SquigglyLines";
 import Image from "next/image";
