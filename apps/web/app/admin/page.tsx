@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 import Loading from "./loading";
 
