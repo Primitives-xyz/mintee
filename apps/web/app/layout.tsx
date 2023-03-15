@@ -28,11 +28,6 @@ export default function RootLayout({
 
             {children}
           </div>
-
-          <div className="bg-[#111C27] text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
-            <Header />
-            {children}
-          </div>
         </body>
       </html>
     </ClerkProvider>
