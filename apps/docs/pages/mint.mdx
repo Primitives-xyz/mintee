@@ -1,0 +1,57 @@
+# Mint NFTs at scale
+
+Using our Mint api, you will be able to mint 1000s of NFTs a month to server your users. While we focus on compresed NFTs, you can use our API to mint any version of token in the [Token Stardard](https://docs.metaplex.com/programs/token-metadata/token-standard).
+
+While we provide the option to mint directly into a user's wallet, if you don't know an addres yet, we will hold it for you. Once you ready to transfer, just called our transfer API.
+
+## Args
+
+**`metadata`**: All the on and off chain data associated with the NFT.
+
+- **`name`**: A required string that specifies the name of the NFT.
+
+- **`symbol`**: On chain symbol (optional)
+
+- **`uri`**: Off chain data (optional)
+
+- **`creators`**: An array of creators (optional)
+
+- **`collection`**: the verified on chain collection
+
+- **`sellerFeeBasisPoints`**: The royalty fee (optional)
+
+- **`primarySaleHappened`**: Whether the NFT has been sold (optional)
+
+- **`isMutable`**: Whether the NFT is mutable (optional)
+
+- **`editionNonce`**: The edition nonce (optional)
+
+- **`tokenStandard`**: The token standard (optional)
+
+- **`uses`**: The use method (optional)
+
+- **`tokenProgramVersion`**: The token program version (optional)
+
+**`options`**: The options for the mint.
+
+- **`network`**: The network to mint on (optional)
+
+- **`toWallet`**: The wallet to mint to (optional)
+
+## Using mintee.js
+
+```typescript filename="typescript" {6} copy
+import { Mintee } from "mintee-nft";
+
+const apiKey = "YOUR_API_KEY";
+const mintee = Mintee.make({ apiKey });
+
+const nftAddress = await mintee.mintNft({
+  metadata: {
+    name: "my first mint",
+    symbol: "MFM",
+    uri: "https://offchain.mintee.io/test.json",
+  },
+});
+console.log(nftAddress);
+```

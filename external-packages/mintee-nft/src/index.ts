@@ -69,13 +69,21 @@ export class Mintee {
     return token;
   }
 
-  async nftInfo({ tokenAddress }: { tokenAddress: string }) {
+  async nftInfo({
+    tokenAddress,
+    options,
+  }: {
+    tokenAddress: string;
+    options?: minteeOptions;
+  }) {
     const url = `${this.apiUrl}nftInfo/${tokenAddress}`;
     const response = await fetch(url, {
       headers: {
         "x-api-key": `${this.apiKey}`,
-        network: this.network,
+        network: options?.network ?? this.network,
       },
+    }).catch((e) => {
+      throw new Error(e);
     });
     const token: nftResponse = await response.json().catch((e) => {
       console.log("error", e);
