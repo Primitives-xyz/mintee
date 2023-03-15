@@ -91,6 +91,28 @@ export class Mintee {
     });
     return token;
   }
+  async nftStatus({
+    tokenAddress,
+    options,
+  }: {
+    tokenAddress: string;
+    options?: minteeOptions;
+  }) {
+    const url = `${this.apiUrl}nftStatus/${tokenAddress}`;
+    const response = await fetch(url, {
+      headers: {
+        "x-api-key": `${this.apiKey}`,
+        network: options?.network ?? this.network,
+      },
+    }).catch((e) => {
+      throw new Error(e);
+    });
+    const token: nftResponse = await response.json().catch((e) => {
+      console.log("error", e);
+      throw new Error(e);
+    });
+    return token;
+  }
 }
 
 declare enum TokenStandard {
@@ -146,6 +168,7 @@ export type JsonMetadata<Uri = string> = {
 };
 type minteeOptions = {
   network: networkStringLiteral;
+  toWallet?: string;
 };
 
 export type networkStringLiteral = "mainnet" | "testnet" | "devnet";
