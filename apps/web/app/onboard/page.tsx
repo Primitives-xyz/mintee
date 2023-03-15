@@ -12,6 +12,7 @@ const conn = connect(psConfig);
 
 export default async function Page() {
   const { userId } = auth();
+  console.log("HERE");
   if (userId) {
     const data = await getUserAPIKey(userId);
     return (
@@ -33,6 +34,8 @@ export default async function Page() {
         </div>
       </div>
     );
+  } else if (userId === undefined) {
+    return <div>Loading...</div>;
   }
 }
 
