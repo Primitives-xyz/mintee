@@ -1,10 +1,8 @@
 // import { UserButton } from "@clerk/nextjs";
-import { auth, UserButton } from "@clerk/nextjs/app-beta";
+import { UserButton } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
 
-export default function Header() {
-  const { userId } = auth();
-
+export default function Header({ userId }: { userId?: string }) {
   return (
     <header className="flex flex-col xs:flex-row justify-between items-center w-full mt-3 border-b pb-7 sm:px-4 px-2 border-gray-500 gap-2">
       <Link href="/" className="flex space-x-2 justify-center items-center">
@@ -32,12 +30,12 @@ export default function Header() {
           </>
         ) : (
           <>
-            <a
+            <Link
               className="flex max-w-fit items-center justify-center  rounded-full border border-blue-600 text-white px-5 py-2 text-sm shadow-md hover:bg-gray-800 font-medium transition"
               href="/admin"
             >
               <p>View Usage</p>
-            </a>
+            </Link>
             <a
               className="flex max-w-fit items-center justify-center  rounded-full border border-blue-600 text-white px-5 py-2 text-sm shadow-md hover:bg-blue-500 bg-blue-600 font-medium transition"
               href="/docs"
@@ -48,7 +46,7 @@ export default function Header() {
           </>
         )}
         <div className="flex justify-center items-center">
-          {userId && <UserButton />}
+          <UserButton />
         </div>
       </div>
     </header>
