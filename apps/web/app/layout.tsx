@@ -23,19 +23,16 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body>
-          <SignedIn>
-            <div className="bg-[#111C27] text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
-              <Header userId={userId ?? undefined} />
+          <div className="bg-[#111C27] text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
+            <Header userId={userId ?? undefined} />
 
-              {children}
-            </div>
-          </SignedIn>
-          <SignedOut>
-            <div className="bg-[#111C27] text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
-              <Header />
-              {children}
-            </div>
-          </SignedOut>
+            {children}
+          </div>
+
+          <div className="bg-[#111C27] text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
+            <Header />
+            {children}
+          </div>
         </body>
       </html>
     </ClerkProvider>
