@@ -1,8 +1,6 @@
-# Mintee NFT - The easiest to use NFT API
+# Mintee.js - The easiest to use NFT API
 
-Mintee NFT is a simple to use API for minting NFTs on the Solana blockchain.
-
-The npm package makes it even easier to use.
+Mintee.js is a simple way to use the Mintee API for minting NFTs on the Solana blockchain.
 
 # Getting Started
 
