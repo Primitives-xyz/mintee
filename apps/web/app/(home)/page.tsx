@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
-import SquigglyLines from "../components/SquigglyLines";
 import Image from "next/image";
 import { cookies, headers } from "next/headers";
+import SquigglyLines from "../../components/SquigglyLines";
 export default async function Page() {
   // Fetch data directly in a Server Component
   // Forward fetched data to your Client Component

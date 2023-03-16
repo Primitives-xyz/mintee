@@ -1,6 +1,6 @@
-import { ClerkProvider } from "@clerk/nextjs/app-beta";
-import Header from "../components/Header";
-import "../styles/globals.css";
+import { auth, ClerkProvider } from "@clerk/nextjs/app-beta";
+import "../../styles/globals.css";
+import Sidebar from "./sidebar";
 export const metadata = {
   title: "Fastest NFT minting service",
   description: "Mintee is the fastest NFT minting service.",
@@ -23,16 +23,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("right here");
-
+  const { userId } = auth();
   return (
     <ClerkProvider>
       <html lang="en">
         <body>
-          <div className="bg-[#111C27] text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
-            <Header />
-
-            {children}
+          <div className="flex flex-row">
+            <Sidebar />
+            <div className="bg-[#111C27]/75 px-8 text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
+              {children}
+            </div>
           </div>
         </body>
       </html>
