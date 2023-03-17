@@ -1,6 +1,6 @@
 import { conn, Env } from "../utils";
 
-export async function getMintAuth(external_id: string, env: Env) {
+export async function getMintAuth(external_id: string, env: Env, url: string) {
   // grab auth header
   // check if auth header starts with bearer and has a token
   if (!external_id) {
@@ -12,7 +12,6 @@ export async function getMintAuth(external_id: string, env: Env) {
   const response = (await Promise.any([
     lookUserUpKV(external_id, env),
     lookUserUpDB(external_id),
-    LookUpUserCache(external_id, env),
   ]).catch((e) => {
     console.log("ERROR looking up user", e);
     throw new Error(e);
@@ -27,7 +26,7 @@ export async function getMintAuth(external_id: string, env: Env) {
   return response;
 }
 
-export async function getAuth(external_id: string, env: Env) {
+export async function getAuth(external_id: string, env: Env, url: string) {
   // grab auth header
   // check if auth header starts with bearer and has a token
   if (!external_id) {
@@ -38,7 +37,6 @@ export async function getAuth(external_id: string, env: Env) {
   const response = (await Promise.any([
     lookUserUpKV(external_id, env),
     lookUserUpDB(external_id),
-    LookUpUserCache(external_id, env),
   ]).catch((e) => {
     console.log("ERROR looking up user", e);
     throw new Error(e);
@@ -60,18 +58,6 @@ export function lookUserUpKV(external_id: string, env: Env) {
       resolve(JSON.parse(response) as apiTokenStatus);
     }
     reject();
-  });
-}
-
-export function LookUpUserCache(external_id: string, env: Env) {
-  return new Promise(async (resolve, reject) => {
-    let cache = caches.default;
-    cache.match(external_id).then(async (response) => {
-      if (response) {
-        resolve((await response.json()) as apiTokenStatus);
-      }
-      reject();
-    });
   });
 }
 

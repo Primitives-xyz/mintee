@@ -6,6 +6,7 @@ export declare function validateMintCompressBody(json: {
 }): Promise<void | [z.SafeParseReturnType<{
     name: string;
     symbol?: string | undefined;
+    description?: string | undefined;
     uri?: string | undefined;
     sellerFeeBasisPoints?: number | undefined;
     primarySaleHappened?: boolean | undefined;
@@ -30,6 +31,7 @@ export declare function validateMintCompressBody(json: {
     primarySaleHappened: boolean;
     isMutable: boolean;
     symbol?: string | undefined;
+    description?: string | undefined;
     editionNonce?: number | undefined;
     tokenStandard?: TokenStandard | undefined;
     collection?: {
@@ -63,6 +65,7 @@ export declare const mintCompressOptionsSchema: z.ZodNullable<z.ZodOptional<z.Zo
 export declare const mintCompressBodySchema: z.ZodObject<{
     name: z.ZodString;
     symbol: z.ZodOptional<z.ZodDefault<z.ZodString>>;
+    description: z.ZodOptional<z.ZodString>;
     uri: z.ZodDefault<z.ZodString>;
     sellerFeeBasisPoints: z.ZodDefault<z.ZodNumber>;
     primarySaleHappened: z.ZodDefault<z.ZodBoolean>;
@@ -101,6 +104,7 @@ export declare const mintCompressBodySchema: z.ZodObject<{
     primarySaleHappened: boolean;
     isMutable: boolean;
     symbol?: string | undefined;
+    description?: string | undefined;
     editionNonce?: number | undefined;
     tokenStandard?: TokenStandard | undefined;
     collection?: {
@@ -117,6 +121,7 @@ export declare const mintCompressBodySchema: z.ZodObject<{
 }, {
     name: string;
     symbol?: string | undefined;
+    description?: string | undefined;
     uri?: string | undefined;
     sellerFeeBasisPoints?: number | undefined;
     primarySaleHappened?: boolean | undefined;

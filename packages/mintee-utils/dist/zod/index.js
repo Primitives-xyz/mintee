@@ -76,6 +76,7 @@ exports.mintCompressOptionsSchema = zod_1.z
 exports.mintCompressBodySchema = zod_1.z.object({
     name: zod_1.z.string(),
     symbol: zod_1.z.string().max(10)["default"]("").optional(),
+    description: zod_1.z.string().max(1000).optional(),
     uri: zod_1.z.string().max(200)["default"](""),
     sellerFeeBasisPoints: zod_1.z.number().min(0).max(10000)["default"](0),
     primarySaleHappened: zod_1.z.boolean()["default"](false),

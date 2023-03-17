@@ -19,9 +19,11 @@ export async function mintRoute(
   }
 
   // check if api key is active / canMint
-  const response = await getMintAuth(external_id, env).catch((e) => {
-    console.log("Error in fetch api token", e);
-  });
+  const response = await getMintAuth(external_id, env, request.url).catch(
+    (e) => {
+      console.log("Error in fetch api token", e);
+    }
+  );
   if (!response) {
     return new Response("api key not found", { status: 401 });
   }
@@ -121,31 +123,35 @@ export async function mintRoute(
                  WHERE externalKey = ?;`,
             [external_id]
           );
+
           const token = trx.execute(
             "SELECT id, canMint, active, userExternalId FROM Token WHERE externalKey = ?;",
             [external_id]
           );
-          trx.execute(
-            "INSERT INTO NFT (name, symbol, offChainUrl, description, creatorUserExternalId, blockchain, blockchainAddress, isCompressed, treeId",
-            [
-              body.data.name ?? "",
-              body.data.symbol || "",
-              "URI",
-              "",
-              response.userExternalId,
-              "Solana",
-              mintInfo.assetId,
-              true,
-              "",
-            ]
-          );
+
           return token;
         })
-        .then((res) => {
+        .then(async (res) => {
+          console.log("RIGHT BEFORE");
           const row = res.rows[0] as apiTokenStatus;
+          console.log("RIGHT AFTER");
+          await conn
+            .execute(
+              "INSERT INTO NFT (name, creatorUserExternalId, blockchainAddress, minteeMinted,isCompressed, description, symbol ) VALUES (?, ?, ?, ?, ?, ?, ?);",
+              [
+                body.data.name,
+                row.userExternalId,
+                mintInfo.assetId,
+                true,
+                true,
+                body.data.description,
+                body.data.symbol,
+              ]
+            )
+            .catch((e) => {
+              console.log("Error inserting into NFT table", e);
+            });
           // create response with userInfo
-          const cache = caches.default;
-          cache.put(external_id, new Response(JSON.stringify(row)));
           env.apiTokens.put(mintInfo.assetId, JSON.stringify(row));
         }),
     ])
