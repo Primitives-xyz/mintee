@@ -1,11 +1,5 @@
-import {
-  apiTokenLookup,
-  apiTokenStatus,
-  corsHeaders,
-  Env,
-  getNFTInfo,
-  sha256,
-} from "../../utils";
+import { apiTokenStatus, getAuth } from "../../auth";
+import { corsHeaders, Env, getNFTInfo, sha256 } from "../../utils";
 import { networkStringLiteral } from "../../utils/nft";
 
 export async function nftInfoRoute(
@@ -45,7 +39,7 @@ export async function nftInfoRoute(
   if (!response) {
     const address = url.pathname.split("/")[2];
     // promise for looking up user token in API
-    const tokenLookup = apiTokenLookup(external_id, env).catch((e) => {
+    const tokenLookup = getAuth(external_id, env).catch((e) => {
       console.log("Error in apiTokenLookup", e);
     }) as Promise<apiTokenStatus>;
     // promise for looking up in KV

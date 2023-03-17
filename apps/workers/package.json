@@ -13,7 +13,7 @@
   "private": true,
   "scripts": {
     "start": "wrangler dev",
-    "deploy": "wrangler publish",
+    "deploy": "turbo build --no-cache && wrangler publish --name api",
     "build": "wrangler publish --dry-run --outdir=dist",
     "test": "vitest"
   },

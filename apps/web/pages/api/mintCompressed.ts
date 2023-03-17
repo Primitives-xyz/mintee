@@ -30,33 +30,43 @@ export default async function handler(
   if (!treeWallet) {
     return res.status(500).json({ error: "No tree wallet" });
   }
-
-  const json = req.body();
+  const jsonTest = JSON.parse(req.body);
+  console.log("jsonTest", jsonTest);
+  console.log("req.body", req.body);
+  console.log("req.body stringfy", JSON.stringify(req.body));
+  const json = await req.body();
   // validate metadata
   const bodyParsePromise = await validateMintCompressBody(json).catch((e) => {
-    console.log("Error validating body", e);
+    console.log("Error validating body in factory", e);
   });
   if (!bodyParsePromise) {
-    return res.status(500).json({ error: "Error validating body" });
+    return res.status(500).json({ error: "Error validating body in factory" });
   }
   const [body, options] = bodyParsePromise;
   // Mint a compressed NFT
 
-  const mintCompressedNftPK = body.collection?.key
-    ? new PublicKey(body.collection?.key)
+  if (!options || !options.success) {
+    return res.status(500).json({ error: options!.error });
+  }
+  if (!body.success) {
+    return res.status(500).json({ error: body.error });
+  }
+  const mintCompressedNftPK = body.data.collection?.key
+    ? new PublicKey(body.data.collection?.key)
     : undefined;
 
-  const sig = await mintCompressedNft(
+  await mintCompressedNft(
     connectionWrapper,
     {
-      ...body,
+      ...body.data,
+      uses: body.data.uses ?? null,
       collection: mintCompressedNftPK
         ? {
             key: mintCompressedNftPK,
-            verified: body.collection!.verified,
+            verified: body.data.collection!.verified,
           }
         : null,
-      creators: body.creators.map((c) => ({
+      creators: body.data.creators?.map((c) => ({
         address: new PublicKey(c.address),
         share: c.share,
         verified: c.verified,
@@ -64,10 +74,13 @@ export default async function handler(
     } as MetadataArgs,
     connectionWrapper.payer,
     treeWallet,
-    options.toWalletAddress ? new PublicKey(options.toWalletAddress) : undefined
+    options.data?.toWalletAddress
+      ? new PublicKey(options.data.toWalletAddress)
+      : undefined
   ).catch((e) => {
     console.error(e);
   });
+
   const treeAccount = await ConcurrentMerkleTreeAccount.fromAccountAddress(
     connectionWrapper,
     treeWallet.publicKey
@@ -75,14 +88,21 @@ export default async function handler(
     console.error(e);
     return res.status(500).json({ error: e.message });
   });
+
   // Get the most rightmost leaf index, which will be the most recently minted compressed NFT.
   // Alternatively you can keep a counter that is incremented on each mint.
   if (!treeAccount) {
     return res.status(500).json({ error: "Failed to get tree account" });
   }
+
   const leafIndex = treeAccount.tree.rightMostPath.index - 1;
+
   const assetId = await getCompressedNftId(treeWallet, leafIndex);
-  return res.status(200).json({ assetId });
+  return res.status(200).json({
+    assetId,
+    leafIndex,
+    treeWalletAddress: treeWallet.publicKey.toBase58(),
+  });
 }
 
 function getTreeKP() {
@@ -93,3 +113,9 @@ function getTreeKP() {
   const treeWallet58 = base58.decode(treeWalletSK);
   return Keypair.fromSecretKey(treeWallet58);
 }
+
+type mintCompressedResponse = {
+  assetId: string;
+  leafIndex: number;
+  treeWalletAddress: string;
+};

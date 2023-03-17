@@ -1,10 +1,5 @@
-import {
-  Env,
-  apiTokenLookup,
-  apiTokenStatus,
-  corsHeaders,
-  uploadMetadata,
-} from "../../utils";
+import { apiTokenStatus, getAuth } from "../../auth";
+import { Env, corsHeaders, uploadMetadata } from "../../utils";
 
 export async function uploadMetadataRoute(request: Request, env: Env) {
   const external_id = request.headers.get("x-api-key");
@@ -12,7 +7,7 @@ export async function uploadMetadataRoute(request: Request, env: Env) {
     // if no external_id, return error
     return new Response("x-api-key header is required", { status: 400 });
   }
-  const response = (await apiTokenLookup(external_id, env).catch((e) => {
+  const response = (await getAuth(external_id, env).catch((e) => {
     console.log("Error in apiTokenLookup", e);
   })) as apiTokenStatus;
 

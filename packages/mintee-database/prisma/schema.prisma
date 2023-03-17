@@ -53,8 +53,8 @@ model Token {
   emailToken        String?   @unique // Only used for short lived email tokens
   valid             Boolean   @default(true)
   externalKey       String?   @unique(length: 100)
-  User              User?     @relation(fields: [UserExternalId], references: [externalId])
-  UserExternalId    String?
+  user              User?     @relation(fields: [userExternalId], references: [externalId])
+  userExternalId    String?
   active            Boolean   @default(false)
   planType          PlanType? @default(FREE)
   nftInfoCallsCount Int       @default(0)
@@ -63,7 +63,7 @@ model Token {
   mintCallsCount    Int       @default(0)
   mintCallsLimit    Int       @default(0)
 
-  @@index([UserExternalId])
+  @@index([userExternalId])
 }
 
 model Tree {

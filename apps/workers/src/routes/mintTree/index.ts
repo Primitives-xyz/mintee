@@ -1,4 +1,5 @@
-import { apiTokenLookup, corsHeaders, Env } from "../../utils";
+import { getMintAuth } from "../../auth";
+import { corsHeaders, Env } from "../../utils";
 
 export async function mintTreeRoutes(request: Request, env: Env) {
   const external_id = request.headers.get("x-api-key");
@@ -6,7 +7,7 @@ export async function mintTreeRoutes(request: Request, env: Env) {
     // if no external_id, return error
     return new Response("x-api-key header is required", { status: 400 });
   }
-  const response = await apiTokenLookup(external_id, env).catch((e) => {
+  const response = await getMintAuth(external_id, env).catch((e) => {
     console.log("Error in apiTokenLookup", e);
   });
 
