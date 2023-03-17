@@ -9,7 +9,7 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && prisma generate",
     "clean": "rimraf .turbo node_modules dist",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
