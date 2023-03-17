@@ -71,11 +71,12 @@ export default async function handler(
             verified: body.data.collection!.verified,
           }
         : null,
-      creators: body.data.creators?.map((c) => ({
-        address: new PublicKey(c.address),
-        share: c.share,
-        verified: c.verified,
-      })),
+      creators:
+        body.data.creators?.map((c) => ({
+          address: new PublicKey(c.address),
+          share: c.share,
+          verified: c.verified,
+        })) ?? [],
     } as MetadataArgs,
     connectionWrapper.payer,
     treeWallet,
