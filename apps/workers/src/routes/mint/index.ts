@@ -109,7 +109,8 @@ export async function mintRoute(
     });
   }
 
-  const mintInfo = (await mintResponse.json()) as { assetId: string };
+  const mintInfo = (await mintResponse.json()) as any;
+  console.log("MINT INFO", mintInfo);
   // after response update database and tell KV is api is active
   ctx.waitUntil(
     Promise.all([
@@ -122,7 +123,7 @@ export async function mintRoute(
             [external_id]
           );
           const token = trx.execute(
-            "SELECT id, canMint, active, creatorUserId FROM Token WHERE externalKey = ?;",
+            "SELECT id, canMint, active, userExternalId FROM Token WHERE externalKey = ?;",
             [external_id]
           );
           trx.execute(
@@ -154,7 +155,10 @@ export async function mintRoute(
   // return compressed asset id
   return new Response(
     JSON.stringify({
-      compressedAssetId: mintInfo.assetId,
+      mintAddress: mintInfo.assetId,
+      isCompressed: true,
+      leafIndex: mintInfo.leafIndex,
+      treeWalletAddress: mintInfo.treeWalletAddress,
     }),
     { headers: corsHeaders }
   );
