@@ -110,7 +110,6 @@ export async function mintRoute(
   }
 
   const mintInfo = (await mintResponse.json()) as any;
-  console.log("MINT INFO", mintInfo);
   // after response update database and tell KV is api is active
   ctx.waitUntil(
     Promise.all([
@@ -156,9 +155,9 @@ export async function mintRoute(
   return new Response(
     JSON.stringify({
       mintAddress: mintInfo.assetId,
-      isCompressed: true,
-      leafIndex: mintInfo.leafIndex,
       treeWalletAddress: mintInfo.treeWalletAddress,
+      leafIndex: mintInfo.leafIndex,
+      isCompressed: true,
     }),
     { headers: corsHeaders }
   );

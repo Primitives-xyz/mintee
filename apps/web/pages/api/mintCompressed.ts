@@ -31,7 +31,6 @@ export default async function handler(
     return res.status(500).json({ error: "No tree wallet" });
   }
   const json = req.body;
-  console.log("json", json);
   // validate metadata
   const bodyParsePromise = await validateMintCompressBody(json).catch((e) => {
     console.log("Error validating body in factory", e);
@@ -56,6 +55,7 @@ export default async function handler(
     connectionWrapper,
     {
       ...body.data,
+      editionNonce: body.data.editionNonce ?? null,
       symbol: body.data.symbol ?? "",
       uses: body.data.uses ?? null,
       collection: mintCompressedNftPK
