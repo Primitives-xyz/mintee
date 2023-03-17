@@ -1,11 +1,6 @@
 import { validateMintCompressBody } from "mintee-utils";
-import {
-  getMintAuth,
-  apiTokenStatus,
-  conn,
-  corsHeaders,
-  Env,
-} from "../../utils";
+import { apiTokenStatus, getMintAuth } from "../../auth";
+import { conn, corsHeaders, Env } from "../../utils";
 
 export async function mintRoute(
   request: Request,
@@ -16,7 +11,6 @@ export async function mintRoute(
   if (request.method === "GET") {
     return new Response("GET not allowed", { status: 405 });
   }
-
   // parse pass in api key
   const external_id = request.headers.get("x-api-key");
   if (!external_id) {
@@ -28,16 +22,17 @@ export async function mintRoute(
   const response = await getMintAuth(external_id, env).catch((e) => {
     console.log("Error in fetch api token", e);
   });
-
   if (!response) {
     return new Response("api key not found", { status: 401 });
   }
 
+  // try to grab body
   const json = (await request.json().catch((e) => {
     console.log("Error parsing json", e);
   })) as { data: any; options: any };
+
   if (!json) {
-    return new Response("Error parsing body", {
+    return new Response("Error parsing body pal!", {
       status: 400,
       headers: corsHeaders,
     });
@@ -53,17 +48,31 @@ export async function mintRoute(
     data: json.data,
     options: json.options,
   }).catch((e) => {
-    console.log("Error validating body", e);
+    console.log("Error validating body from zod function", e);
   });
   if (!bodyParsePromise) {
-    return new Response("Error validating body", {
+    return new Response("Error validating bod", {
       status: 400,
       headers: corsHeaders,
     });
   }
   const [body, options] = bodyParsePromise;
-  if (!body || !body.name) {
-    return new Response("Name is required", {
+  if (!body) {
+    return new Response("Body required", {
+      status: 400,
+      headers: corsHeaders,
+    });
+  } else if (!body.success) {
+    return new Response(
+      "Error validating body: " +
+        body.error.errors.map((e) => e.path[0].toString() + " " + e.message),
+      {
+        status: 400,
+        headers: corsHeaders,
+      }
+    );
+  } else if (!options || !options.success) {
+    return new Response("Error validating options", {
       status: 400,
       headers: corsHeaders,
     });
@@ -77,12 +86,14 @@ export async function mintRoute(
       "cloudflare-worker-key": env.WORKER_KEY,
     },
     body: JSON.stringify({
-      metadata: body,
-      toWalletAddress: options.toWalletAddress,
+      metadata: body.data,
+      toWalletAddress: options,
     }),
   }).catch((e) => {
     console.log("Error minting NFT " + e);
   });
+
+  console.log("MINT RESPONSE", mintResponse);
 
   // if void response, return error
   if (!mintResponse) {
@@ -113,17 +124,17 @@ export async function mintRoute(
             [external_id]
           );
           const token = trx.execute(
-            "SELECT id, canMint, active, creatorUserExternalId FROM Token WHERE externalKey = ?;",
+            "SELECT id, canMint, active, creatorUserId FROM Token WHERE externalKey = ?;",
             [external_id]
           );
           trx.execute(
             "INSERT INTO NFT (name, symbol, offChainUrl, description, creatorUserExternalId, blockchain, blockchainAddress, isCompressed, treeId",
             [
-              body.name,
-              body.symbol,
-              body.uri,
+              body.data.name ?? "",
+              body.data.symbol || "",
+              "URI",
               "",
-              response.externalId,
+              response.userExternalId,
               "Solana",
               mintInfo.assetId,
               true,

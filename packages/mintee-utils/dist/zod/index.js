@@ -48,40 +48,53 @@ function validateMintCompressBody(json) {
                     if (!json.data) {
                         throw new Error("The body is null, try using our npm package instead: https://www.npmjs.com/package/mintee-nft");
                     }
-                    body = exports.mintCompressBodySchema.parseAsync(json.data);
-                    options = exports.mintCompressOptionsSchema.parseAsync(json.options);
-                    return [4 /*yield*/, Promise.all([body, options])];
-                case 1: return [2 /*return*/, _a.sent()];
+                    if (!json.options) {
+                        json.options = {};
+                    }
+                    body = exports.mintCompressBodySchema.safeParseAsync(json.data);
+                    options = exports.mintCompressOptionsSchema.safeParseAsync(json.options);
+                    return [4 /*yield*/, Promise.all([body, options])["catch"](function (e) {
+                            console.log("Error parsing body", e);
+                        })];
+                case 1: 
+                // const options = mintCompressOptionsSchema.parseAsync(json.options);
+                return [2 /*return*/, _a.sent()];
             }
         });
     });
 }
 exports.validateMintCompressBody = validateMintCompressBody;
 // combine zode schemas
-exports.mintCompressOptionsSchema = zod_1.z.object({
-    toWalletAddress: zod_1.z.string().min(1).max(200).optional(),
-    network: zod_1.z.string().min(1).max(200).optional()
-});
+exports.mintCompressOptionsSchema = zod_1.z
+    .object({
+    toWalletAddress: zod_1.z.string().max(200).optional(),
+    network: zod_1.z.string().max(200).optional()
+})
+    .optional()
+    .nullable();
+//  parse json.data.name with Zod
 exports.mintCompressBodySchema = zod_1.z.object({
-    name: zod_1.z.string().min(1).max(32),
-    symbol: zod_1.z.string().min(1).max(10)["default"](""),
+    name: zod_1.z.string(),
+    symbol: zod_1.z.string().max(10)["default"]("").optional(),
     uri: zod_1.z.string().max(200)["default"](""),
     sellerFeeBasisPoints: zod_1.z.number().min(0).max(10000)["default"](0),
     primarySaleHappened: zod_1.z.boolean()["default"](false),
     isMutable: zod_1.z.boolean()["default"](true),
-    editionNonce: zod_1.z.number().nullable(),
-    tokenStandard: zod_1.z.nativeEnum(types_1.TokenStandard)["default"](0),
+    editionNonce: zod_1.z.number().optional(),
+    tokenStandard: zod_1.z.nativeEnum(types_1.TokenStandard)["default"](0).optional(),
     collection: zod_1.z
         .object({
         verified: zod_1.z.boolean().optional(),
-        key: zod_1.z.string().min(1).max(200).optional()
+        key: zod_1.z.string().max(200).optional()
     })
         .optional(),
-    uses: zod_1.z.nativeEnum(types_1.UseMethod).nullable(),
-    tokenProgramVersion: zod_1.z.nativeEnum(types_1.TokenProgramVersion)["default"](0),
-    creators: zod_1.z.array(zod_1.z.object({
-        address: zod_1.z.string().min(1).max(200),
+    uses: zod_1.z.nativeEnum(types_1.UseMethod).optional(),
+    tokenProgramVersion: zod_1.z.nativeEnum(types_1.TokenProgramVersion)["default"](0).optional(),
+    creators: zod_1.z
+        .array(zod_1.z.object({
+        address: zod_1.z.string().max(200),
         verified: zod_1.z.boolean().optional(),
         share: zod_1.z.number().min(0).max(100)
     }))
+        .optional()
 });

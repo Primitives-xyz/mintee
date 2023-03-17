@@ -1,4 +1,5 @@
-import { Env, apiTokenLookup, apiTokenStatus, corsHeaders } from "../../utils";
+import { apiTokenStatus, getAuth } from "../../auth";
+import { Env, corsHeaders } from "../../utils";
 
 export async function nftStatusRoute(
   request: Request,
@@ -12,7 +13,7 @@ export async function nftStatusRoute(
     // if no external_id, return error
     return new Response("x-api-key header is required", { status: 400 });
   }
-  const response = apiTokenLookup(external_id, env).catch((e) => {
+  const response = getAuth(external_id, env).catch((e) => {
     console.log("Error in apiTokenLookup", e);
   }) as Promise<apiTokenStatus>;
 

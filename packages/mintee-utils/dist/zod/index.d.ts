@@ -1,33 +1,56 @@
 import { z } from "zod";
-import { TokenProgramVersion, TokenStandard, UseMethod } from "../types";
+import { TokenStandard, UseMethod, TokenProgramVersion } from "../types";
 export declare function validateMintCompressBody(json: {
     data: any;
-    options: any;
-}): Promise<[{
-    symbol: string;
+    options?: any;
+}): Promise<void | [z.SafeParseReturnType<{
     name: string;
-    uri: string;
-    creators: {
-        address: string;
-        share: number;
-        verified?: boolean | undefined;
-    }[];
-    sellerFeeBasisPoints: number;
-    primarySaleHappened: boolean;
-    isMutable: boolean;
-    editionNonce: number | null;
-    tokenStandard: TokenStandard;
-    uses: UseMethod | null;
-    tokenProgramVersion: TokenProgramVersion;
+    symbol?: string | undefined;
+    uri?: string | undefined;
+    sellerFeeBasisPoints?: number | undefined;
+    primarySaleHappened?: boolean | undefined;
+    isMutable?: boolean | undefined;
+    editionNonce?: number | undefined;
+    tokenStandard?: TokenStandard | undefined;
     collection?: {
         verified?: boolean | undefined;
         key?: string | undefined;
     } | undefined;
+    uses?: UseMethod | undefined;
+    tokenProgramVersion?: TokenProgramVersion | undefined;
+    creators?: {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }[] | undefined;
 }, {
+    name: string;
+    uri: string;
+    sellerFeeBasisPoints: number;
+    primarySaleHappened: boolean;
+    isMutable: boolean;
+    symbol?: string | undefined;
+    editionNonce?: number | undefined;
+    tokenStandard?: TokenStandard | undefined;
+    collection?: {
+        verified?: boolean | undefined;
+        key?: string | undefined;
+    } | undefined;
+    uses?: UseMethod | undefined;
+    tokenProgramVersion?: TokenProgramVersion | undefined;
+    creators?: {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }[] | undefined;
+}>, z.SafeParseReturnType<{
     toWalletAddress?: string | undefined;
     network?: string | undefined;
-}]>;
-export declare const mintCompressOptionsSchema: z.ZodObject<{
+} | null | undefined, {
+    toWalletAddress?: string | undefined;
+    network?: string | undefined;
+} | null | undefined>]>;
+export declare const mintCompressOptionsSchema: z.ZodNullable<z.ZodOptional<z.ZodObject<{
     toWalletAddress: z.ZodOptional<z.ZodString>;
     network: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
@@ -36,16 +59,16 @@ export declare const mintCompressOptionsSchema: z.ZodObject<{
 }, {
     toWalletAddress?: string | undefined;
     network?: string | undefined;
-}>;
+}>>>;
 export declare const mintCompressBodySchema: z.ZodObject<{
     name: z.ZodString;
-    symbol: z.ZodDefault<z.ZodString>;
+    symbol: z.ZodOptional<z.ZodDefault<z.ZodString>>;
     uri: z.ZodDefault<z.ZodString>;
     sellerFeeBasisPoints: z.ZodDefault<z.ZodNumber>;
     primarySaleHappened: z.ZodDefault<z.ZodBoolean>;
     isMutable: z.ZodDefault<z.ZodBoolean>;
-    editionNonce: z.ZodNullable<z.ZodNumber>;
-    tokenStandard: z.ZodDefault<z.ZodNativeEnum<typeof TokenStandard>>;
+    editionNonce: z.ZodOptional<z.ZodNumber>;
+    tokenStandard: z.ZodOptional<z.ZodDefault<z.ZodNativeEnum<typeof TokenStandard>>>;
     collection: z.ZodOptional<z.ZodObject<{
         verified: z.ZodOptional<z.ZodBoolean>;
         key: z.ZodOptional<z.ZodString>;
@@ -56,9 +79,9 @@ export declare const mintCompressBodySchema: z.ZodObject<{
         verified?: boolean | undefined;
         key?: string | undefined;
     }>>;
-    uses: z.ZodNullable<z.ZodNativeEnum<typeof UseMethod>>;
-    tokenProgramVersion: z.ZodDefault<z.ZodNativeEnum<typeof TokenProgramVersion>>;
-    creators: z.ZodArray<z.ZodObject<{
+    uses: z.ZodOptional<z.ZodNativeEnum<typeof UseMethod>>;
+    tokenProgramVersion: z.ZodOptional<z.ZodDefault<z.ZodNativeEnum<typeof TokenProgramVersion>>>;
+    creators: z.ZodOptional<z.ZodArray<z.ZodObject<{
         address: z.ZodString;
         verified: z.ZodOptional<z.ZodBoolean>;
         share: z.ZodNumber;
@@ -70,46 +93,46 @@ export declare const mintCompressBodySchema: z.ZodObject<{
         address: string;
         share: number;
         verified?: boolean | undefined;
-    }>, "many">;
+    }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    symbol: string;
     name: string;
     uri: string;
-    creators: {
-        address: string;
-        share: number;
-        verified?: boolean | undefined;
-    }[];
     sellerFeeBasisPoints: number;
     primarySaleHappened: boolean;
     isMutable: boolean;
-    editionNonce: number | null;
-    tokenStandard: TokenStandard;
-    uses: UseMethod | null;
-    tokenProgramVersion: TokenProgramVersion;
-    collection?: {
-        verified?: boolean | undefined;
-        key?: string | undefined;
-    } | undefined;
-}, {
-    name: string;
-    creators: {
-        address: string;
-        share: number;
-        verified?: boolean | undefined;
-    }[];
-    editionNonce: number | null;
-    uses: UseMethod | null;
     symbol?: string | undefined;
-    uri?: string | undefined;
-    sellerFeeBasisPoints?: number | undefined;
-    primarySaleHappened?: boolean | undefined;
-    isMutable?: boolean | undefined;
+    editionNonce?: number | undefined;
     tokenStandard?: TokenStandard | undefined;
     collection?: {
         verified?: boolean | undefined;
         key?: string | undefined;
     } | undefined;
+    uses?: UseMethod | undefined;
     tokenProgramVersion?: TokenProgramVersion | undefined;
+    creators?: {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }[] | undefined;
+}, {
+    name: string;
+    symbol?: string | undefined;
+    uri?: string | undefined;
+    sellerFeeBasisPoints?: number | undefined;
+    primarySaleHappened?: boolean | undefined;
+    isMutable?: boolean | undefined;
+    editionNonce?: number | undefined;
+    tokenStandard?: TokenStandard | undefined;
+    collection?: {
+        verified?: boolean | undefined;
+        key?: string | undefined;
+    } | undefined;
+    uses?: UseMethod | undefined;
+    tokenProgramVersion?: TokenProgramVersion | undefined;
+    creators?: {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }[] | undefined;
 }>;
 export type mintCompressBody = z.infer<typeof mintCompressBodySchema>;
