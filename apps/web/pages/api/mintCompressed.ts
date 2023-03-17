@@ -56,6 +56,7 @@ export default async function handler(
     connectionWrapper,
     {
       ...body.data,
+      symbol: body.data.symbol ?? "",
       uses: body.data.uses ?? null,
       collection: mintCompressedNftPK
         ? {
