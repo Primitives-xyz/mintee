@@ -66,6 +66,7 @@ importers:
       bs58: ^5.0.0
       encoding: ^0.1.13
       framer-motion: ^8.2.4
+      mintee-database: '*'
       mintee-nft: ^1.0.2
       mintee-utils: '*'
       next: latest
@@ -106,6 +107,7 @@ importers:
       bigint-buffer: 1.1.5
       bs58: 5.0.0
       framer-motion: 8.5.5_biqbaboplfbrettd7655fr4n2y
+      mintee-database: link:../../packages/mintee-database
       mintee-nft: link:../../external-packages/mintee-nft
       mintee-utils: link:../../packages/mintee-utils
       next: 13.2.4_6m24vuloj5ihw4zc5lbsktc4fu
@@ -180,7 +182,24 @@ importers:
   external-packages/post:
     specifiers: {}
 
-  packages/database:
+  packages/eslint-config-custom:
+    specifiers:
+      eslint: ^7.23.0
+      eslint-config-next: 13.0.0
+      eslint-config-prettier: ^8.3.0
+      eslint-config-turbo: latest
+      eslint-plugin-react: 7.31.8
+      typescript: ^4.7.4
+    dependencies:
+      eslint: 7.32.0
+      eslint-config-next: 13.0.0_jofidmxrjzhj7l6vknpw5ecvfe
+      eslint-config-prettier: 8.7.0_eslint@7.32.0
+      eslint-config-turbo: 0.0.9_eslint@7.32.0
+      eslint-plugin-react: 7.31.8_eslint@7.32.0
+    devDependencies:
+      typescript: 4.9.5
+
+  packages/mintee-database:
     specifiers:
       '@prisma/client': ^4.11.0
       config: '*'
@@ -201,23 +220,6 @@ importers:
       tsconfig: 7.0.0
       tsup: 5.12.9_typescript@4.9.5
       tsx: 3.12.3
-      typescript: 4.9.5
-
-  packages/eslint-config-custom:
-    specifiers:
-      eslint: ^7.23.0
-      eslint-config-next: 13.0.0
-      eslint-config-prettier: ^8.3.0
-      eslint-config-turbo: latest
-      eslint-plugin-react: 7.31.8
-      typescript: ^4.7.4
-    dependencies:
-      eslint: 7.32.0
-      eslint-config-next: 13.0.0_jofidmxrjzhj7l6vknpw5ecvfe
-      eslint-config-prettier: 8.7.0_eslint@7.32.0
-      eslint-config-turbo: 0.0.9_eslint@7.32.0
-      eslint-plugin-react: 7.31.8_eslint@7.32.0
-    devDependencies:
       typescript: 4.9.5
 
   packages/mintee-utils:

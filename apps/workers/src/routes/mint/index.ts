@@ -1,6 +1,6 @@
 import { validateMintCompressBody } from "mintee-utils";
 import {
-  apiTokenLookup,
+  getMintAuth,
   apiTokenStatus,
   conn,
   corsHeaders,
@@ -25,24 +25,12 @@ export async function mintRoute(
   }
 
   // check if api key is active / canMint
-  const response = await apiTokenLookup(external_id, env).catch((e) => {
-    console.log("Error in apiTokenLookup", e);
+  const response = await getMintAuth(external_id, env).catch((e) => {
+    console.log("Error in fetch api token", e);
   });
 
   if (!response) {
     return new Response("api key not found", { status: 401 });
-  } else if (!response.active) {
-    // api is not active, go to mintee.io to activate
-    return new Response("api is not active, go to mintee.io to activate", {
-      status: 401,
-      headers: corsHeaders,
-    });
-  } else if (!response.canMint) {
-    // api is not active, go to mintee.io to activate
-    return new Response("api is not allowed to mint", {
-      status: 401,
-      headers: corsHeaders,
-    });
   }
 
   const json = (await request.json().catch((e) => {
@@ -125,19 +113,19 @@ export async function mintRoute(
             [external_id]
           );
           const token = trx.execute(
-            "SELECT id, canMint, active, userId FROM Token WHERE externalKey = ?;",
+            "SELECT id, canMint, active, creatorUserExternalId FROM Token WHERE externalKey = ?;",
             [external_id]
           );
           trx.execute(
-            "INSERT INTO NFT (name, symbol, offChainUrl, description, creaturUserId, blockchain, blockchainAddress, isCompress, treeId",
+            "INSERT INTO NFT (name, symbol, offChainUrl, description, creatorUserExternalId, blockchain, blockchainAddress, isCompressed, treeId",
             [
               body.name,
               body.symbol,
               body.uri,
               "",
-              response.userId,
+              response.externalId,
               "Solana",
-              response.id,
+              mintInfo.assetId,
               true,
               "",
             ]

@@ -1,0 +1,99 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL_TEST")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  firstName  String?
+  lastName   String?
+  social     Json?
+  tokens     Token[]
+  externalId String?   @unique(length: 100)
+  planType   PlanType? @default(FREE)
+  NFT        NFT[]
+  Tree       Tree[]
+
+  @@index([externalId])
+}
+
+model NFT {
+  id                    Int         @id @default(autoincrement())
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @default(now()) @updatedAt
+  name                  String      @db.VarChar(255)
+  symbol                String?     @db.VarChar(255)
+  offChainUrl           String?     @db.VarChar(255)
+  description           String?     @db.VarChar(255)
+  creatorUser           User        @relation(fields: [creatorUserExternalId], references: [externalId])
+  creatorUserExternalId String
+  blockchainAddress     String?     @db.VarChar(255)
+  blockchain            Blockchain?
+  minteeMinted          Boolean     @default(false)
+  isCompressed          Boolean     @default(false)
+  Tree                  Tree?       @relation(fields: [treeId], references: [id])
+  treeId                Int?
+
+  @@index([creatorUserExternalId])
+  @@index([treeId])
+}
+
+model Token {
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
+  type              TokenType
+  emailToken        String?   @unique // Only used for short lived email tokens
+  valid             Boolean   @default(true)
+  externalKey       String?   @unique(length: 100)
+  User              User?     @relation(fields: [UserExternalId], references: [externalId])
+  UserExternalId    String?
+  active            Boolean   @default(false)
+  planType          PlanType? @default(FREE)
+  nftInfoCallsCount Int       @default(0)
+  nftInfoCallsLimit Int       @default(0)
+  canMint           Boolean   @default(false)
+  mintCallsCount    Int       @default(0)
+  mintCallsLimit    Int       @default(0)
+
+  @@index([UserExternalId])
+}
+
+model Tree {
+  id                    Int         @id @default(autoincrement())
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @default(now()) @updatedAt
+  name                  String      @db.VarChar(255)
+  description           String?     @db.VarChar(255)
+  creatorUser           User        @relation(fields: [creatorUserExternalId], references: [externalId])
+  creatorUserExternalId String
+  blockchain            Blockchain?
+  blockchainAddress     String?     @db.VarChar(255)
+  nfts                  NFT[]
+  minteeMinted          Boolean     @default(false)
+
+  @@index([creatorUserExternalId])
+}
+
+enum Blockchain {
+  Solana
+}
+
+enum TokenType {
+  EMAIL // used as a short-lived token sent to the user's email
+  API
+}
+
+enum PlanType {
+  FREE
+  PRO
+  PREMIUM
+  ENTERPRISE
+}
