@@ -38,6 +38,7 @@ export const mintCompressOptionsSchema = z
 export const mintCompressBodySchema = z.object({
   name: z.string(),
   symbol: z.string().max(10).default("").optional(),
+  description: z.string().max(1000).optional(),
   uri: z.string().max(200).default(""),
   sellerFeeBasisPoints: z.number().min(0).max(10000).default(0),
   primarySaleHappened: z.boolean().default(false),
