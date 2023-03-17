@@ -30,12 +30,7 @@ export default async function handler(
   if (!treeWallet) {
     return res.status(500).json({ error: "No tree wallet" });
   }
-  console.log("req", req);
-  console.log("req.body", req.body);
-  const jsonTest = JSON.parse(req.body);
-  console.log("jsonTest", jsonTest);
-  console.log("req.body stringfy", JSON.stringify(req.body));
-  const json = await req.body();
+  const json = await req.body;
   // validate metadata
   const bodyParsePromise = await validateMintCompressBody(json).catch((e) => {
     console.log("Error validating body in factory", e);
