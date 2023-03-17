@@ -28,11 +28,11 @@ export const psConfig = {
 
 export const conn = connect(psConfig);
 
-export async function apiTokenLookup(external_id: string, env: Env) {
+export async function getMintAuth(external_id: string, env: Env) {
   // grab auth header
   // check if auth header starts with bearer and has a token
   if (!external_id) {
-    throw new Error("Unauthorized");
+    throw new Error("No external_id");
   }
   // grab the token
   // check if the token is in the KVawait
@@ -45,6 +45,13 @@ export async function apiTokenLookup(external_id: string, env: Env) {
     throw new Error(e);
   })) as apiTokenStatus;
 
+  if (!response) {
+    throw new Error("No token found: " + external_id);
+  } else if (!response.active) {
+    throw new Error("Token is not active: " + external_id);
+  } else if (!response.canMint) {
+    throw new Error("Token cannot mint: " + external_id);
+  }
   return response;
 }
 
@@ -52,8 +59,7 @@ export function lookUserUpKV(external_id: string, env: Env) {
   return new Promise(async (resolve, reject) => {
     const response = await env.apiTokens.get(external_id);
     if (response) {
-      const userInfo: apiTokenStatus = JSON.parse(response);
-      resolve(userInfo);
+      resolve(JSON.parse(response) as apiTokenStatus);
     }
     reject();
   });
@@ -64,8 +70,7 @@ export function LookUpUserCache(external_id: string, env: Env) {
     let cache = caches.default;
     cache.match(external_id).then(async (response) => {
       if (response) {
-        const userInfo: apiTokenStatus = await response.json();
-        resolve(userInfo);
+        resolve((await response.json()) as apiTokenStatus);
       }
       reject();
     });
@@ -76,7 +81,7 @@ export function lookUserUpDB(external_id: string) {
   const response = new Promise(async (resolve, reject) => {
     const response = await conn
       .execute(
-        "SELECT id, canMint, active, userId FROM Token WHERE externalKey = ?",
+        "SELECT externalId, canMint, active, userId FROM Token WHERE externalKey = ?",
         [external_id]
       )
       .catch((e) => {
@@ -84,14 +89,15 @@ export function lookUserUpDB(external_id: string) {
       });
 
     if (response && response.rows.length > 0) {
-      const row = response.rows[0] as apiTokenStatus;
-      const userInfo: apiTokenStatus = {
-        id: row.id,
-        canMint: row.canMint,
-        userId: row.userId,
-        active: row.active,
-      };
-      resolve(userInfo);
+      resolve(
+        response.rows[0].map((row: apiTokenStatus) => {
+          return {
+            canMint: row.canMint,
+            userId: row.userId,
+            active: row.active,
+          };
+        })
+      );
     }
     reject();
   });
@@ -99,10 +105,10 @@ export function lookUserUpDB(external_id: string) {
 }
 
 export type apiTokenStatus = {
-  id: number;
   canMint: boolean;
   active: boolean;
   userId: number;
+  externalId: string;
 };
 
 export async function sha256(message: any) {

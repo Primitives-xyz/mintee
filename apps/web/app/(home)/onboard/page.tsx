@@ -1,14 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/app-beta";
 import Head from "next/head";
-import { connect } from "@planetscale/database";
 import CodeView from "./code";
-const psConfig = {
-  host: "aws.connect.psdb.cloud",
-  username: "g3s67laml1b4smxqc239",
-  password: "pscale_pw_RdHk3l4bhvrREUaPkIykgVoRBdJGJLgQp5frEdNi82i",
-};
-
-const conn = connect(psConfig);
+import { pscale } from "../../../utils";
 
 export default async function Page() {
   const { userId } = auth();
@@ -45,7 +38,7 @@ async function getUserAPIKey(userId: string) {
   // if not, create a new user
   // if so, return the user
 
-  const userTableResult = await conn.execute(
+  const userTableResult = await pscale.execute(
     "SELECT * FROM User WHERE externalId = ?",
     [userId]
   );
@@ -55,7 +48,7 @@ async function getUserAPIKey(userId: string) {
 
     // insert user into database including externalId, email, and first name and last name
     // also insert api Token with field active set to true
-    const [newUser, apiKey] = await conn.transaction(async (trx) => {
+    const [newUser, apiKey] = await pscale.transaction(async (trx) => {
       const userInsertResult = await trx.execute(
         "INSERT INTO User (externalId, email, firstName, lastName) VALUES (?, ?, ?, ?)",
         [
@@ -85,7 +78,7 @@ async function getUserAPIKey(userId: string) {
     };
   }
   const user = userTableResult.rows[0] as { id: string };
-  const tokensRes = await conn.execute(
+  const tokensRes = await pscale.execute(
     "SELECT * FROM Token WHERE userId = ? AND type = ?",
     [user.id, "API"]
   );
