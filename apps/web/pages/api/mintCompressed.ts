@@ -1,4 +1,8 @@
-import { MetadataArgs } from "@metaplex-foundation/mpl-bubblegum";
+import {
+  MetadataArgs,
+  TokenProgramVersion,
+  TokenStandard,
+} from "@metaplex-foundation/mpl-bubblegum";
 import base58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -58,6 +62,9 @@ export default async function handler(
       editionNonce: body.data.editionNonce ?? null,
       symbol: body.data.symbol ?? "",
       uses: body.data.uses ?? null,
+      tokenStandard: body.data.tokenStandard ?? TokenStandard.NonFungible,
+      tokenProgramVersion:
+        body.data.tokenProgramVersion ?? TokenProgramVersion.Original,
       collection: mintCompressedNftPK
         ? {
             key: mintCompressedNftPK,
