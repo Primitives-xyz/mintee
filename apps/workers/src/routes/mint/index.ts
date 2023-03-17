@@ -86,8 +86,8 @@ export async function mintRoute(
       "cloudflare-worker-key": env.WORKER_KEY,
     },
     body: JSON.stringify({
-      metadata: body.data,
-      toWalletAddress: options,
+      data: body.data,
+      options,
     }),
   }).catch((e) => {
     console.log("Error minting NFT " + e);
@@ -101,8 +101,6 @@ export async function mintRoute(
     });
   }
 
-  console.log("MINT RESPONSE", mintResponse.status);
-  console.log("MINT RESPONSE", await mintResponse.text());
   // we got a repsonse, but the status is not ok
   if (mintResponse && !mintResponse.ok) {
     return new Response("Error minting NFT, error from factory.", {
