@@ -93,8 +93,6 @@ export async function mintRoute(
     console.log("Error minting NFT " + e);
   });
 
-  console.log("MINT RESPONSE", mintResponse);
-
   // if void response, return error
   if (!mintResponse) {
     return new Response("Error minting NFT", {
@@ -103,6 +101,8 @@ export async function mintRoute(
     });
   }
 
+  console.log("MINT RESPONSE", mintResponse.status);
+  console.log("MINT RESPONSE", await mintResponse.text());
   // we got a repsonse, but the status is not ok
   if (mintResponse && !mintResponse.ok) {
     return new Response("Error minting NFT, error from factory.", {
