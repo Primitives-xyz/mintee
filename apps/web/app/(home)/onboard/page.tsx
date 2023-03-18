@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/app-beta";
 import Head from "next/head";
 import CodeView from "./code";
 import { pscale } from "../../../utils";
+import StripeCheckout from "./stripeCheckout";
 
 export default async function Page() {
   const { userId } = auth();
@@ -22,6 +23,7 @@ export default async function Page() {
             </p>
             <h1 className="text-lg font-bold mt-2">Install our npm package</h1>
             <CodeView apiKey={data.apiKey} />
+            <StripeCheckout />
           </div>
         </div>
       </div>
