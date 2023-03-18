@@ -7,7 +7,9 @@ export default function Sidebar() {
       <div className="flex flex-col h-screen p-3 bg-[#111C27] text-white shadow w-48">
         <div className="space-y-3">
           <div className="flex items-center">
-            <h2 className="text-xl font-bold">Mintee Dashboard</h2>
+            <Link href="/">
+              <h2 className="text-xl font-bold">Mintee Dashboard</h2>
+            </Link>
           </div>
           <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center py-4">

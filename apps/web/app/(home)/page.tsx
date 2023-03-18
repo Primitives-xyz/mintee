@@ -1,8 +1,10 @@
 import { auth } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
 import Image from "next/image";
-import { cookies, headers } from "next/headers";
 import SquigglyLines from "../../components/SquigglyLines";
+export const config = {
+  runtime: "edge", // this is a pre-requisite
+};
 export default async function Page() {
   // Fetch data directly in a Server Component
   // Forward fetched data to your Client Component
@@ -75,6 +77,16 @@ export default async function Page() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+        <div className="w-full h-96 bg-[#47586a]/75 rounded-2xl mt-4 ">
+          <h2 className="text-4xl mt-4"> Pricing</h2>
+          <div className="flex flex-row w-full mt-4">
+            <div className="flex flex-col w-1/3">
+              <div className="h-48 text-2xl">Free</div>
+            </div>
+            <div className="flex flex-col w-1/3">$20/Month</div>
+            <div className="flex flex-col w-1/3">$100/month</div>
           </div>
         </div>
       </main>
