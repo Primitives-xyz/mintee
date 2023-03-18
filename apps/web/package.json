@@ -6,7 +6,6 @@
     "start": "next start"
   },
   "dependencies": {
-    "mintee-database": "*",
     "@clerk/nextjs": "^4.11.3",
     "@headlessui/react": "^1.7.7",
     "@headlessui/tailwindcss": "^0.1.2",
@@ -21,6 +20,7 @@
     "@solana/spl-token": "^0.3.7",
     "@stripe/stripe-js": "^1.48.0",
     "@tailwindcss/forms": "^0.5.3",
+    "@tanstack/react-table": "^8.7.9",
     "@types/react-syntax-highlighter": "^15.5.6",
     "@upstash/ratelimit": "^0.3.8",
     "@upstash/redis": "^1.19.1",
@@ -29,6 +29,7 @@
     "bigint-buffer": "^1.1.5",
     "bs58": "^5.0.0",
     "framer-motion": "^8.2.4",
+    "mintee-database": "*",
     "mintee-nft": "^1.0.2",
     "mintee-utils": "*",
     "next": "latest",

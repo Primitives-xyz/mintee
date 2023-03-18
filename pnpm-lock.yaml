@@ -52,6 +52,7 @@ importers:
       '@solana/spl-token': ^0.3.7
       '@stripe/stripe-js': ^1.48.0
       '@tailwindcss/forms': ^0.5.3
+      '@tanstack/react-table': ^8.7.9
       '@types/node': 18.11.3
       '@types/react': 18.0.21
       '@types/react-dom': 18.0.6
@@ -99,6 +100,7 @@ importers:
       '@solana/spl-token': 0.3.7_x2vmtgewl3b7iy3vptfr2o6jb4
       '@stripe/stripe-js': 1.48.0
       '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.7
+      '@tanstack/react-table': 8.7.9_biqbaboplfbrettd7655fr4n2y
       '@types/react-syntax-highlighter': 15.5.6
       '@upstash/ratelimit': 0.3.10_encoding@0.1.13
       '@upstash/redis': 1.20.1_encoding@0.1.13
@@ -2867,6 +2869,23 @@ packages:
     dependencies:
       mini-svg-data-uri: 1.4.4
       tailwindcss: 3.2.7
+    dev: false
+
+  /@tanstack/react-table/8.7.9_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-6MbbQn5AupSOkek1+6IYu+1yZNthAKTRZw9tW92Vi6++iRrD1GbI3lKTjJalf8lEEKOqapPzQPE20nywu0PjCA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      '@tanstack/table-core': 8.7.9
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/table-core/8.7.9:
+    resolution: {integrity: sha512-4RkayPMV1oS2SKDXfQbFoct1w5k+pvGpmX18tCXMofK/VDRdA2hhxfsQlMvsJ4oTX8b0CI4Y3GDKn5T425jBCw==}
+    engines: {node: '>=12'}
     dev: false
 
   /@types/acorn/4.0.6:

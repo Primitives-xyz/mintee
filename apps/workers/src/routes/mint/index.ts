@@ -137,7 +137,7 @@ export async function mintRoute(
           console.log("RIGHT AFTER");
           await conn
             .execute(
-              "INSERT INTO NFT (name, creatorUserExternalId, blockchainAddress, minteeMinted,isCompressed, description, symbol ) VALUES (?, ?, ?, ?, ?, ?, ?);",
+              "INSERT INTO NFT (name, creatorUserExternalId, blockchainAddress, minteeMinted,isCompressed, description, symbol, blockchain ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
               [
                 body.data.name,
                 row.userExternalId,
@@ -146,6 +146,7 @@ export async function mintRoute(
                 true,
                 body.data.description,
                 body.data.symbol,
+                "Solana",
               ]
             )
             .catch((e) => {
