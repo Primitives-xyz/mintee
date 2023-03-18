@@ -22,7 +22,6 @@ export default async function handler(
         mode: "subscription",
         success_url: `${req.headers.origin}/?success=true`,
         cancel_url: `${req.headers.origin}/?canceled=true`,
-        automatic_tax: { enabled: true },
       });
       res.redirect(303, session.url!);
     } catch (err: any) {
