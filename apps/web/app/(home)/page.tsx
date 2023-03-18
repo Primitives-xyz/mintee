@@ -2,9 +2,7 @@ import { auth } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
 import Image from "next/image";
 import SquigglyLines from "../../components/SquigglyLines";
-export const config = {
-  runtime: "edge", // this is a pre-requisite
-};
+
 export default async function Page() {
   // Fetch data directly in a Server Component
   // Forward fetched data to your Client Component
