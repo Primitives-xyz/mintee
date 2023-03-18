@@ -1,6 +1,7 @@
 import { auth, ClerkProvider } from "@clerk/nextjs/app-beta";
 import "../../styles/globals.css";
 import Header from "./Header";
+
 export const metadata = {
   title: "Fastest NFT minting service",
   description: "Mintee is the fastest NFT minting service.",
