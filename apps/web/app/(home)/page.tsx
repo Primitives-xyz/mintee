@@ -43,7 +43,7 @@ export default async function Page() {
 
           <Link
             className="bg-gray-500 rounded-xl text-white font-medium   w-52 px-4 py-3 sm:mt-10 mt-8 hover:bg-gray-400 transition"
-            href="wwww.docs.mintee.io"
+            href="https://wwww.docs.mintee.io"
           >
             Read our docs
           </Link>
