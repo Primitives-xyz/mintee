@@ -40,6 +40,8 @@ model NFT {
   isCompressed          Boolean     @default(false)
   Tree                  Tree?       @relation(fields: [treeId], references: [id])
   treeId                Int?
+  isCollection          Boolean     @default(false)
+  collectionId          Int?
 
   @@index([creatorUserExternalId])
   @@index([treeId])
