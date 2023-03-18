@@ -7,7 +7,11 @@ const config: DocsThemeConfig = {
   project: {
     link: "https://npmjs.com/package/mintee-nft",
   },
-
+  head: (
+    <>
+      <title>Mintee docs!</title>
+    </>
+  ),
   docsRepositoryBase: "https://docs.mintee.io",
   footer: {
     text: "Mintee API",
