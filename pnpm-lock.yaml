@@ -71,6 +71,7 @@ importers:
       mintee-nft: ^1.0.2
       mintee-utils: '*'
       next: latest
+      nextra: ^2.2.19
       postcss: ^8.4.18
       react: 18.2.0
       react-compare-slider: ^2.2.0
@@ -113,6 +114,7 @@ importers:
       mintee-nft: link:../../external-packages/mintee-nft
       mintee-utils: link:../../packages/mintee-utils
       next: 13.2.4_6m24vuloj5ihw4zc5lbsktc4fu
+      nextra: 2.2.19_ld2jel3hspngo3u5lti2kgl2sq
       react: 18.2.0
       react-compare-slider: 2.2.0_biqbaboplfbrettd7655fr4n2y
       react-countup: 6.4.1_elcnzj4mjdoaqus7ts26ufldxi
@@ -7795,7 +7797,7 @@ packages:
       gray-matter: 4.0.3
       katex: 0.16.4
       lodash.get: 4.4.2
-      next: 13.2.4_biqbaboplfbrettd7655fr4n2y
+      next: 13.2.4_6m24vuloj5ihw4zc5lbsktc4fu
       next-mdx-remote: 4.4.1_biqbaboplfbrettd7655fr4n2y
       p-limit: 3.1.0
       react: 18.2.0
