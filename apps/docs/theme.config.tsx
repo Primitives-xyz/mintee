@@ -5,10 +5,10 @@ const config: DocsThemeConfig = {
   logo: <span>Mintee API</span>,
 
   project: {
-    link: "https://npmjs.com/package/mintee-nft",
+    link: "https://github.com/shuding/nextra-docs-template",
   },
 
-  docsRepositoryBase: "https://docs.mintee.io",
+  docsRepositoryBase: "https://github.com/shuding/nextra-docs-template",
   footer: {
     text: "Mintee API",
   },
