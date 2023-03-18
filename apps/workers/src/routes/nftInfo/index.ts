@@ -63,16 +63,14 @@ export async function nftInfoRoute(
     .catch((e) => {
       throw new Error("factory responds with nothing");
     });
-
   const anyTokenPromise = Promise.any([kvPromise, nftInfoPromise]);
   const [tokenInfoResponse, tokenLookupResponse] = await Promise.all([
     anyTokenPromise,
     tokenLookup,
   ]);
-
   if (!tokenLookupResponse) {
     return new Response(
-      "x-api-key incorrect, if you think this is a mistake contact support@mintee.io",
+      "x-api-key is not connected to an account, if you think this is a mistake contact support@mintee.io",
       {
         status: 500,
         headers: corsHeaders,

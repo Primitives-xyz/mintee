@@ -80,11 +80,11 @@ export default async function Page() {
         <div className="w-full h-96 bg-[#47586a]/75 rounded-2xl mt-4 ">
           <h2 className="text-4xl mt-4"> Pricing</h2>
           <div className="flex flex-row w-full mt-4">
-            <div className="flex flex-col w-1/3">
-              <div className="h-48 text-2xl">Free</div>
+            <div className="flex flex-col w-1/3 h-48">
+              <div className=" text-2xl ">Free</div>
             </div>
-            <div className="flex flex-col w-1/3">$20/Month</div>
-            <div className="flex flex-col w-1/3">$100/month</div>
+            <div className="flex flex-col w-1/3 text-2xl">$20/Month</div>
+            <div className="flex flex-col w-1/3 text-2xl">$100/month</div>
           </div>
         </div>
       </main>
