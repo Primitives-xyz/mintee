@@ -30,7 +30,7 @@ export default function RootLayout({
         <body>
           <div className="flex flex-row">
             <Sidebar />
-            <div className="bg-[#111C27]/75 px-8 text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
+            <div className="bg-[#111C27]/75 text-white w-full px-4 min-h-screen mx-auto flex-col items-center justify-center py-2">
               {children}
             </div>
           </div>
