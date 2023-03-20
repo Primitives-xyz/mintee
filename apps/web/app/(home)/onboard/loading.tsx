@@ -1,4 +1,4 @@
-export function loadingAPI() {
+export default function LoadingAPI() {
   return (
     <div className="flex justify-center items-center flex-row">
       <h1>Loading...</h1>
