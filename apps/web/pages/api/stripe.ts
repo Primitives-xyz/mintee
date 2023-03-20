@@ -5,6 +5,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
 });
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 const endpointSecret = "whsec_qX1n35wFgEkj9OrxZl77dBdBpObfzmCl";
 export default async function handler(
   req: NextApiRequest,
