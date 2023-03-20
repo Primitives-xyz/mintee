@@ -110,7 +110,7 @@ export default async function Page() {
                 <div> $20/month</div>
               </div>
               <div className=" text-xl flex justify-center items-center h-16">
-                5,000 NFT mints a month
+                1,000 NFT mints a month
               </div>
               <div className=" text-xl flex justify-center items-center h-16">
                 250,000 NFT info calls a month
@@ -130,7 +130,7 @@ export default async function Page() {
                 <div> $100/Month</div>
               </div>
               <div className=" text-xl flex justify-center items-center h-16">
-                25 NFT mints a month
+                5,000 NFT mints a month
               </div>
               <div className=" text-xl flex justify-center items-center h-16">
                 10,000 NFT info calls a month
