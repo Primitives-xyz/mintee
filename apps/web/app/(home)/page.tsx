@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
 import Image from "next/image";
 import SquigglyLines from "../../components/SquigglyLines";
+import { Testimonials } from "../../components/Testimonials";
 
 export default async function Page() {
   // Fetch data directly in a Server Component
@@ -77,16 +78,76 @@ export default async function Page() {
             </div>
           </div>
         </div>
-        <div className="w-full h-96 bg-[#47586a]/75 rounded-2xl mt-4 ">
-          <h2 className="text-4xl mt-4"> Pricing</h2>
-          <div className="flex flex-row w-full mt-4">
-            <div className="flex flex-col w-1/3 h-48">
-              <div className=" text-2xl ">Free</div>
+        <div className="w-full bg-[#47586a]/75 rounded-2xl mt-4 ">
+          <div className="text-4xl mt-4  w-full flex items-center justify-center">
+            <div className="bg-gray-400 shadow-sm w-48 rounded-2xl py-1 ">
+              Pricing
             </div>
-            <div className="flex flex-col w-1/3 text-2xl">$20/Month</div>
-            <div className="flex flex-col w-1/3 text-2xl">$100/month</div>
+          </div>
+          <div className="flex sm:flex-row flex-col w-full mt-4">
+            <div className="grid grid-cols-1 divide-y-2 w-1/3 mx-8">
+              <div className="text-yellow-300 text-2xl flex justify-center items-start h-12">
+                <div> Free</div>
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                25 NFT mints a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                10,000 NFT info calls a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                1 certified collection a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                {" "}
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                {" "}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 divide-y-2 w-1/3 mx-8">
+              <div className="text-yellow-300 text-2xl flex justify-center items-start h-12">
+                <div> $20/month</div>
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                5,000 NFT mints a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                250,000 NFT info calls a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                3 certified collection a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                100 on-chain updates a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                {" "}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 divide-y-2 w-1/3 mx-8">
+              <div className="text-yellow-300 text-2xl flex justify-center items-start h-12">
+                <div> $100/Month</div>
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                25 NFT mints a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                10,000 NFT info calls a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                25 certified collection a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                2,500 on chain updates a month
+              </div>
+              <div className=" text-xl flex justify-center items-center h-16">
+                3 unique trees a month
+              </div>
+            </div>
           </div>
         </div>
+        <Testimonials />
       </main>
     </>
   );

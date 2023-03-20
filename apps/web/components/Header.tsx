@@ -32,6 +32,7 @@ export default function Header({ userId }: { userId?: string }) {
         ) : (
           <>
             <Link
+              prefetch
               className="flex max-w-fit items-center justify-center  rounded-full border border-blue-600 text-white px-5 py-2 text-sm shadow-md hover:bg-gray-800 font-medium transition"
               href="/dashboard"
             >
