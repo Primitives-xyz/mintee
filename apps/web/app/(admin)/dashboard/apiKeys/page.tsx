@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/app-beta";
 import { prismaModels } from "mintee-database";
 import { pscale } from "../../../../utils";
-
+export const revalidate = 0.5;
 async function getTokens() {
   const { userId } = auth();
   const tokens = await pscale.execute(
