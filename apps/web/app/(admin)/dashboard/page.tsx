@@ -21,7 +21,8 @@ async function getPosts() {
       'symbol', n.symbol,
       'offChainUrl', n.offChainUrl,
       'description', n.description,
-      'blockchainAddress', n.blockchainAddress
+      'blockchainAddress', n.blockchainAddress,
+      'isCompressed', n.isCompressed
     )) as nfts,
     JSON_ARRAYAGG(JSON_OBJECT(
       'id', t.id,
