@@ -33,6 +33,7 @@
     "mintee-database": "*",
     "mintee-nft": "^1.0.2",
     "mintee-utils": "*",
+    "multiparty": "^4.2.3",
     "next": "latest",
     "nextra": "^2.2.19",
     "react": "18.2.0",
@@ -48,6 +49,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/multiparty": "^0.0.33",
     "@types/node": "18.11.3",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",
