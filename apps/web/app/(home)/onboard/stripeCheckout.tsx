@@ -11,6 +11,7 @@ const stripePromise = loadStripe(
 );
 export default function StripeCheckout() {
   const { userId } = useAuth();
+  console.log("USERRRID", userId);
   useEffect(() => {
     // Check to see if this is a redirect back from Checkout
     const query = new URLSearchParams(window.location.search);
