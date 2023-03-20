@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
-import multiparty from "multiparty";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
 });
@@ -16,17 +15,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const form = new multiparty.Form();
-  const data = await new Promise((resolve, reject) => {
-    form.parse(req, function (err: any, fields: any, files: any) {
-      if (err) reject({ err });
-      resolve({ fields, files });
-    });
-  });
-  console.log(`data: `, JSON.stringify(data));
   if (req.method === "POST") {
     try {
-      console.log("req.body", req);
+      console.log("req.body", req.body);
       const body = req.body;
       // Create Checkout Sessions from body params.
       const session = await stripe.checkout.sessions.create({
