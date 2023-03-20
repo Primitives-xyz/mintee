@@ -28,6 +28,11 @@ export default function DashboardTable({
   ];
   return (
     <>
+      <div className="w-full flex justify-center items-center text-xl font-bold ">
+        <div className="bg-[#111C27]/75 w-48 rounded-xl flex justify-center items-center my-2">
+          NFTs Minted
+        </div>
+      </div>
       <Table data={userCreatedNFTs} columns={columns} />
     </>
   );
