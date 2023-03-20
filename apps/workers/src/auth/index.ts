@@ -84,3 +84,28 @@ export type apiTokenStatus = {
   active: boolean;
   userExternalId: string;
 };
+
+export async function getExternalKeyandAPIToken(request: Request, env: Env) {
+  // if get request, return error
+  if (request.method === "GET") {
+    throw new Error("GET not allowed");
+  }
+  // parse pass in api key
+  const external_id = request.headers.get("x-api-key");
+  if (!external_id) {
+    // if no external_id, return error
+    throw new Error("x-api-key header is required");
+  }
+
+  // check if api key is active / canMint
+  const response = await getMintAuth(external_id, env, request.url).catch(
+    (e) => {
+      console.log("Error in fetch api token", e);
+    }
+  );
+  if (!response) {
+    throw new Error("api key not found");
+  }
+
+  return external_id;
+}
