@@ -19,7 +19,7 @@ async function getPosts() {
       'id', n.id,
       'name', n.name,
       'symbol', n.symbol,
-      'offChainUrl', n.offChainUrl,
+      'uri', n.uri,
       'description', n.description,
       'blockchainAddress', n.blockchainAddress,
       'isCompressed', n.isCompressed
@@ -67,37 +67,39 @@ export default async function Page() {
             <div className="h-24 w-full sm:w-48 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text-md font-bold mx-2">NFT Info Calls</h1>
               <div className="text-4xl">
-                {userCreatedNFTs.tokens[0].nftInfoCallsCount}
+                {userCreatedNFTs?.tokens[0].nftInfoCallsCount ?? 0}
               </div>
             </div>
             <div className="h-24 w-full sm:w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text-md font-bold mx-2">NFTs Minted This Month</h1>
               <div className="text-4xl">
-                {userCreatedNFTs.tokens[0].mintCallsCount}
+                {userCreatedNFTs?.tokens[0].mintCallsCount ?? 0}
               </div>
             </div>
             <div className="h-24 w-full sm:w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text- font-bold mx-2">API Status</h1>
               <div
                 className={`text-4xl ${
-                  userCreatedNFTs.tokens[0].active
+                  userCreatedNFTs?.tokens[0].active
                     ? "text-green-500"
                     : "text-red-500"
                 }`}
               >
-                {userCreatedNFTs.tokens[0].active ? "Active" : "Inactive"}
+                {userCreatedNFTs?.tokens[0].active ? "Active" : "Inactive"}
               </div>
             </div>
             <div className="h-24 w-full sm:w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text-md font-bold mx-2">Team Tier</h1>
               <div className="text-3xl">
-                {userCreatedNFTs.tokens[0].planType}
+                {userCreatedNFTs?.tokens[0].planType ?? "Free"}
               </div>
             </div>
           </div>
-          <div className="overflow-auto bg-[#70767d] px-4 py-2 rounded-md mt-2 shadow-xl">
-            <DashboardTable userCreatedNFTs={userCreatedNFTs.nfts} />
-          </div>
+          {userCreatedNFTs?.nfts && (
+            <div className="overflow-auto bg-[#70767d] px-4 py-2 rounded-md mt-2 shadow-xl">
+              <DashboardTable userCreatedNFTs={userCreatedNFTs.nfts} />
+            </div>
+          )}
         </div>
       </div>
     </>

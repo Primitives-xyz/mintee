@@ -87,7 +87,7 @@ export default async function Page() {
             </div>
           </div>
           <div className="flex sm:flex-row flex-col w-full mt-4">
-            <div className="grid grid-cols-1 divide-y-2 w-1/3 mx-8">
+            <div className="grid grid-cols-1 divide-y-2 w-full sm:w-1/3 px-4 lg:px-16">
               <div className="text-yellow-300 text-2xl flex justify-center items-start h-12">
                 <div> Free</div>
               </div>
@@ -107,7 +107,7 @@ export default async function Page() {
                 {" "}
               </div>
             </div>
-            <div className="grid grid-cols-1 divide-y-2 w-1/3 mx-8">
+            <div className="grid grid-cols-1 divide-y-2 w-full sm:w-1/3 px-4 lg:px-16">
               <div className="text-yellow-300 text-2xl flex justify-center items-start h-12">
                 <div> $20/month</div>
               </div>
@@ -127,7 +127,7 @@ export default async function Page() {
                 {" "}
               </div>
             </div>
-            <div className="grid grid-cols-1 divide-y-2 w-1/3 mx-8">
+            <div className="grid grid-cols-1 divide-y-2 w-full sm:w-1/3 px-4 lg:px-16">
               <div className="text-yellow-300 text-2xl flex justify-center items-start h-12">
                 <div> $100/Month</div>
               </div>
