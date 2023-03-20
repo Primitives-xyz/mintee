@@ -23,6 +23,12 @@ export async function validateMintCompressBody(json: {
   });
 }
 
+export async function validateOffChainBody(body: any) {
+  return await offChainMetadataSchema.safeParseAsync(body).catch((e) => {
+    console.log("Error parsing body", e);
+  });
+}
+
 // combine zode schemas
 
 export const mintCompressOptionsSchema = z
@@ -64,3 +70,46 @@ export const mintCompressBodySchema = z.object({
     .optional(),
 });
 export type mintCompressBody = z.infer<typeof mintCompressBodySchema>;
+
+export const offChainMetadataSchema = z.object({
+  name: z.string(),
+  symbol: z.string().max(10).default("").optional(),
+  description: z.string().max(1000).optional(),
+  sellerFeeBasisPoints: z.number().min(0).max(10000).default(0),
+  image: z.string().max(200).optional(),
+  externalUrl: z.string().max(200).optional(),
+  attributes: z
+    .array(
+      z.object({
+        trait_type: z.string().optional(),
+        value: z.string().optional(),
+      })
+    )
+    .optional(),
+  properties: z
+    .object({
+      creators: z
+        .array(
+          z.object({
+            address: z.string().max(200),
+            share: z.number().min(0).max(100),
+          })
+        )
+        .optional(),
+      files: z
+        .array(
+          z.object({
+            type: z.string().optional(),
+            uri: z.string().max(200),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+  collection: z
+    .object({
+      name: z.string().optional(),
+      family: z.string().optional(),
+    })
+    .optional(),
+});

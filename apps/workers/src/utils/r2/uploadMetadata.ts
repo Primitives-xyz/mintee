@@ -1,5 +1,6 @@
 // import types from mantee-types
 import { R2Object } from "@cloudflare/workers-types";
+
 import { Env } from "..";
 /**
  * Upload metadata to a public bucket
@@ -21,9 +22,40 @@ export async function uploadMetadata(
     throw new Error(err);
   });
 }
+
 export type metadataInternal = {
-  symbol?: string | undefined;
-  description?: string | undefined;
-  max_uri_length?: number | undefined;
-  name: string;
+  isCompressed?: boolean;
+} & JsonMetadata;
+
+export type JsonMetadata<Uri = string> = {
+  name?: string;
+  symbol?: string;
+  description?: string;
+  seller_fee_basis_points?: number;
+  image?: Uri;
+  external_url?: Uri;
+  attributes?: Array<{
+    trait_type?: string;
+    value?: string;
+    [key: string]: unknown;
+  }>;
+  properties?: {
+    creators?: Array<{
+      address?: string;
+      share?: number;
+      [key: string]: unknown;
+    }>;
+    files?: Array<{
+      type?: string;
+      uri?: Uri;
+      [key: string]: unknown;
+    }>;
+    [key: string]: unknown;
+  };
+  collection?: {
+    name?: string;
+    family?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
 };

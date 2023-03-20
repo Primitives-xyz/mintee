@@ -3,11 +3,11 @@ import React from "react";
 
 export default function Sidebar() {
   return (
-    <div className="flex">
+    <div className="sm:flex hidden sm:visible">
       <div className="flex flex-col h-screen p-3 bg-[#111C27] text-white shadow w-48">
         <div className="space-y-3">
           <div className="flex items-center justify-center">
-            <Link href="/" prefetch>
+            <Link href="/">
               <h2 className="text-xl font-bold">Mintee ⚡️</h2>
             </Link>
           </div>

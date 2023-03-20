@@ -62,21 +62,21 @@ export default async function Page() {
         <h2 className="text-2xl min-w-full shadow-md bg-[#111C27]/75 p-2 rounded-lg">
           Mintee Account Overview
         </h2>
-        <div className="flex flex-col">
-          <div className="flex flex-col sm:flex-row space-x-2 m-2 w-full items-center justify-start">
+        <div className="flex flex-col overflow-auto">
+          <div className="flex flex-col sm:flex-row sm:space-x-2 p-2 w-full items-center justify-center sm:justify-start space-y-2 sm:space-y-0">
             <div className="h-24 w-full sm:w-48 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text-md font-bold mx-2">NFT Info Calls</h1>
               <div className="text-4xl">
                 {userCreatedNFTs.tokens[0].nftInfoCallsCount}
               </div>
             </div>
-            <div className="h-24 w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
+            <div className="h-24 w-full sm:w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text-md font-bold mx-2">NFTs Minted This Month</h1>
               <div className="text-4xl">
                 {userCreatedNFTs.tokens[0].mintCallsCount}
               </div>
             </div>
-            <div className="h-24 w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
+            <div className="h-24 w-full sm:w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text- font-bold mx-2">API Status</h1>
               <div
                 className={`text-4xl ${
@@ -88,7 +88,7 @@ export default async function Page() {
                 {userCreatedNFTs.tokens[0].active ? "Active" : "Inactive"}
               </div>
             </div>
-            <div className="h-24 w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
+            <div className="h-24 w-full sm:w-64 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text-md font-bold mx-2">Team Tier</h1>
               <div className="text-3xl">
                 {userCreatedNFTs.tokens[0].planType}

@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.mintCompressBodySchema = exports.mintCompressOptionsSchema = exports.validateMintCompressBody = void 0;
+exports.offChainMetadataSchema = exports.mintCompressBodySchema = exports.mintCompressOptionsSchema = exports.validateOffChainBody = exports.validateMintCompressBody = void 0;
 var zod_1 = require("zod");
 var types_1 = require("../types");
 function validateMintCompressBody(json) {
@@ -64,6 +64,19 @@ function validateMintCompressBody(json) {
     });
 }
 exports.validateMintCompressBody = validateMintCompressBody;
+function validateOffChainBody(body) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, exports.offChainMetadataSchema.safeParseAsync(body)["catch"](function (e) {
+                        console.log("Error parsing body", e);
+                    })];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+}
+exports.validateOffChainBody = validateOffChainBody;
 // combine zode schemas
 exports.mintCompressOptionsSchema = zod_1.z
     .object({
@@ -97,5 +110,41 @@ exports.mintCompressBodySchema = zod_1.z.object({
         verified: zod_1.z.boolean().optional(),
         share: zod_1.z.number().min(0).max(100)
     }))
+        .optional()
+});
+exports.offChainMetadataSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    symbol: zod_1.z.string().max(10)["default"]("").optional(),
+    description: zod_1.z.string().max(1000).optional(),
+    sellerFeeBasisPoints: zod_1.z.number().min(0).max(10000)["default"](0),
+    image: zod_1.z.string().max(200).optional(),
+    externalUrl: zod_1.z.string().max(200).optional(),
+    attributes: zod_1.z
+        .array(zod_1.z.object({
+        trait_type: zod_1.z.string().optional(),
+        value: zod_1.z.string().optional()
+    }))
+        .optional(),
+    properties: zod_1.z
+        .object({
+        creators: zod_1.z
+            .array(zod_1.z.object({
+            address: zod_1.z.string().max(200),
+            share: zod_1.z.number().min(0).max(100)
+        }))
+            .optional(),
+        files: zod_1.z
+            .array(zod_1.z.object({
+            type: zod_1.z.string().optional(),
+            uri: zod_1.z.string().max(200)
+        }))
+            .optional()
+    })
+        .optional(),
+    collection: zod_1.z
+        .object({
+        name: zod_1.z.string().optional(),
+        family: zod_1.z.string().optional()
+    })
         .optional()
 });
