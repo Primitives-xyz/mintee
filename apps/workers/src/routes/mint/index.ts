@@ -114,48 +114,44 @@ export async function mintRoute(
   const mintInfo = (await mintResponse.json()) as any;
   // after response update database and tell KV is api is active
   ctx.waitUntil(
-    Promise.all([
-      await conn
-        .transaction(async (trx) => {
-          await trx.execute(
-            `UPDATE Token SET mintCallsCount = mintCallsCount + 1,
+    conn
+      .transaction(async (trx) => {
+        await trx.execute(
+          `UPDATE Token SET mintCallsCount = mintCallsCount + 1,
                  canMint = (mintCallsCount + 1) <= mintCallsLimit
                  WHERE externalKey = ?;`,
-            [external_id]
-          );
+          [external_id]
+        );
 
-          const token = trx.execute(
-            "SELECT id, canMint, active, userExternalId FROM Token WHERE externalKey = ?;",
-            [external_id]
-          );
+        const token = trx.execute(
+          "SELECT id, canMint, active, userExternalId FROM Token WHERE externalKey = ?;",
+          [external_id]
+        );
 
-          return token;
-        })
-        .then(async (res) => {
-          console.log("RIGHT BEFORE");
-          const row = res.rows[0] as apiTokenStatus;
-          console.log("RIGHT AFTER");
-          await conn
-            .execute(
-              "INSERT INTO NFT (name, creatorUserExternalId, blockchainAddress, minteeMinted,isCompressed, description, symbol, blockchain ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-              [
-                body.data.name,
-                row.userExternalId,
-                mintInfo.assetId,
-                true,
-                true,
-                body.data.description,
-                body.data.symbol,
-                "Solana",
-              ]
-            )
-            .catch((e) => {
-              console.log("Error inserting into NFT table", e);
-            });
-          // create response with userInfo
-          env.apiTokens.put(mintInfo.assetId, JSON.stringify(row));
-        }),
-    ])
+        return token;
+      })
+      .then(async (res) => {
+        const row = res.rows[0] as apiTokenStatus;
+        await conn
+          .execute(
+            "INSERT INTO NFT (name, creatorUserExternalId, blockchainAddress, minteeMinted,isCompressed, description, symbol, blockchain ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+            [
+              body.data.name,
+              row.userExternalId,
+              mintInfo.assetId,
+              true,
+              true,
+              body.data.description,
+              body.data.symbol,
+              "Solana",
+            ]
+          )
+          .catch((e) => {
+            console.log("Error inserting into NFT table", e);
+          });
+        // create response with userInfo
+        await env.apiTokens.put(mintInfo.assetId, JSON.stringify(row));
+      })
   );
 
   // return compressed asset id
