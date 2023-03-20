@@ -27,7 +27,7 @@ export default function StripeCheckout() {
     <form action="/api/checkout" method="POST">
       <section>
         <button type="submit" role="link">
-          Checkout
+          Upgrade to Pro
         </button>
       </section>
       <style jsx>
