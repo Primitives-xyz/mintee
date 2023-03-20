@@ -20,7 +20,11 @@ export default async function handler(
 
   try {
     console.log("going into try");
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(
+      JSON.stringify(req.body),
+      sig,
+      endpointSecret
+    );
 
     console.log("event", event);
   } catch (err: any) {
@@ -28,8 +32,6 @@ export default async function handler(
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
-
-  console.log("EVENT", event);
 
   // Handle the event
   switch (event.type) {
