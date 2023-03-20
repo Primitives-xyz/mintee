@@ -24,11 +24,13 @@ export default async function handler(
     return;
   }
 
+  console.log("EVENT", event);
+
   // Handle the event
   switch (event.type) {
     case "checkout.session.completed":
       const checkoutSessionCompleted = event.data.object;
-      // Then define and call a function to handle the event checkout.session.completed
+      console.log(checkoutSessionCompleted);
       break;
     // ... handle other event types
     default:
