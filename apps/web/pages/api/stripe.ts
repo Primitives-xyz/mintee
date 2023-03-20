@@ -11,6 +11,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const sig = req.headers["stripe-signature"];
+  console.log("sig", sig);
   if (!sig) {
     res.status(400).send(`Webhook Error: Signature missing`);
     return;
