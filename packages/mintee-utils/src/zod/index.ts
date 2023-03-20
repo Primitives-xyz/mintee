@@ -41,6 +41,72 @@ export const mintCompressOptionsSchema = z
 
 //  parse json.data.name with Zod
 
+export const minteeNFTInputSchema = z.object({
+  name: z.string(),
+  symbol: z.string().max(10).default("").optional(),
+  description: z.string().max(1000).optional(),
+  uri: z.string().max(200).optional(),
+  sellerFeeBasisPoints: z.number().min(0).max(10000).optional(),
+  primarySaleHappened: z.boolean().optional(),
+  isMutable: z.boolean().optional(),
+  editionNonce: z.number().optional(),
+  tokenStandard: z.nativeEnum(TokenStandard).default(0).optional(),
+  collection: z
+    .object({
+      verified: z.boolean().optional(),
+      address: z.string().max(200).optional(),
+      key: z.string().max(200).optional(),
+    })
+    .optional(),
+  uses: z.nativeEnum(UseMethod).optional(),
+  tokenProgramVersion: z.nativeEnum(TokenProgramVersion).default(0).optional(),
+  creators: z
+    .array(
+      z.object({
+        address: z.string().max(200),
+        verified: z.boolean().optional(),
+        share: z.number().min(0).max(100),
+      })
+    )
+    .optional(),
+  image: z.string().max(200).optional(),
+  externalUrl: z.string().max(200).optional(),
+  attributes: z
+    .array(
+      z.object({
+        trait_type: z.string().optional(),
+        value: z.string().optional(),
+      })
+    )
+    .optional(),
+  properties: z
+    .object({
+      creators: z
+        .array(
+          z.object({
+            address: z.string().max(200),
+            share: z.number().min(0).max(100),
+          })
+        )
+        .optional(),
+      files: z
+        .array(
+          z.object({
+            type: z.string().optional(),
+            uri: z.string().max(200),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+});
+
+export type minteeNFTInput = z.infer<typeof minteeNFTInputSchema>;
+
+export type minteeNFTInfo = minteeNFTInput & {
+  blockchainAddress: string;
+  updateAuthorityAddress: string;
+};
 export const mintCompressBodySchema = z.object({
   name: z.string(),
   symbol: z.string().max(10).default("").optional(),
@@ -104,12 +170,6 @@ export const offChainMetadataSchema = z.object({
           })
         )
         .optional(),
-    })
-    .optional(),
-  collection: z
-    .object({
-      name: z.string().optional(),
-      family: z.string().optional(),
     })
     .optional(),
 });

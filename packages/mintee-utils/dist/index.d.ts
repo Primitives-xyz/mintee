@@ -1,4 +1,3 @@
-import { validateMintCompressBody } from "./zod";
-export { validateMintCompressBody };
-import type { mintCompressBody } from "./zod";
-export type { mintCompressBody };
+export { validateMintCompressBody, minteeNFTInputSchema } from "./zod";
+export type { mintCompressBody, minteeNFTInfo } from "./zod";
+export type { metadataInternal } from "./types";

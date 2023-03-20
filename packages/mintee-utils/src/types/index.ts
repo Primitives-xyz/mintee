@@ -21,6 +21,10 @@ export declare enum TokenStandard {
   ProgrammableNonFungible = 4,
 }
 
+export type metadataInternal = {
+  isCompressed?: boolean;
+} & JsonMetadata;
+
 export type JsonMetadata<Uri = string> = {
   name?: string;
   symbol?: string;
@@ -46,11 +50,7 @@ export type JsonMetadata<Uri = string> = {
     }>;
     [key: string]: unknown;
   };
-  collection?: {
-    name?: string;
-    family?: string;
-    [key: string]: unknown;
-  };
+
   [key: string]: unknown;
 };
 
