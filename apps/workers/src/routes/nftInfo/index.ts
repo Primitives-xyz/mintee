@@ -96,9 +96,9 @@ export async function nftInfoRoute(
 
   ctx.waitUntil(
     env.nftInfo.put(address + network, tokenInfoResponse).then(async (r) => {
-      return await conn
+      await conn
         .transaction(async (trx) => {
-          trx.execute(
+          await trx.execute(
             `UPDATE Token SET nftInfoCallsCount = nftInfoCallsCount + 1,
              active = (nftInfoCallsCount + 1) <= nftInfoCallsLimit
              WHERE externalKey = ?;`,

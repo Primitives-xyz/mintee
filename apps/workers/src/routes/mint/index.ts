@@ -117,7 +117,7 @@ export async function mintRoute(
     Promise.all([
       await conn
         .transaction(async (trx) => {
-          trx.execute(
+          await trx.execute(
             `UPDATE Token SET mintCallsCount = mintCallsCount + 1,
                  canMint = (mintCallsCount + 1) <= mintCallsLimit
                  WHERE externalKey = ?;`,

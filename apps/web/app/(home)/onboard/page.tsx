@@ -84,11 +84,27 @@ async function getUserAPIKey(userId: string) {
     };
   }
   const user = userTableResult.rows[0] as { id: string };
-  const tokensRes = await pscale.execute(
+  let tokensRes = await pscale.execute(
     "SELECT * FROM Token WHERE userExternalId = ? AND type = ?",
     [userId, "API"]
   );
 
+  if (tokensRes.rows.length === 0) {
+    const user = await currentUser();
+    const apiKey = generateExternalApiToken(
+      user!.emailAddresses[0].emailAddress
+    );
+
+    await pscale.execute(
+      "INSERT INTO Token (userExternalId, active, nftInfoCallsLimit, mintCallsLimit, canMint, type, externalKey) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [userId, true, 1000, 25, true, "API", apiKey]
+    );
+
+    tokensRes = await pscale.execute(
+      "SELECT * FROM Token WHERE userExternalId = ? AND type = ?",
+      [userId, "API"]
+    );
+  }
   const { externalKey } = tokensRes.rows[0] as { externalKey: string };
 
   // get the user's id from the database
