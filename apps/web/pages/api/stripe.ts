@@ -38,5 +38,5 @@ export default async function handler(
   }
 
   // Return a 200 response to acknowledge receipt of the event
-  res.json({ received: true });
+  res.send({});
 }
