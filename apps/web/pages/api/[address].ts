@@ -2,6 +2,8 @@ import { JsonMetadata, Metaplex, PublicKey } from "@metaplex-foundation/js";
 import { Connection } from "@solana/web3.js";
 import { NextApiResponse, NextApiRequest } from "next";
 import { TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
+import { minteeNFTInfo } from "mintee-utils";
+import { prismaModels } from "mintee-database";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -28,18 +30,22 @@ export default async function handler(
   if (!token) {
     return res.status(404).json({ message: "Token not found" });
   }
-
-  const response: nftResponse = {
-    token: {
-      name: token.name,
-      symbol: token.symbol,
-      address: token.address.toBase58(),
-      collectionAddress: token.collection?.address.toBase58(),
-      uri: token.uri,
-      editionNonce: token.editionNonce,
-      tokenStandard: token.tokenStandard,
+  const response: minteeNFTInfo = {
+    ...token,
+    blockchainAddress: token.address.toBase58(),
+    tokenStandard: token.tokenStandard!,
+    editionNonce: token.editionNonce ?? undefined,
+    collection: {
+      address: token.collection?.address?.toBase58() ?? undefined,
+      verified: token.collection?.verified ?? undefined,
     },
-    offChain: token.json,
+    updateAuthorityAddress: token.updateAuthorityAddress?.toBase58(),
+    uses: token.uses?.useMethod,
+    creators: token.creators.map((c) => ({
+      address: c.address.toBase58(),
+      verified: c.verified,
+      share: c.share,
+    })),
   };
   return res.status(200).json(response);
 }
@@ -55,16 +61,3 @@ function initMetaplex(network?: string) {
   const connection = new Connection(url, "confirmed");
   return Metaplex.make(connection);
 }
-
-type nftResponse = {
-  offChain: JsonMetadata<string> | null;
-  token: {
-    name: string;
-    symbol: string;
-    address: string;
-    collectionAddress?: string;
-    uri: string;
-    editionNonce: number | null;
-    tokenStandard: TokenStandard | null;
-  };
-};

@@ -1,4 +1,3 @@
-import { JsonMetadata } from "mintee-utils/dist/types";
 import { validateOffChainBody } from "mintee-utils/dist/zod";
 import { getExternalKeyandAPIToken } from "../../auth";
 import { corsHeaders, Env, uploadMetadata } from "../../utils";
@@ -19,10 +18,10 @@ export async function mintRoute(
       headers: corsHeaders,
     });
   }
-
   if (mintInfo.data.uri) {
     return mintNFTWithUri(external_id, mintInfo, ctx, env);
   } else {
+    // we need to upload off chain metadata if no uri
     const offChainDataParse = await validateOffChainBody(mintInfo.data);
     if (!offChainDataParse || !offChainDataParse.success) {
       return new Response("Error parsing body", {
@@ -30,11 +29,12 @@ export async function mintRoute(
         headers: corsHeaders,
       });
     }
-
-    await uploadMetadata(offChainDataParse.data, env, external_id);
+    const offChainUriKey = `${
+      offChainDataParse.data.name
+    }-${new Date().getTime()}`.replace(/ /g, "-");
+    await uploadMetadata(offChainDataParse.data, env, offChainUriKey);
+    const offChainUri = `${env.r2Url}${offChainUriKey}`;
+    mintInfo.data.uri = offChainUri;
+    return await mintNFTWithUri(external_id, mintInfo, ctx, env);
   }
-  return new Response("Error parsing body", {
-    status: 400,
-    headers: corsHeaders,
-  });
 }

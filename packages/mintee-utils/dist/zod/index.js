@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.offChainMetadataSchema = exports.mintCompressBodySchema = exports.mintCompressOptionsSchema = exports.validateOffChainBody = exports.validateMintCompressBody = void 0;
+exports.offChainMetadataSchema = exports.mintCompressBodySchema = exports.minteeNFTInputSchema = exports.mintCompressOptionsSchema = exports.validateOffChainBody = exports.validateMintCompressBody = void 0;
 var zod_1 = require("zod");
 var types_1 = require("../types");
 function validateMintCompressBody(json) {
@@ -86,6 +86,57 @@ exports.mintCompressOptionsSchema = zod_1.z
     .optional()
     .nullable();
 //  parse json.data.name with Zod
+exports.minteeNFTInputSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    symbol: zod_1.z.string().max(10)["default"]("").optional(),
+    description: zod_1.z.string().max(1000).optional(),
+    uri: zod_1.z.string().max(200).optional(),
+    sellerFeeBasisPoints: zod_1.z.number().min(0).max(10000).optional(),
+    primarySaleHappened: zod_1.z.boolean().optional(),
+    isMutable: zod_1.z.boolean().optional(),
+    editionNonce: zod_1.z.number().optional(),
+    tokenStandard: zod_1.z.nativeEnum(types_1.TokenStandard)["default"](0).optional(),
+    collection: zod_1.z
+        .object({
+        verified: zod_1.z.boolean().optional(),
+        address: zod_1.z.string().max(200).optional(),
+        key: zod_1.z.string().max(200).optional()
+    })
+        .optional(),
+    uses: zod_1.z.nativeEnum(types_1.UseMethod).optional(),
+    tokenProgramVersion: zod_1.z.nativeEnum(types_1.TokenProgramVersion)["default"](0).optional(),
+    creators: zod_1.z
+        .array(zod_1.z.object({
+        address: zod_1.z.string().max(200),
+        verified: zod_1.z.boolean().optional(),
+        share: zod_1.z.number().min(0).max(100)
+    }))
+        .optional(),
+    image: zod_1.z.string().max(200).optional(),
+    externalUrl: zod_1.z.string().max(200).optional(),
+    attributes: zod_1.z
+        .array(zod_1.z.object({
+        trait_type: zod_1.z.string().optional(),
+        value: zod_1.z.string().optional()
+    }))
+        .optional(),
+    properties: zod_1.z
+        .object({
+        creators: zod_1.z
+            .array(zod_1.z.object({
+            address: zod_1.z.string().max(200),
+            share: zod_1.z.number().min(0).max(100)
+        }))
+            .optional(),
+        files: zod_1.z
+            .array(zod_1.z.object({
+            type: zod_1.z.string().optional(),
+            uri: zod_1.z.string().max(200)
+        }))
+            .optional()
+    })
+        .optional()
+});
 exports.mintCompressBodySchema = zod_1.z.object({
     name: zod_1.z.string(),
     symbol: zod_1.z.string().max(10)["default"]("").optional(),
@@ -139,12 +190,6 @@ exports.offChainMetadataSchema = zod_1.z.object({
             uri: zod_1.z.string().max(200)
         }))
             .optional()
-    })
-        .optional(),
-    collection: zod_1.z
-        .object({
-        name: zod_1.z.string().optional(),
-        family: zod_1.z.string().optional()
     })
         .optional()
 });

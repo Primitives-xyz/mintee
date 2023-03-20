@@ -26,9 +26,9 @@ const mainnetTestTokens = {
   },
 };
 
-describe("Mintee", () => {
+describe("Mintee NFT info test", () => {
   test("Mintee initializes with apiKey and options", () => {
-    const apiKey = "test-api-key";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
     const network: "devnet" | "mainnet" | "testnet" = "devnet";
     const options = { network };
     const mintee = new Mintee({ apiKey, options });
@@ -38,8 +38,8 @@ describe("Mintee", () => {
   });
 
   test("Mintee initializes with apiKey only", () => {
-    const apiKey = "test-api-key";
-    const mintee = Mintee.make({
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
+    const mintee = Mintee.init({
       apiKey,
       options: {
         network: "devnet",
@@ -50,7 +50,7 @@ describe("Mintee", () => {
   });
 
   test("Mintee nftInfo method calls fetch with correct arguments devnet", async () => {
-    const apiKey = "am9obm55d29vZHRrZUBnbWFpbC5jb206MTY3ODc2NDgwODQyNA==";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
     const apiUrl = "https://api.mintee.io/";
 
     const mintee = new Mintee({
@@ -71,15 +71,19 @@ describe("Mintee", () => {
           network: mintee.network,
         },
       });
-      const infoReponse = await mintee.nftInfo({ tokenAddress: key });
+      const infoReponse = await mintee
+        .nftInfo({ tokenAddress: key })
+        .catch((e) => {
+          throw new Error(e);
+        });
+
       expect(infoReponse.token).toContain(onChainResponse);
 
       sinon.restore();
     }
   });
   test("Mintee nftInfo method calls fetch with correct arguments mainnet", async () => {
-    const apiKey = "am9obm55d29vZHRrZUBnbWFpbC5jb206MTY3ODc2NDgwODQyNA==";
-    const apiUrl = "https://api.mintee.io/";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
 
     const mintee = new Mintee({
       apiKey,
@@ -89,13 +93,7 @@ describe("Mintee", () => {
       const onChainResponse = {
         name: value.name,
       };
-      const fetchSpy = sinon.spy(globalThis, "fetch");
-      fetchSpy.withArgs(`${apiUrl}nftInfo/${key}`, {
-        headers: {
-          "x-api-key": apiKey,
-          network: mintee.network,
-        },
-      });
+
       const infoReponse = await mintee.nftInfo({ tokenAddress: key });
       expect(infoReponse.token).toContain(onChainResponse);
 
@@ -104,22 +102,12 @@ describe("Mintee", () => {
   });
   test("Mintee nft info doesn't return token with invalid api key", async () => {
     const apiKey = "badkey";
-    const apiUrl = "https://api.mintee.io/";
 
     const mintee = new Mintee({
       apiKey,
     });
 
     for (const [key, value] of Object.entries(mainnetTestTokens)) {
-      const fetchSpy = sinon.spy(globalThis, "fetch");
-
-      fetchSpy.withArgs(`${apiUrl}nftInfo/${key}`, {
-        headers: {
-          "x-api-key": apiKey,
-          network: mintee.network,
-        },
-      });
-
       // in vitest, expect the function to throw an
       const infoReponse = await mintee
         .nftInfo({ tokenAddress: key })

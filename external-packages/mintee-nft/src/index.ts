@@ -1,5 +1,5 @@
-import { mintCompressBody } from "mintee-utils";
-import { mintCompressBodySchema } from "mintee-utils/dist/zod";
+import { minteeNFTInputSchema, minteeNFTInfo } from "mintee-utils";
+import { JsonMetadata } from "mintee-utils/dist/types";
 export class Mintee {
   /** The connection object from Solana's SDK. */
   public readonly apiKey: string;
@@ -19,7 +19,7 @@ export class Mintee {
     this.apiUrl = `https://api.noxford1.workers.dev/`;
   }
 
-  static make({
+  static init({
     apiKey,
     options,
   }: {
@@ -37,31 +37,27 @@ export class Mintee {
    * @param metadata,
    * @returns
    */
-  async mintNft({
-    metadata,
-    toWallet,
-  }: {
-    metadata: mintCompressBody;
-    toWallet?: string;
-  }) {
-    const data = await mintCompressBodySchema
-      .parseAsync(metadata)
-      .catch((e) => {
-        throw new Error(e);
-      });
+  async mintNft(nftInput: minteeNFTInfo, options?: minteeOptions) {
+    const data = await minteeNFTInputSchema.parseAsync(nftInput).catch((e) => {
+      throw new Error(e);
+    });
     const url = `${this.apiUrl}mint`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "x-api-key": `${this.apiKey}`,
         "Content-Type": "application/json",
+        network: options?.network ?? this.network,
       },
       body: JSON.stringify({
         data,
         options: {
-          toWallet: toWallet ? toWallet : undefined,
+          toWallet: options?.toWallet ? options.toWallet : undefined,
         },
       }),
+    }).catch((e) => {
+      console.log("error", e);
+      throw new Error(e);
     });
     const token = await response.json().catch((e) => {
       throw new Error(e);
@@ -134,38 +130,7 @@ type nftResponse = {
     tokenStandard: TokenStandard | null;
   };
 };
-export type JsonMetadata<Uri = string> = {
-  name?: string;
-  symbol?: string;
-  description?: string;
-  seller_fee_basis_points?: number;
-  image?: Uri;
-  external_url?: Uri;
-  attributes?: Array<{
-    trait_type?: string;
-    value?: string;
-    [key: string]: unknown;
-  }>;
-  properties?: {
-    creators?: Array<{
-      address?: string;
-      share?: number;
-      [key: string]: unknown;
-    }>;
-    files?: Array<{
-      type?: string;
-      uri?: Uri;
-      [key: string]: unknown;
-    }>;
-    [key: string]: unknown;
-  };
-  collection?: {
-    name?: string;
-    family?: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-};
+
 type minteeOptions = {
   network: networkStringLiteral;
   toWallet?: string;
