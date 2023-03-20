@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { useAuth } from "@clerk/nextjs";
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -9,6 +10,7 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
 );
 export default function StripeCheckout() {
+  const { userId } = useAuth();
   useEffect(() => {
     // Check to see if this is a redirect back from Checkout
     const query = new URLSearchParams(window.location.search);
@@ -33,6 +35,7 @@ export default function StripeCheckout() {
         >
           Upgrade to Pro
         </button>
+        <input type="hidden" name="userId" value={userId as string} />
       </section>
     </form>
   );

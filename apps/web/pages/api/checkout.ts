@@ -10,6 +10,8 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     try {
+      console.log("req.body", req);
+      const body = req.body;
       // Create Checkout Sessions from body params.
       const session = await stripe.checkout.sessions.create({
         line_items: [
@@ -20,8 +22,9 @@ export default async function handler(
           },
         ],
         mode: "subscription",
-        success_url: `${req.headers.origin}/?success=true`,
-        cancel_url: `${req.headers.origin}/?canceled=true`,
+
+        success_url: `${req.headers.origin}/upgrade?success=true&userId=${body.userId}`,
+        cancel_url: `${req.headers.origin}/onboard?canceled=true`,
       });
       res.redirect(303, session.url!);
     } catch (err: any) {
