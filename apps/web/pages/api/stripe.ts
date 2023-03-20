@@ -17,14 +17,11 @@ export default async function handler(
     return;
   }
   let event;
+  const buf = await buffer(req);
 
   try {
     console.log("going into try");
-    event = stripe.webhooks.constructEvent(
-      await buffer(req),
-      sig,
-      endpointSecret
-    );
+    event = stripe.webhooks.constructEvent(buf, sig, endpointSecret);
 
     console.log("event", event);
   } catch (err: any) {
@@ -45,5 +42,5 @@ export default async function handler(
   }
 
   // Return a 200 response to acknowledge receipt of the event
-  res.send({});
+  res.json({ received: true });
 }
