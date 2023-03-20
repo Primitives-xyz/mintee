@@ -15,7 +15,7 @@ export default async function handler(
         line_items: [
           {
             // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-            price: "price_1Mn7UrBmA1eN5ps6kTlKp0br",
+            price: "price_1MnohIBmA1eN5ps6P3X1rKmV",
             quantity: 1,
           },
         ],
