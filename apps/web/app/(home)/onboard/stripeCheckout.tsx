@@ -27,16 +27,14 @@ export default function StripeCheckout() {
 
   return (
     <form action="/api/checkout" method="POST">
-      <section>
-        <button
-          type="submit"
-          role="link"
-          className="flex w-48 text-lg mt-4 items-center justify-center  rounded-full border hover:text-yellow-300 border-blue-600 text-white px-5 py-2  shadow-md  bg-blue-600 font-medium transition"
-        >
-          Upgrade to Pro
-        </button>
-        <input type="hidden" name="userId" value={userId as string} />
-      </section>
+      <button
+        type="submit"
+        role="link"
+        className="flex w-48 text-lg mt-4 items-center justify-center  rounded-full border hover:text-yellow-300 border-blue-600 text-white px-5 py-2  shadow-md  bg-blue-600 font-medium transition"
+      >
+        Upgrade to Pro
+      </button>
+      <input type="hidden" name="userId" value={userId as string} />
     </form>
   );
 }
