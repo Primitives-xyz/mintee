@@ -1,3 +1,4 @@
+import { minteeNFTInfo } from "mintee-utils";
 import { apiTokenStatus, getAuth } from "../../auth";
 import { conn, corsHeaders, Env, getNFTInfo, sha256 } from "../../utils";
 import { networkStringLiteral } from "../../utils/nft";
@@ -67,7 +68,10 @@ export async function nftInfoRoute(
   const [tokenInfoResponse, tokenLookupResponse] = await Promise.all([
     anyTokenPromise,
     tokenLookup,
-  ]);
+  ]).catch((e) => {
+    console.log("Error in Promise.all", e);
+    throw new Error("Error in Promise.all");
+  });
   if (!tokenLookupResponse) {
     return new Response(
       "x-api-key is not connected to an account, if you think this is a mistake contact support@mintee.io",
@@ -98,6 +102,27 @@ export async function nftInfoRoute(
     env.nftInfo.put(address + network, tokenInfoResponse).then(async (r) => {
       await conn
         .transaction(async (trx) => {
+          const nftInfo = JSON.parse(tokenInfoResponse) as minteeNFTInfo;
+          await trx
+            .execute(
+              `INSERT INTO NFT (name, symbol, uri, description, image, blockchainAddress, sellerFeeBasisPoints, isMutable,  blockchain, primarySaleHappened, network) VALUES (?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?);`,
+              [
+                nftInfo.name,
+                nftInfo.symbol,
+                nftInfo.uri,
+                nftInfo.description,
+                nftInfo.image,
+                nftInfo.blockchainAddress,
+                nftInfo.sellerFeeBasisPoints,
+                nftInfo.isMutable,
+                "Solana",
+                nftInfo.primarySaleHappened,
+                network === "devnet" ? "DEVNET" : "MAINNET",
+              ]
+            )
+            .catch((e) => {
+              console.log("error in insert nft", e);
+            });
           await trx.execute(
             `UPDATE Token SET nftInfoCallsCount = nftInfoCallsCount + 1,
              active = (nftInfoCallsCount + 1) <= nftInfoCallsLimit

@@ -9,7 +9,7 @@ export async function mintRoute(
   ctx: ExecutionContext,
   env: Env
 ) {
-  const external_id = await getExternalKeyandAPIToken(request, env);
+  const externalUserId = await getExternalKeyandAPIToken(request, env);
   const mintInfo = await mintInfoData(request);
 
   if (!mintInfo.data) {
@@ -19,7 +19,7 @@ export async function mintRoute(
     });
   }
   if (mintInfo.data.uri) {
-    return mintNFTWithUri(external_id, mintInfo, ctx, env);
+    return mintNFTWithUri(externalUserId, mintInfo, ctx, env);
   } else {
     // we need to upload off chain metadata if no uri
     const offChainDataParse = await validateOffChainBody(mintInfo.data);
@@ -35,6 +35,6 @@ export async function mintRoute(
     await uploadMetadata(offChainDataParse.data, env, offChainUriKey);
     const offChainUri = `${env.r2Url}${offChainUriKey}`;
     mintInfo.data.uri = offChainUri;
-    return await mintNFTWithUri(external_id, mintInfo, ctx, env);
+    return await mintNFTWithUri(externalUserId, mintInfo, ctx, env);
   }
 }

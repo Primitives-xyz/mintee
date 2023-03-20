@@ -3,26 +3,26 @@ import sinon from "sinon";
 import { Mintee } from "..";
 
 const devnetestTokens = {
-  FzLVJJG5WSHyuHWP1YXHCJ3xB7snVEEA9XTEsX5Yc6fq: {
-    name: "nickie",
+  TrV9F1yRrKhy1LRGKSvnGwGcc2R8VfcmiBJnQZvPLq3: {
+    name: "nick1234",
   },
-  ErUN3NFr7DJeQpHvoucHZB2a3pqGtysJRJc9PtsEFcKD: {
-    name: "nick 2",
+  ExeUMscaVZV2NGMTpKUEwRVaL87ELD7JXcWq3BBJ4Rk: {
+    name: "nickkyyyy",
   },
-  "6vm6opAMVebeiYcYYoWwjvoE5KjNCrF7Lz8PknyxCdzJ": {
-    name: "nick test drop",
+  "5zo9jR2gfH7Tub5sjt9cuyoyriVrBdmi4KThhb6zqQt4": {
+    name: "nick's profile background",
   },
 };
 
 const mainnetTestTokens = {
-  Cs1i6fN4PJe7bhFFfWs1JMZj3PdDqpL9mP3U93LgsySF: {
-    name: "chizygram",
+  HVdz1hVzvGdQJeUGrj7Xd2WyRZ3CYYLgkvjEKCF7pJjV: {
+    name: "DeGod #9999",
   },
-  GP9JZgsTmksbD6zvmG4nx2nhHkhdfKPwt9J3aqk66fS8: {
-    name: "decent",
+  "364S9Q7Qp5zVX6VduqKJ39TihCosKiBEYw5QmpUM8qaX": {
+    name: "Fox #7779",
   },
-  "8kZshW1xgneLSZo7esCA7xEmiMQqitNV1wDjBSp7RL5z": {
-    name: "bounce0001",
+  "42Z5L8aNrqeq23T3suCWQCDYFoRdr9QvqMmze7HvnNJU": {
+    name: "Galactic Gecko #9992",
   },
 };
 
@@ -49,7 +49,7 @@ describe("Mintee NFT info test", () => {
     assert.equal(mintee.network, "devnet");
   });
 
-  test("Mintee nftInfo method calls fetch with correct arguments devnet", async () => {
+  test("Devnet - Mintee nftInfo method calls fetch and gets back correct info", async () => {
     const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
     const apiUrl = "https://api.mintee.io/";
 
@@ -77,12 +77,12 @@ describe("Mintee NFT info test", () => {
           throw new Error(e);
         });
 
-      expect(infoReponse.token).toContain(onChainResponse);
+      expect(infoReponse).toContain(onChainResponse);
 
       sinon.restore();
     }
   });
-  test("Mintee nftInfo method calls fetch with correct arguments mainnet", async () => {
+  test("Mainnet - Mintee nftInfo method calls fetch and gets back correct info", async () => {
     const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
 
     const mintee = new Mintee({
@@ -95,7 +95,7 @@ describe("Mintee NFT info test", () => {
       };
 
       const infoReponse = await mintee.nftInfo({ tokenAddress: key });
-      expect(infoReponse.token).toContain(onChainResponse);
+      expect(infoReponse).toContain(onChainResponse);
 
       sinon.restore();
     }
@@ -111,9 +111,7 @@ describe("Mintee NFT info test", () => {
       // in vitest, expect the function to throw an
       const infoReponse = await mintee
         .nftInfo({ tokenAddress: key })
-        .catch((e) => {
-          console.log("error", e);
-        });
+        .catch((e) => {});
       expect(infoReponse).toBeUndefined();
 
       sinon.restore();
