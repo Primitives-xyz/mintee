@@ -20,30 +20,69 @@ model User {
   planType   PlanType? @default(FREE)
   NFT        NFT[]
   Tree       Tree[]
+  Wallet     Wallet[]
 
   @@index([externalId])
 }
 
-model NFT {
-  id                    Int         @id @default(autoincrement())
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @default(now()) @updatedAt
-  name                  String      @db.VarChar(255)
-  symbol                String?     @db.VarChar(255)
-  offChainUrl           String?     @db.VarChar(255)
-  description           String?     @db.VarChar(255)
-  creatorUser           User        @relation(fields: [creatorUserExternalId], references: [externalId])
-  creatorUserExternalId String
-  blockchainAddress     String?     @db.VarChar(255)
-  blockchain            Blockchain?
-  minteeMinted          Boolean     @default(false)
-  isCompressed          Boolean     @default(false)
-  Tree                  Tree?       @relation(fields: [treeId], references: [id])
-  treeId                Int?
-  isCollection          Boolean     @default(false)
+model Wallet {
+  id                Int        @id @default(autoincrement())
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @default(now()) @updatedAt
+  blockchainAddress String     @db.VarChar(255)
+  user              User       @relation(fields: [userExternalId], references: [externalId])
+  userExternalId    String
+  blockchain        Blockchain
+  NFT               NFT[]
 
+  @@index([userExternalId])
+}
+
+model NFT {
+  id                      Int           @id @default(autoincrement())
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @default(now()) @updatedAt
+  name                    String        @db.VarChar(255)
+  symbol                  String?       @db.VarChar(255)
+  offChainUrl             String?       @db.VarChar(255)
+  description             String?       @db.VarChar(255)
+  blockchainAddress       String?       @db.VarChar(255)
+  sellerFeeBasisPoints    Int           @default(0)
+  isMutable               Boolean       @default(false)
+  editionNonce            Int?
+  tokenStandard           TokenStandard @default(NonFungible)
+  blockchain              Blockchain?
+  parentNFT               NFT?          @relation("ChildNFT", fields: [parentNFTId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  parentNFTId             Int?
+  minteeMinted            Boolean       @default(false)
+  creatorUserExternalId   String
+  creatorUser             User          @relation(fields: [creatorUserExternalId], references: [externalId])
+  isCompressed            Boolean       @default(false)
+  Tree                    Tree?         @relation(fields: [treeId], references: [id])
+  treeId                  Int?
+  isCollection            Boolean       @default(false)
+  NFT                     NFT[]         @relation("ChildNFT")
+  Creators                Creator[]
+  walletId                Int?
+  Wallet                  Wallet?       @relation(fields: [walletId], references: [id])
+  updateAuthorityAddress  String?       @db.VarChar(255)
+  json                    Json?
+  primarySaleHappened     Boolean       @default(false)
+  verifiedCollectionToken Boolean?      @default(false)
+
+  @@index([parentNFTId])
   @@index([creatorUserExternalId])
   @@index([treeId])
+  @@index([walletId])
+}
+
+model Creator {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+  creatorAddress String   @db.VarChar(255)
+  creatorShare   Int
+  NFT            NFT[]
 }
 
 model Token {
@@ -97,4 +136,11 @@ enum PlanType {
   PRO
   PREMIUM
   ENTERPRISE
+}
+
+enum TokenStandard {
+  NonFungible
+  FungibleAsset
+  Fungible
+  NonFungibleEdition
 }

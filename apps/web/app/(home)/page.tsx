@@ -58,6 +58,7 @@ export default async function Page() {
                   alt="Original photo of a room with roomGPT.io"
                   src="/img/carbon.png"
                   className="w-full object-cover h-96 rounded-2xl"
+                  priority
                   width={400}
                   height={400}
                 />
@@ -71,6 +72,7 @@ export default async function Page() {
                   alt="Generated photo of a room with roomGPT.io"
                   width={400}
                   height={400}
+                  priority
                   src="/img/cf.png"
                   className="w-full object-cover h-96 rounded-2xl sm:mt-0 mt-2"
                 />
