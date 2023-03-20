@@ -5,7 +5,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
 });
 
-const endpointSecret = "whsec_ikwATD5obUy7b47CVK2uswEKpukSFElr";
+const endpointSecret = "whsec_qX1n35wFgEkj9OrxZl77dBdBpObfzmCl";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
