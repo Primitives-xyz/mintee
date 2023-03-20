@@ -21,7 +21,10 @@ export default async function handler(
   try {
     console.log("going into try");
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+
+    console.log("event", event);
   } catch (err: any) {
+    console.log("ERRROR WHATT", err);
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
