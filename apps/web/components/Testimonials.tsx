@@ -4,7 +4,7 @@ const testimonials = [
       content: "NFT Info Fetch API",
       link: "/",
       author: {
-        name: "Sub 50ms reponse times",
+        name: "Sub 100ms reponse times",
         role: "We cache NFT data at the edge to help you deliver great user experiences with web 3 technologies.",
       },
     },
