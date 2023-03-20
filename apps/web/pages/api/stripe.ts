@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
-
+import { buffer } from "micro";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2022-11-15",
 });
@@ -20,11 +20,7 @@ export default async function handler(
 
   try {
     console.log("going into try");
-    event = stripe.webhooks.constructEvent(
-      JSON.stringify(req.body),
-      sig,
-      endpointSecret
-    );
+    event = stripe.webhooks.constructEvent(buffer(req), sig, endpointSecret);
 
     console.log("event", event);
   } catch (err: any) {

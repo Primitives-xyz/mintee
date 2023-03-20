@@ -29,6 +29,7 @@
     "bigint-buffer": "^1.1.5",
     "bs58": "^5.0.0",
     "framer-motion": "^8.2.4",
+    "micro": "^10.0.1",
     "mintee-database": "*",
     "mintee-nft": "^1.0.2",
     "mintee-utils": "*",
