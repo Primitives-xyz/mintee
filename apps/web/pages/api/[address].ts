@@ -1,9 +1,7 @@
-import { JsonMetadata, Metaplex, PublicKey } from "@metaplex-foundation/js";
+import { Metaplex, PublicKey } from "@metaplex-foundation/js";
 import { Connection } from "@solana/web3.js";
 import { NextApiResponse, NextApiRequest } from "next";
-import { TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
 import { minteeNFTInfo } from "mintee-utils";
-import { prismaModels } from "mintee-database";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -22,7 +20,7 @@ export default async function handler(
   // fetch token
   const token = await mp
     .nfts()
-    .findByMint({ mintAddress: tokenPK })
+    .findByMint({ mintAddress: tokenPK, loadJsonMetadata: false })
     .catch((e) => {
       console.log("Error", e);
     });

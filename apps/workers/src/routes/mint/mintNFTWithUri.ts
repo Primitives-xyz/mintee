@@ -3,7 +3,7 @@ import { apiTokenStatus } from "../../auth";
 import { conn, corsHeaders, Env } from "../../utils";
 
 export async function mintNFTWithUri(
-  external_id: string,
+  externalUserId: string,
   mintInfoData: {
     data: any;
     options: any;
@@ -85,13 +85,13 @@ export async function mintNFTWithUri(
         await trx.execute(
           `UPDATE Token SET mintCallsCount = mintCallsCount + 1,
                    canMint = (mintCallsCount + 1) <= mintCallsLimit
-                   WHERE externalKey = ?;`,
-          [external_id]
+                   WHERE userExternalId = ?;`,
+          [externalUserId]
         );
 
         const token = trx.execute(
-          "SELECT id, canMint, active, userExternalId FROM Token WHERE externalKey = ?;",
-          [external_id]
+          "SELECT id, canMint, active, userExternalId FROM Token WHERE userExternalId = ?;",
+          [externalUserId]
         );
 
         return token;
@@ -100,13 +100,13 @@ export async function mintNFTWithUri(
         const row = res.rows[0] as apiTokenStatus;
         await conn
           .execute(
-            "INSERT INTO NFT (name, creatorUserExternalId, blockchainAddress, minteeMinted,isCompressed, description, symbol, blockchain ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+            "INSERT INTO NFT (name, creatorUserExternalId, blockchainAddress, minteeMinted, isCompressed, description, symbol, blockchain ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
             [
               body.data.name,
-              row.userExternalId,
+              externalUserId,
               mintInfo.assetId,
-              true,
-              true,
+              1,
+              1,
               body.data.description,
               body.data.symbol,
               "Solana",

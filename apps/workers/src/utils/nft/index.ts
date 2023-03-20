@@ -32,7 +32,11 @@ export async function getNFTInfo({
     console.log("Error", e);
     throw new Error("Error fetching token" + e);
   });
-  const tokenInfo = JSON.stringify(await factoryResponse.json());
-
+  const tokenInfo = JSON.stringify(
+    await factoryResponse.json().catch((e) => {
+      console.log("Error", e);
+      throw new Error("Error parsing token" + e);
+    })
+  );
   return tokenInfo;
 }

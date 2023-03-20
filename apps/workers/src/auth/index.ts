@@ -53,7 +53,10 @@ export async function getAuth(external_id: string, env: Env, url: string) {
 
 export function lookUserUpKV(external_id: string, env: Env) {
   return new Promise(async (resolve, reject) => {
-    const response = await env.apiTokens.get(external_id);
+    const response = await env.apiTokens.get(external_id).catch((e) => {
+      console.log("ERROR", e);
+      reject(e);
+    });
     if (response) {
       resolve(JSON.parse(response) as apiTokenStatus);
     }
@@ -70,6 +73,7 @@ export function lookUserUpDB(external_id: string): Promise<apiTokenStatus> {
       )
       .catch((e) => {
         console.log("ERROR", e);
+        reject(e);
       });
     if (response && response.rows.length > 0) {
       resolve(response.rows[0]);
@@ -107,5 +111,5 @@ export async function getExternalKeyandAPIToken(request: Request, env: Env) {
     throw new Error("api key not found");
   }
 
-  return external_id;
+  return response.userExternalId;
 }

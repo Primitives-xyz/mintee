@@ -1,5 +1,6 @@
 import { minteeNFTInputSchema, minteeNFTInfo } from "mintee-utils";
 import { JsonMetadata } from "mintee-utils/dist/types";
+import { minteeNFTInput } from "mintee-utils/dist/zod";
 export class Mintee {
   /** The connection object from Solana's SDK. */
   public readonly apiKey: string;
@@ -37,7 +38,7 @@ export class Mintee {
    * @param metadata,
    * @returns
    */
-  async mintNft(nftInput: minteeNFTInfo, options?: minteeOptions) {
+  async mintNft(nftInput: minteeNFTInput, options?: minteeOptions) {
     const data = await minteeNFTInputSchema.parseAsync(nftInput).catch((e) => {
       throw new Error(e);
     });
@@ -59,9 +60,7 @@ export class Mintee {
       console.log("error", e);
       throw new Error(e);
     });
-    const token = await response.json().catch((e) => {
-      throw new Error(e);
-    });
+    const token = await response.json().catch((e) => {});
     return token;
   }
 
@@ -81,12 +80,19 @@ export class Mintee {
     }).catch((e) => {
       throw new Error(e);
     });
-    const token: nftResponse = await response.json().catch((e) => {
+    const token: minteeNFTInfo = await response.json().catch((e) => {
       console.log("error", e);
       throw new Error(e);
     });
     return token;
   }
+  /**
+   * Grab the most up to date on chain NFT data. Good for checking state of programmable NFT.
+   *
+   * @param tokenAddress
+   * @param options
+   * @returns
+   */
   async nftStatus({
     tokenAddress,
     options,
