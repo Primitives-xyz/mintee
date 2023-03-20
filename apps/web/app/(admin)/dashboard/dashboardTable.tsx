@@ -12,7 +12,7 @@ export default function DashboardTable({
 
   const columns = [
     columnHelper.accessor("name", {
-      header: "Name",
+      header: () => <div className="text-left">Name</div>,
       cell: (row) => <div className="text-left">{row.getValue()}</div>,
     }),
     columnHelper.accessor("symbol", {

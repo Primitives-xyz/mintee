@@ -63,8 +63,8 @@ export default async function Page() {
           Mintee Account Overview
         </h2>
         <div className="flex flex-col">
-          <div className="flex flex-row space-x-2 m-2 w-full items-center justify-start">
-            <div className="h-24 w-42 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
+          <div className="flex flex-col sm:flex-row space-x-2 m-2 w-full items-center justify-start">
+            <div className="h-24 w-full sm:w-48 rounded-md bg-slate-700 flex justify-center  items-center flex-col">
               <h1 className="text-md font-bold mx-2">NFT Info Calls</h1>
               <div className="text-4xl">
                 {userCreatedNFTs.tokens[0].nftInfoCallsCount}
