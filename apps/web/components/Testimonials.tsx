@@ -1,13 +1,11 @@
-import Image from "next/image";
-
 const testimonials = [
   [
     {
       content: "NFT Info Fetch API",
       link: "/",
       author: {
-        name: "We cache NFT data at the edge to help you deliver great user experiences with web 3 technologies.",
-        role: "Sub 50ms reponse times",
+        name: "Sub 50ms reponse times",
+        role: "We cache NFT data at the edge to help you deliver great user experiences with web 3 technologies.",
       },
     },
 
@@ -18,6 +16,14 @@ const testimonials = [
       author: {
         name: "Leverage the next generation of NFTs at scale.",
         role: "Solana compressed NFTs deliver the benefits of NFTs for use in your game or application.",
+      },
+    },
+    {
+      content: "Mintee.js",
+      link: "/",
+      author: {
+        name: "Our TypeScript library makes it easy to mint NFTs for any application.",
+        role: "Solana NFTs are a global phenomenon. We deliver perfomance no matter where you are.",
       },
     },
   ],
@@ -33,7 +39,11 @@ export function Testimonials() {
       <div className="mx-auto px-4 sm:px-6 lg:px-8 md:px-7">
         <div className="mx-auto md:text-center">
           <h1 className="mx-auto max-w-4xl font-display text-4xl font-bold tracking-normal text-gray-300 sm:text-6xl">
-            Pay Monthly, Worry Less
+            Blazing Fast Performance
+          </h1>
+          <h1 className="text-4xl">⚡️</h1>
+          <h1 className="mx-auto max-w-4xl font-display text-4xl font-bold tracking-normal text-gray-300 sm:text-6xl">
+            Web 3.0 Technology
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg sm:text-gray-400  text-gray-500 leading-7">
             {`Solana's fastest NFT API`}
@@ -58,12 +68,12 @@ export function Testimonials() {
                             {testimonial.content}
                           </p>
                         </blockquote>
-                        <figcaption className="relative mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
+                        <figcaption className="relative mt-6 flex items-center justify-center border-t border-slate-100 pt-6">
                           <div>
                             <div className="font-display text-base text-white">
                               {testimonial.author.name}
                             </div>
-                            <div className="mt-1 text-sm text-gray-400">
+                            <div className="mt-1 text-sm text-gray-400 flex justify-center items-center w-full">
                               {testimonial.author.role}
                             </div>
                           </div>

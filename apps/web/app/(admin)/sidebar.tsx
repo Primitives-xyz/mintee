@@ -6,12 +6,12 @@ export default function Sidebar() {
     <div className="flex">
       <div className="flex flex-col h-screen p-3 bg-[#111C27] text-white shadow w-48">
         <div className="space-y-3">
-          <div className="flex items-center">
-            <Link href="/">
-              <h2 className="text-xl font-bold">Mintee Dashboard</h2>
+          <div className="flex items-center justify-center">
+            <Link href="/" prefetch>
+              <h2 className="text-xl font-bold">Mintee ⚡️</h2>
             </Link>
           </div>
-          <div className="relative">
+          {/* <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center py-4">
               <button
                 type="submit"
@@ -39,12 +39,12 @@ export default function Sidebar() {
               placeholder="Search..."
               className="w-full py-2 pl-10 text-sm rounded-md focus:outline-none"
             />
-          </div>
+          </div> */}
           <div className="flex-1">
             <ul className="pt-2 pb-4 space-y-1 text-sm">
               <li className="rounded-sm">
                 <Link
-                  href="/"
+                  href="/dashboard"
                   className="flex items-center p-2 space-x-3 rounded-md  hover:bg-[#2e4a66] "
                 >
                   <svg
@@ -88,7 +88,7 @@ export default function Sidebar() {
               </li>
               <li className="rounded-sm">
                 <Link
-                  href="#"
+                  href="/dashboard/apiKeys"
                   className="flex items-center p-2 space-x-3 rounded-md  hover:bg-[#2e4a66] "
                 >
                   <svg
