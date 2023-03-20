@@ -4,7 +4,7 @@ import type { prismaModels } from "mintee-database";
 import DashboardTable from "./dashboardTable";
 
 // revalidate data every second on fetch
-export const revalidate = 1;
+export const revalidate = 0.5;
 
 async function getPosts() {
   const { userId } = auth();
