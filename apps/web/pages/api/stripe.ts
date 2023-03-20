@@ -20,7 +20,11 @@ export default async function handler(
 
   try {
     console.log("going into try");
-    event = stripe.webhooks.constructEvent(buffer(req), sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(
+      await buffer(req),
+      sig,
+      endpointSecret
+    );
 
     console.log("event", event);
   } catch (err: any) {
