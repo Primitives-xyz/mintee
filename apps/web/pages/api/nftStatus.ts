@@ -16,6 +16,7 @@ export default async function handler(
   try {
     tokenPK = new PublicKey(address);
   } catch (error) {
+    console.log("ERRROR WHATT", error);
     return res.status(404).json({ message: "Invalid token address" });
   }
   if (!tokenPK)
