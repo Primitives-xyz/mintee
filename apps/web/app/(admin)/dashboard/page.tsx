@@ -55,7 +55,7 @@ export default async function Page() {
   const userCreatedNFTs = await getPosts();
 
   // Forward fetched data to your Client Component
-
+  console.log(userCreatedNFTs);
   return (
     <>
       <div className="">
