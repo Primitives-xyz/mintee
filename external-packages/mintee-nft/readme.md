@@ -23,7 +23,7 @@ const apiKey = "YOUR_API_KEY";
 const mintee = new Mintee({ apiKey });
 
 // or use make // devnet
-// const mintee = Mintee.make({apiKey}, options: {
+// const mintee = Mintee.init({apiKey}, options: {
 //  network: 'devnet'
 // })
 

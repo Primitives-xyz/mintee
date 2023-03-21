@@ -12,7 +12,7 @@ While we provide the option to mint directly into a user's wallet, if you don't 
 
 - **`symbol`**: On chain symbol (optional)
 
-- **`uri`**: Off chain data (optional)
+- **`uri`**: Off chain data **If no uri is provided, we parse your data and upload for you** (optional)
 
 - **`creators`**: An array of creators (optional)
 
@@ -44,14 +44,12 @@ While we provide the option to mint directly into a user's wallet, if you don't 
 import { Mintee } from "mintee-nft";
 
 const apiKey = "YOUR_API_KEY";
-const mintee = Mintee.make({ apiKey });
+const mintee = Mintee.init({ apiKey });
 
 const nftAddress = await mintee.mintNft({
-  metadata: {
-    name: "my first mint",
-    symbol: "MFM",
-    uri: "https://offchain.mintee.io/test.json",
-  },
+  name: "my first mint",
+  symbol: "MFM",
+  uri: "https://offchain.mintee.io/test.json",
 });
 
 console.log(nftAddress);

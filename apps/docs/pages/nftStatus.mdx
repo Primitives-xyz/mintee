@@ -54,7 +54,7 @@ const nftInfo = await response.json();
 import { Mintee } from "mintee-nft";
 
 const apiKey = "YOUR_API_KEY";
-const mintee = Mintee.make({ apiKey });
+const mintee = Mintee.init({ apiKey });
 
 const tokenAddress = "5SvFwK7MX3t5FR8k5rcM8eRfuBeAchFQaSxS7r3CnnXz";
 const nftInfo = await mintee.nftStatus({ tokenAddress });

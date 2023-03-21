@@ -17,7 +17,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const sig = req.headers["stripe-signature"];
-  console.log("sig", sig);
   if (!sig) {
     res.status(400).send(`Webhook Error: Signature missing`);
     return;
@@ -26,12 +25,8 @@ export default async function handler(
   const buf = await buffer(req);
 
   try {
-    console.log("going into try");
     event = stripe.webhooks.constructEvent(buf, sig, endpointSecret);
-
-    console.log("event", event);
   } catch (err: any) {
-    console.log("ERRROR WHATT", err);
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
@@ -40,7 +35,6 @@ export default async function handler(
   switch (event.type) {
     case "checkout.session.completed":
       const checkoutSessionCompleted = event.data.object;
-      console.log(checkoutSessionCompleted);
       break;
     // ... handle other event types
     default:
