@@ -31,7 +31,6 @@ export default function RootLayout({
         <body>
           <div className="bg-[#111C27] text-white max-w-full min-h-screen mx-auto flex-col items-center justify-center py-2">
             <Header userId={userId ?? ""} />
-
             {children}
           </div>
         </body>

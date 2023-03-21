@@ -26,7 +26,7 @@ const publicPages: Array<string> = [
   "/sign-up/[[...index]]",
   "/sign-in/[[...index]]",
   "/api",
-  "/onboard",
+  "/warp",
 ];
 
 function MyApp({ Component, pageProps }: AppProps) {
