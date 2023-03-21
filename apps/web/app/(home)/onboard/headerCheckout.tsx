@@ -9,7 +9,7 @@ import { useAuth } from "@clerk/nextjs";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
 );
-export default function StripeCheckout() {
+export default function HeaderCheckout() {
   const { userId } = useAuth();
   useEffect(() => {
     // Check to see if this is a redirect back from Checkout
@@ -30,7 +30,7 @@ export default function StripeCheckout() {
       <button
         type="submit"
         role="link"
-        className="flex w-48 text-lg mt-4 items-center justify-center  rounded-full border hover:text-yellow-300 border-blue-600 text-white px-5 py-2  shadow-md  bg-blue-600 font-medium transition"
+        className="flex max-w-fit items-center justify-center  rounded-full border border-blue-600 text-white px-5 py-2 text-sm shadow-md hover:bg-blue-500 bg-blue-600 font-medium transition"
       >
         Upgrade to Pro
       </button>

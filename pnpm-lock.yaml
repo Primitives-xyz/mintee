@@ -169,6 +169,7 @@ importers:
   external-packages/mintee-nft:
     specifiers:
       '@types/node': ^14.14.31
+      '@types/sinon': ^10.0.13
       '@vitest/ui': ^0.29.2
       mintee-utils: '*'
       sinon: ^15.0.2
@@ -180,6 +181,7 @@ importers:
       vitest: 0.29.2_@vitest+ui@0.29.2
     devDependencies:
       '@types/node': 14.18.38
+      '@types/sinon': 10.0.13
       '@vitest/ui': 0.29.2
       typescript: 4.9.5
 
@@ -2941,6 +2943,16 @@ packages:
       '@types/mime': 3.0.1
       '@types/node': 18.15.0
     dev: false
+
+  /@types/sinon/10.0.13:
+    resolution: {integrity: sha512-UVjDqJblVNQYvVNUsj0PuYYw0ELRmgt1Nt5Vk0pT5f16ROGfcKJY8o1HVuMOJOpD727RrGB9EGvoaTQE5tgxZQ==}
+    dependencies:
+      '@types/sinonjs__fake-timers': 8.1.2
+    dev: true
+
+  /@types/sinonjs__fake-timers/8.1.2:
+    resolution: {integrity: sha512-9GcLXF0/v3t80caGs5p2rRfkB+a8VBGLJZVih6CNFkx8IZ994wiKKLSRs9nuFwk1HevWs/1mnUmkApGrSGsShA==}
+    dev: true
 
   /@types/stack-trace/0.0.29:
     resolution: {integrity: sha512-TgfOX+mGY/NyNxJLIbDWrO9DjGoVSW9+aB8H2yy1fy32jsvxijhmyJI9fDFgvz3YP4lvJaq9DzdR/M1bOgVc9g==}
@@ -9993,6 +10005,7 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: false
 
   /vlq/2.0.4:
     resolution: {integrity: sha512-aodjPa2wPQFkra1G8CzJBTHXhgk3EVSwxSWXNPr1fgdFLUb8kvLV1iEb6rFgasIsjP82HWI6dsb5Io26DDnasA==}
