@@ -2,7 +2,7 @@ import { auth, ClerkProvider } from "@clerk/nextjs/app-beta";
 import "../../styles/globals.css";
 import Sidebar from "./sidebar";
 export const metadata = {
-  title: "Fastest NFT minting service",
+  title: "Mintee Dashboard",
   description: "Mintee is the fastest NFT minting service.",
   ogImage: "https://minte.vercel.app/warp.jpeg",
   siteName: "Mintee",
