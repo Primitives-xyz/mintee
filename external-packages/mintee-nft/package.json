@@ -12,7 +12,6 @@
     "ui": "vitest --ui"
   },
   "dependencies": {
-    "@types/sinon": "^10.0.13",
     "mintee-utils": "*",
     "sinon": "^15.0.2",
     "vitest": "^0.29.2"
