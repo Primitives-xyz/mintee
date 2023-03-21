@@ -1,9 +1,8 @@
 export default function Loading() {
   // You can add any UI inside Loading, including a Skeleton.
   return (
-    <button type="button" className="bg-indigo-500 ..." disabled>
-      <svg className="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg>
-      Processing...
-    </button>
+    <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-gray-900"></div>
+    </div>
   );
 }

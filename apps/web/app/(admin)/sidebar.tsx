@@ -37,7 +37,7 @@ export default function Sidebar() {
               </li>
               <li className="rounded-sm">
                 <Link
-                  href="#"
+                  href="/dashboard/apiTokens"
                   className="flex items-center p-2 space-x-3 rounded-md  hover:bg-[#2e4a66] "
                 >
                   <svg
@@ -79,7 +79,7 @@ export default function Sidebar() {
                   <span>API Tokens</span>
                 </Link>
               </li>
-              <li className="rounded-sm">
+              {/* <li className="rounded-sm">
                 <Link
                   href="#"
                   className="flex items-center p-2 space-x-3 rounded-md  hover:bg-[#2e4a66] "
@@ -105,7 +105,7 @@ export default function Sidebar() {
                   </svg>
                   <span>Settings</span>
                 </Link>
-              </li>
+              </li> */}
               <li className="rounded-sm">
                 <Link
                   href="#"
