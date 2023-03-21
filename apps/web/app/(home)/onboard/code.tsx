@@ -30,7 +30,7 @@ export default function CodeView({ apiKey }: { apiKey?: string }) {
   
   async function mintNFT() {
     // initialize mintee with your api key
-    const mintee = Mintee.make({
+    const mintee = Mintee.init({
     apiKey: "${apiKey ?? ""}"});
   
     // mint nft 
