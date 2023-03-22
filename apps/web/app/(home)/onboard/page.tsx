@@ -1,9 +1,8 @@
-import { auth, currentUser } from "@clerk/nextjs/app-beta";
+import { currentUser } from "@clerk/nextjs/app-beta";
 import Head from "next/head";
 import CodeView from "./code";
 import { pscale } from "../../../utils";
 import StripeCheckout from "./stripeCheckout";
-import { Suspense } from "react";
 import { User } from "@clerk/nextjs/dist/api";
 
 export default async function Page() {
