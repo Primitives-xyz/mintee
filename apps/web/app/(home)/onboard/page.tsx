@@ -47,18 +47,17 @@ async function getUserAPIKey(user: User) {
   // if so, return the user
   const userId = user.id;
   const userTableResult = await pscale
-    .execute("SELECT * FROM User WHERE externalId = ?", [userId])
+    .execute("SELECT * FROM User WHERE externalId = ?", [user.id])
 
     .catch((e) => {
       console.log(e);
     });
-
   if (!userTableResult || userTableResult.rows.length === 0) {
     // insert user into database including externalId, email, and first name and last name
     // also insert api Token with field active set to true
     await pscale
       .execute(
-        "INSERT INTO User (externalId, email, firstName, lastName) VALUES (?, ?, ?, ?)",
+        "INSERT IGNORE INTO User (externalId, email, firstName, lastName) VALUES (?, ?, ?, ?) ",
         [
           user.id,
           user!.emailAddresses[0].emailAddress,
@@ -80,11 +79,9 @@ async function getUserAPIKey(user: User) {
     );
 
     return {
-      props: {
-        userId,
-        isNew: true,
-        apiKey,
-      },
+      userId,
+      isNew: true,
+      apiKey,
     };
   }
   let tokensRes = await pscale.execute(
@@ -93,7 +90,6 @@ async function getUserAPIKey(user: User) {
   );
 
   if (tokensRes.rows.length === 0) {
-    const user = await currentUser();
     const apiKey = generateExternalApiToken(
       user!.emailAddresses[0].emailAddress
     );
