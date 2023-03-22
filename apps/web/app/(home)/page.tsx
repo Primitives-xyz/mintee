@@ -4,7 +4,8 @@ import Image from "next/image";
 import SquigglyLines from "../../components/SquigglyLines";
 import { Testimonials } from "../../components/Testimonials";
 import AlphaAnnouncement from "../../components/Alpha";
-
+import codePic from "../../public/img/carbon.png";
+import cfPic from "../../public/img/cf.png";
 export default async function Page() {
   // Fetch data directly in a Server Component
   // Forward fetched data to your Client Component
@@ -58,11 +59,8 @@ export default async function Page() {
                 <h3 className="mb-1 font-medium text-lg">Easy to use API</h3>
                 <Image
                   alt="Original photo of a room with roomGPT.io"
-                  src="/img/carbon.png"
+                  src={codePic}
                   className="w-full object-cover h-96 rounded-2xl"
-                  priority
-                  width={400}
-                  height={400}
                 />
               </div>
               <div className="sm:mt-0 mt-8 sm:w-1/2">
@@ -72,10 +70,7 @@ export default async function Page() {
 
                 <Image
                   alt="Generated photo of a room with roomGPT.io"
-                  width={400}
-                  height={400}
-                  priority
-                  src="/img/cf.png"
+                  src={cfPic}
                   className="w-full object-cover h-96 rounded-2xl sm:mt-0 mt-2"
                 />
               </div>
