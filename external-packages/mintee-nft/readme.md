@@ -5,7 +5,7 @@ Mintee.js is a simple way to use the Mintee API for minting NFTs on the Solana b
 # Getting Started
 
 ```shell filename="shell"  copy
-npm install mintee-nft
+npm install mintee.js
 ```
 
 You can interact with Mintee by using our npm package or by using our API directly.
@@ -17,7 +17,7 @@ Visit the [Mintee Sign Up](https://mintee.io/sign-up) and generate an API key.
 # Using The API
 
 ```typescript filename="typescript" {4} copy
-import { Mintee } from "mintee-nft";
+import { Mintee } from "mintee.js";
 
 const apiKey = "YOUR_API_KEY";
 const mintee = new Mintee({ apiKey });

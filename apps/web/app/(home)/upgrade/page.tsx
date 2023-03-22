@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs/app-beta";
 import Link from "next/link";
 import { pscale } from "../../../utils";
 
-async function updateUserTokens(userId: string) {
+async function updateUserTokens() {
+  const { userId } = auth();
   await pscale
     .execute(
       `UPDATE Token t
@@ -17,12 +18,8 @@ async function updateUserTokens(userId: string) {
 }
 
 export default async function Page(props: any) {
-  const { userId } = auth();
-  await updateUserTokens(userId!);
-  console.log("USERID", userId, props.searchParams.userId);
-  if (!userId) {
-    return <div>Something has gone wrong</div>;
-  }
+  await updateUserTokens();
+
   //    else if (userId != props.searchParams.userId) {
   //     return (
   //       <div>

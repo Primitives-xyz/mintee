@@ -3,11 +3,13 @@ import Head from "next/head";
 import CodeView from "./code";
 import { pscale } from "../../../utils";
 import StripeCheckout from "./stripeCheckout";
+import { Suspense } from "react";
+import { User } from "@clerk/nextjs/dist/api";
 
 export default async function Page() {
-  const { userId } = auth();
-  if (userId) {
-    const data = await getUserAPIKey(userId);
+  const user = await currentUser();
+  if (user?.id) {
+    const data = await getUserAPIKey(user);
     return (
       <div className="">
         <Head>
@@ -39,32 +41,34 @@ function generateExternalApiToken(email: string) {
     .replace(/=/g, "");
 }
 
-async function getUserAPIKey(userId: string) {
+async function getUserAPIKey(user: User) {
   // check if userId is in the database as externalId
   // if not, create a new user
   // if so, return the user
-
+  const userId = user.id;
   const userTableResult = await pscale
     .execute("SELECT * FROM User WHERE externalId = ?", [userId])
+
     .catch((e) => {
       console.log(e);
     });
 
   if (!userTableResult || userTableResult.rows.length === 0) {
-    const user = await currentUser();
-
     // insert user into database including externalId, email, and first name and last name
     // also insert api Token with field active set to true
-
-    await pscale.execute(
-      "INSERT INTO User (externalId, email, firstName, lastName) VALUES (?, ?, ?, ?)",
-      [
-        userId,
-        user!.emailAddresses[0].emailAddress,
-        user!.firstName,
-        user!.lastName,
-      ]
-    );
+    await pscale
+      .execute(
+        "INSERT INTO User (externalId, email, firstName, lastName) VALUES (?, ?, ?, ?)",
+        [
+          user.id,
+          user!.emailAddresses[0].emailAddress,
+          user!.firstName,
+          user!.lastName,
+        ]
+      )
+      .catch((e) => {
+        console.log(e);
+      });
 
     // generate a new externalKey for our api
     const apiKey = generateExternalApiToken(
@@ -83,7 +87,6 @@ async function getUserAPIKey(userId: string) {
       },
     };
   }
-  const user = userTableResult.rows[0] as { id: string };
   let tokensRes = await pscale.execute(
     "SELECT * FROM Token WHERE userExternalId = ? AND type = ?",
     [userId, "API"]
@@ -108,5 +111,5 @@ async function getUserAPIKey(userId: string) {
   const { externalKey } = tokensRes.rows[0] as { externalKey: string };
 
   // get the user's id from the database
-  return { userId: user.id, isNew: false, apiKey: externalKey };
+  return { userId, isNew: false, apiKey: externalKey };
 }
