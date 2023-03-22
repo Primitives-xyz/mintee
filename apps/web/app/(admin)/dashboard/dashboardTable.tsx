@@ -26,7 +26,6 @@ export default function DashboardTable({
       cell: (row) => (row.getValue() ? "Yes" : "No"),
     }),
   ];
-  console.log("userCreatedNFTs", userCreatedNFTs);
   return (
     <>
       <div className="w-full flex justify-center items-center text-xl font-bold ">
