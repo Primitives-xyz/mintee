@@ -10,7 +10,6 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     try {
-      console.log("req.body", req.body);
       const body = req.body;
       // Create Checkout Sessions from body params.
       const session = await stripe.checkout.sessions.create({
