@@ -60,7 +60,9 @@ export class Mintee {
       console.log("error", e);
       throw new Error(e);
     });
-    const token = await response.json().catch((e) => {});
+    const token = (await response
+      .json()
+      .catch((e) => {})) as mintCompressedResponse;
     return token;
   }
 
@@ -143,3 +145,9 @@ type minteeOptions = {
 };
 
 export type networkStringLiteral = "mainnet" | "testnet" | "devnet";
+
+export type mintCompressedResponse = {
+  assetId: string;
+  leafIndex: number;
+  treeWalletAddress: string;
+};

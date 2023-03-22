@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/app-beta";
 import { prismaModels } from "mintee-database";
 import { pscale } from "../../../../utils";
+import ApiKeyViewInfo from "./apiKeyView";
 export const revalidate = 0.5;
 async function getTokens() {
   const { userId } = auth();
@@ -22,13 +23,16 @@ export default async function ApiKeysView() {
         <div className="flex flex-row space-x-2 m-2 w-full items-center justify-start">
           <div className=" rounded-md bg-slate-700 flex justify-center  items-center flex-col">
             <div className="text-lg">
-              {tokens.map((token, index) => (
-                <div className="m-2" key={token.id}>
-                  <span className="font-bold">{index + 1 + ":"}</span>
-                  {"  "}
-                  {token.externalKey}
-                </div>
-              ))}
+              {tokens.length > 0 &&
+                tokens.map((token, index) => (
+                  <div className="m-2 flex flex-row" key={token.id}>
+                    <div className="font-bold min-h-full w-12  flex justify-center items-center">
+                      <span>{index + 1 + ":"}</span>
+                    </div>
+
+                    <ApiKeyViewInfo apiKey={token.externalKey ?? ""} />
+                  </div>
+                ))}
             </div>
           </div>
         </div>
