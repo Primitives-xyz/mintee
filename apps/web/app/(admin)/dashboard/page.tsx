@@ -4,7 +4,7 @@ import type { prismaModels } from "mintee-database";
 import DashboardTable from "./dashboardTable";
 
 // revalidate data every second on fetch
-export const revalidate = 0.5;
+export const revalidate = 1;
 
 async function getPosts() {
   const { userId } = auth();
@@ -15,15 +15,16 @@ async function getPosts() {
     u.email as userEmail,
     u.firstName as userFirstName,
     u.lastName as userLastName,
-    JSON_ARRAYAGG(JSON_OBJECT(
-      'id', n.id,
-      'name', n.name,
-      'symbol', n.symbol,
-      'uri', n.uri,
-      'description', n.description,
-      'blockchainAddress', n.blockchainAddress,
-      'isCompressed', n.isCompressed
-    )) as nfts,
+    (SELECT JSON_ARRAYAGG(JSON_OBJECT(
+      'id', n2.id,
+      'name', n2.name,
+      'symbol', n2.symbol,
+      'uri', n2.uri,
+      'description', n2.description,
+      'blockchainAddress', n2.blockchainAddress,
+      'blockchainAddress', n2.blockchainAddress,
+      'creatorUserExternalId', n2.creatorUserExternalId
+    )) FROM (SELECT DISTINCT id, name, symbol, uri, description, blockchainAddress, creatorUserExternalId FROM NFT WHERE creatorUserExternalId = ?) as n2) as nfts,
     JSON_ARRAYAGG(JSON_OBJECT(
       'id', t.id,
       'type', t.type,
@@ -37,12 +38,12 @@ async function getPosts() {
       'mintCallsLimit', t.mintCallsLimit
     )) as tokens
   FROM User as u
-  LEFT JOIN NFT as n ON u.externalId = n.creatorUserExternalId
+  INNER JOIN NFT as n ON u.externalId = n.creatorUserExternalId
   LEFT JOIN Token as t ON u.externalId = t.userExternalId
   WHERE u.externalId = ?
   GROUP BY u.externalId, u.email`;
 
-  const result = await pscale.execute(sqlQuery, [userId]);
+  const result = await pscale.execute(sqlQuery, [userId, userId]);
 
   return result.rows[0] as prismaModels.User & {
     nfts: prismaModels.NFT[];
