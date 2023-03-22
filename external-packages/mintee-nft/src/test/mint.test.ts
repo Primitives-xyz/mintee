@@ -8,10 +8,7 @@ describe("Mintee mint info test", () => {
     const apiUrl = "https://api.mintee.io/";
 
     const mintee = new Mintee({
-      apiKey,
-      options: {
-        network: "devnet",
-      },
+      apiKey: "******************DV83",
     });
     const fetchSpy = sinon.spy(globalThis, "fetch");
     fetchSpy.withArgs(`${apiUrl}mint`, {
@@ -24,12 +21,30 @@ describe("Mintee mint info test", () => {
         data: {
           name: "Nick test test",
         },
-        options: {
-          toWallet: undefined,
-        },
       }),
     });
     mintee.mintNft({ name: "Nick test test" });
     sinon.restore();
   });
 });
+
+async function mint() {
+  const mintee = Mintee.init({
+    apiKey: "******************DV83",
+  });
+
+  const mintInfo = await mintee.mintNft({
+    name: "Minting has never been easier",
+    symbol: "MINT",
+  });
+
+  // or
+
+  await fetch("https://api.mintee.io/mint", {
+    method: "POST",
+    headers: {
+      "x-api-key": "******************DV83",
+    },
+    body: JSON.stringify({ name: "mint with fetch!" }),
+  });
+}

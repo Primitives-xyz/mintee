@@ -26,14 +26,19 @@ export default function DashboardTable({
       cell: (row) => (row.getValue() ? "Yes" : "No"),
     }),
   ];
+  console.log("userCreatedNFTs", userCreatedNFTs);
   return (
     <>
       <div className="w-full flex justify-center items-center text-xl font-bold ">
-        <div className="bg-[#111C27]/75 w-64 h-10 rounded-xl flex justify-center items-center my-2">
-          Most recent NFTs minted
+        <div className="bg-[#111C27]/75 w-fit h-10 rounded-xl flex px-4 justify-center items-center my-2">
+          {userCreatedNFTs[0]?.id != null
+            ? "Your NFTs"
+            : "You have not created any NFTs yet."}
         </div>
       </div>
-      <Table data={userCreatedNFTs} columns={columns} />
+      {userCreatedNFTs[0]?.id != null && (
+        <Table data={userCreatedNFTs} columns={columns} />
+      )}
     </>
   );
 }
