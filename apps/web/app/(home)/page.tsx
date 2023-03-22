@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import SquigglyLines from "../../components/SquigglyLines";
 import { Testimonials } from "../../components/Testimonials";
+import AlphaAnnouncement from "../../components/Alpha";
 
 export default async function Page() {
   // Fetch data directly in a Server Component
@@ -11,6 +12,7 @@ export default async function Page() {
   return (
     <>
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 sm:mt-10 mt-10 background-gradient">
+        <AlphaAnnouncement />
         <a
           href="/"
           target="_blank"
