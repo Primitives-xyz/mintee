@@ -33,9 +33,10 @@ export async function nftInfoRoute(
   // Otherwise, fetch response to POST request from origin
 
   // promise for looking up user token in API
-  const tokenLookup = getAuth(external_id, env, request.url).catch((e) => {
+  const apiTokenLookup = getAuth(external_id, env, request.url).catch((e) => {
     console.log("Error in apiTokenLookup", e);
   }) as Promise<apiTokenStatus>;
+
   // promise for looking up in KV
   const kvPromise = env.nftInfo
     .get(address + network)
@@ -47,32 +48,82 @@ export async function nftInfoRoute(
         return response;
       }
     });
+
+  const compressedNFTInfoPromise = fetch(env.rpcUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      method: "get_asset",
+      id: "compression-example",
+      params: [address],
+    }),
+  }).then(async (response) => {
+    if (!response) {
+      throw new Error("not in compressed");
+    }
+    if (response) {
+      const json = (await response.json()) as any;
+      const offChain = await fetch(json.result.content.json_uri).catch((e) => {
+        console.log("Error in offChain", e);
+      });
+      const offChainJson = (await offChain!.json()) as any;
+
+      const metadata = json.result.content.metadata;
+
+      const body = {
+        name: metadata.name,
+        symbol: metadata.symbol,
+        image: offChainJson.image,
+        blockchainAddress: address,
+        description: metadata.description,
+        sellerFeeBasisPoints: json.result.royalty.basis_points,
+        primarySaleHappened: json.result.content.primary_sale_happened,
+        isMutable: json.result.is_mutable,
+        externalUrl: offChainJson.external_url,
+      } as minteeNFTInfo;
+      const v = JSON.stringify(body);
+      return v;
+    }
+  });
+
   // promise for looking up in factory, should taken longest
   const nftInfoPromise = getNFTInfo({
     env,
     address,
     network: network ? network : undefined,
   })
+    .catch((e) => {
+      throw new Error("factory responds with nothing");
+    })
     .then(async (response) => {
+      console.log("response", response);
       if (!response) {
         throw new Error("factory responds with nothing");
       }
       if (response) {
+        console.log("not right here", response);
         return response;
       }
-    })
-    .catch((e) => {
-      throw new Error("factory responds with nothing");
     });
-  const anyTokenPromise = Promise.any([kvPromise, nftInfoPromise]);
-  const [tokenInfoResponse, tokenLookupResponse] = await Promise.all([
+
+  const anyTokenPromise = Promise.any([
+    compressedNFTInfoPromise,
+    kvPromise,
+    nftInfoPromise,
+  ]);
+
+  const [tokenInfoResponse, apiTokenLookupResponse] = await Promise.all([
     anyTokenPromise,
-    tokenLookup,
+    apiTokenLookup,
   ]).catch((e) => {
     console.log("Error in Promise.all", e);
     throw new Error("Error in Promise.all");
   });
-  if (!tokenLookupResponse) {
+  console.log("TOKEN INFO RESPONSE", tokenInfoResponse);
+  if (!apiTokenLookupResponse) {
     return new Response(
       "x-api-key is not connected to an account, if you think this is a mistake contact support@mintee.io",
       {
@@ -80,7 +131,7 @@ export async function nftInfoRoute(
         headers: corsHeaders,
       }
     );
-  } else if (!tokenLookupResponse.active) {
+  } else if (!apiTokenLookupResponse.active) {
     // api is not active, go to mintee.io to activate
     return new Response("api is not active, go to mintee.io to activate", {
       status: 401,
