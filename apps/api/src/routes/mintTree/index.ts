@@ -7,9 +7,11 @@ export async function mintTreeRoutes(request: Request, env: Env) {
     // if no external_id, return error
     return new Response("x-api-key header is required", { status: 400 });
   }
-  const response = await getMintAuth(external_id, env).catch((e) => {
-    console.log("Error in apiTokenLookup", e);
-  });
+  const response = await getMintAuth(external_id, env, request.url).catch(
+    (e) => {
+      console.log("Error in apiTokenLookup", e);
+    }
+  );
 
   if (!response) {
     return new Response("Unauthorized", {
