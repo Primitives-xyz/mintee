@@ -27,24 +27,3 @@ describe("Mintee mint info test", () => {
     sinon.restore();
   });
 });
-
-async function mint() {
-  const mintee = Mintee.init({
-    apiKey: "******************DV83",
-  });
-
-  const mintInfo = await mintee.mintNft({
-    name: "Minting has never been easier",
-    symbol: "MINT",
-  });
-
-  // or
-
-  await fetch("https://api.mintee.io/mint", {
-    method: "POST",
-    headers: {
-      "x-api-key": "******************DV83",
-    },
-    body: JSON.stringify({ name: "mint with fetch!" }),
-  });
-}
