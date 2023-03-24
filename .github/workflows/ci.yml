@@ -36,8 +36,11 @@ jobs:
         - name: wrangler
           run: pnpm add -g wrangler
 
+        - name: wrangler
+          run: pnpm add -g turbo
+ 
         - name: Build
-          run: pnpm build --filter=...workers
+          run: turbo build --filter=...webhooks
  
         - name: Deploy github actions
           run: cd apps/api && CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} wrangler publish
