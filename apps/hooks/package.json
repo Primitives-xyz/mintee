@@ -13,8 +13,7 @@
   "private": true,
   "scripts": {
     "start": "wrangler dev",
-    "deploy": "turbo build --no-cache && wrangler publish --name webhooks",
-    "gh:deploy": " wrangler publish",
+    "deploy": "turbo build --no-cache && wrangler publish",
     "build": "wrangler publish --dry-run --outdir=dist",
     "test": "vitest"
   },

@@ -13,8 +13,7 @@
   "private": true,
   "scripts": {
     "start": "wrangler dev",
-    "deploy": "turbo build --no-cache && wrangler publish --name api",
-    "gh:deploy": "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} wrangler publish",
+    "deploy": "turbo build --no-cache && wrangler publish",
     "build": "wrangler publish --dry-run --outdir=dist",
     "test": "vitest"
   },
