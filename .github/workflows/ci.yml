@@ -32,7 +32,10 @@ jobs:
  
         - name: Install dependencies
           run: pnpm install
- 
+
+        - name: wrangler
+          run: pnpm add -g wrangler
+          
         - name: Build
           run: pnpm build --filter...workers
  
@@ -65,6 +68,9 @@ jobs:
  
         - name: Install dependencies
           run: pnpm install
+
+        - name: wrangler
+          run: pnpm add -g wrangler
  
         - name: Build
           run: pnpm build --filter...webhooks
