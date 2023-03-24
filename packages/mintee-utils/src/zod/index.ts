@@ -35,6 +35,7 @@ export const mintCompressOptionsSchema = z
   .object({
     toWalletAddress: z.string().max(200).optional(),
     network: z.string().max(200).optional(),
+    isCollection: z.boolean().optional(),
   })
   .optional()
   .nullable();
