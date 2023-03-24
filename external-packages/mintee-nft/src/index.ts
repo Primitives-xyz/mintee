@@ -114,7 +114,6 @@ export class Mintee {
     }).catch((e) => {
       throw new Error(e);
     });
-    console.log("response", response);
     const token: minteeNFTInfo = await response.json().catch((e) => {
       console.log("error", e);
       throw new Error(e);
