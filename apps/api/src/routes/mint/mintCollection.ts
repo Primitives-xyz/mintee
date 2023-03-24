@@ -77,7 +77,7 @@ export async function mintCollectionNFT({
         );
 
         const token = trx.execute(
-          "SELECT id, canMint, active, userExternalId FROM Token WHERE userExternalId = ?;",
+          "SELECT id, canMint, active, userExternalId, mintCollectionCount, mintCollectionLimit FROM Token WHERE userExternalId = ?;",
           [externalUserId]
         );
 

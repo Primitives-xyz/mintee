@@ -88,22 +88,24 @@ model Creator {
 }
 
 model Token {
-  id                Int       @id @default(autoincrement())
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @default(now()) @updatedAt
-  type              TokenType
-  emailToken        String?   @unique // Only used for short lived email tokens
-  valid             Boolean   @default(true)
-  externalKey       String?   @unique(length: 100)
-  user              User?     @relation(fields: [userExternalId], references: [externalId])
-  userExternalId    String?
-  active            Boolean   @default(false)
-  planType          PlanType? @default(FREE)
-  nftInfoCallsCount Int       @default(0)
-  nftInfoCallsLimit Int       @default(0)
-  canMint           Boolean   @default(false)
-  mintCallsCount    Int       @default(0)
-  mintCallsLimit    Int       @default(0)
+  id                  Int       @id @default(autoincrement())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
+  type                TokenType
+  emailToken          String?   @unique // Only used for short lived email tokens
+  valid               Boolean   @default(true)
+  externalKey         String?   @unique(length: 100)
+  user                User?     @relation(fields: [userExternalId], references: [externalId])
+  userExternalId      String?
+  active              Boolean   @default(false)
+  planType            PlanType? @default(FREE)
+  nftInfoCallsCount   Int       @default(0)
+  nftInfoCallsLimit   Int       @default(0)
+  canMint             Boolean   @default(false)
+  mintCallsCount      Int       @default(0)
+  mintCallsLimit      Int       @default(0)
+  mintCollectionCount Int       @default(0)
+  mintCollectionLimit Int       @default(1)
 
   @@index([userExternalId])
 }

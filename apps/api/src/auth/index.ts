@@ -68,7 +68,7 @@ export function lookUserUpDB(external_id: string): Promise<apiTokenStatus> {
   const response = new Promise(async (resolve, reject) => {
     const response = await conn
       .execute(
-        "SELECT userExternalId, canMint, active FROM Token WHERE externalKey = ?",
+        "SELECT userExternalId, canMint, active, mintCollectionCount, mintCollectionLimit FROM Token WHERE externalKey = ?",
         [external_id]
       )
       .catch((e) => {
@@ -87,6 +87,8 @@ export type apiTokenStatus = {
   canMint: boolean;
   active: boolean;
   userExternalId: string;
+  mintCollectionCount?: number;
+  mintCollectionLimit?: number;
 };
 
 export async function getExternalKeyandAPIToken(request: Request, env: Env) {
@@ -111,5 +113,5 @@ export async function getExternalKeyandAPIToken(request: Request, env: Env) {
     throw new Error("api key not found");
   }
 
-  return response.userExternalId;
+  return response;
 }

@@ -266,3 +266,18 @@ export const minteeNFTInputSchema = z.object({
     })
     .optional(),
 });
+
+export async function mintCollection() {
+  // initialize mintee
+  const mintee = Mintee.init({ apiKey: "YOU_API_KEY" });
+
+  // mint a collection
+  const collectionNFT = mintee.mintNft({
+    name: "My first collection",
+    symbol: "MNTE",
+
+    description: "This is my first collection, can't wait to verify NFTs",
+  });
+
+  collectionNFT;
+}
