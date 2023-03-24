@@ -39,7 +39,7 @@ jobs:
         - name: Deploy github actions
           run: cd apps/api && pnpm run deploy:github-actions
   hooks:
-      name: Build and Deploy api
+      name: Build and Deploy hooks 
       timeout-minutes: 15
       runs-on: ubuntu-latest
       # To use Remote Caching, uncomment the next lines and follow the steps below.
@@ -67,7 +67,7 @@ jobs:
           run: pnpm install
  
         - name: Build
-          run: pnpm build --filter...hooks
+          run: pnpm build --filter...webhooks
  
         - name: Deploy github actions
           run: cd apps/hooks && pnpm run deploy:github-actions
