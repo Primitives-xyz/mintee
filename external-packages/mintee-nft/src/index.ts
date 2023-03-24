@@ -1,6 +1,38 @@
-import { minteeNFTInputSchema, minteeNFTInfo } from "mintee-utils";
-import { JsonMetadata } from "mintee-utils/dist/types";
-import { minteeNFTInput } from "mintee-utils/dist/zod";
+import { z } from "zod";
+import BN from "bn.js";
+
+enum TokenStandard {
+  NonFungible = 0,
+  FungibleAsset = 1,
+  Fungible = 2,
+  NonFungibleEdition = 3,
+  ProgrammableNonFungible = 4,
+}
+export type minteeNFTInput = z.infer<typeof minteeNFTInputSchema>;
+
+export type minteeNFTInfo = minteeNFTInput & {
+  blockchainAddress: string;
+  updateAuthorityAddress: string;
+};
+
+export type Uses = {
+  useMethod: UseMethod;
+  remaining: bignum;
+  total: bignum;
+};
+
+export type bignum = number | BN;
+
+export enum UseMethod {
+  Burn = 0,
+  Multiple = 1,
+  Single = 2,
+}
+
+export enum TokenProgramVersion {
+  Original = 0,
+  Token2022 = 1,
+}
 export class Mintee {
   /** The connection object from Solana's SDK. */
   public readonly apiKey: string;
@@ -82,6 +114,7 @@ export class Mintee {
     }).catch((e) => {
       throw new Error(e);
     });
+    console.log("response", response);
     const token: minteeNFTInfo = await response.json().catch((e) => {
       console.log("error", e);
       throw new Error(e);
@@ -119,13 +152,6 @@ export class Mintee {
   }
 }
 
-declare enum TokenStandard {
-  NonFungible = 0,
-  FungibleAsset = 1,
-  Fungible = 2,
-  NonFungibleEdition = 3,
-  ProgrammableNonFungible = 4,
-}
 type nftResponse = {
   offChain: JsonMetadata<string> | null;
   token: {
@@ -151,3 +177,93 @@ export type mintCompressedResponse = {
   leafIndex: number;
   treeWalletAddress: string;
 };
+
+type JsonMetadata<Uri = string> = {
+  name?: string;
+  symbol?: string;
+  description?: string;
+  seller_fee_basis_points?: number;
+  image?: Uri;
+  external_url?: Uri;
+  attributes?: Array<{
+    trait_type?: string;
+    value?: string;
+    [key: string]: unknown;
+  }>;
+  properties?: {
+    creators?: Array<{
+      address?: string;
+      share?: number;
+      [key: string]: unknown;
+    }>;
+    files?: Array<{
+      type?: string;
+      uri?: Uri;
+      [key: string]: unknown;
+    }>;
+    [key: string]: unknown;
+  };
+
+  [key: string]: unknown;
+};
+
+export const minteeNFTInputSchema = z.object({
+  name: z.string(),
+  symbol: z.string().max(10).default("").optional(),
+  description: z.string().max(1000).optional(),
+  uri: z.string().max(200).optional(),
+  sellerFeeBasisPoints: z.number().min(0).max(10000).optional(),
+  primarySaleHappened: z.boolean().optional(),
+  isMutable: z.boolean().optional(),
+  editionNonce: z.number().optional(),
+  isCollecttion: z.boolean().optional(),
+  tokenStandard: z.nativeEnum(TokenStandard).default(0).optional(),
+  collection: z
+    .object({
+      verified: z.boolean().optional(),
+      address: z.string().max(200).optional(),
+      key: z.string().max(200).optional(),
+    })
+    .optional(),
+  uses: z.nativeEnum(UseMethod).optional(),
+  tokenProgramVersion: z.nativeEnum(TokenProgramVersion).default(0).optional(),
+  creators: z
+    .array(
+      z.object({
+        address: z.string().max(200),
+        verified: z.boolean().optional(),
+        share: z.number().min(0).max(100),
+      })
+    )
+    .optional(),
+  image: z.string().max(200).optional(),
+  externalUrl: z.string().max(200).optional(),
+  attributes: z
+    .array(
+      z.object({
+        trait_type: z.string().optional(),
+        value: z.string().optional(),
+      })
+    )
+    .optional(),
+  properties: z
+    .object({
+      creators: z
+        .array(
+          z.object({
+            address: z.string().max(200),
+            share: z.number().min(0).max(100),
+          })
+        )
+        .optional(),
+      files: z
+        .array(
+          z.object({
+            type: z.string().optional(),
+            uri: z.string().max(200),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+});

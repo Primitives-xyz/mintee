@@ -28,7 +28,7 @@ const mainnetTestTokens = {
 
 describe("Mintee NFT info test", () => {
   test("Mintee initializes with apiKey and options", () => {
-    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2Nzk2NjQwMjE2MjM";
     const network: "devnet" | "mainnet" | "testnet" = "devnet";
     const options = { network };
     const mintee = new Mintee({ apiKey, options });
@@ -38,7 +38,7 @@ describe("Mintee NFT info test", () => {
   });
 
   test("Mintee initializes with apiKey only", () => {
-    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2Nzk2NjQwMjE2MjM";
     const mintee = Mintee.init({
       apiKey,
       options: {
@@ -50,7 +50,7 @@ describe("Mintee NFT info test", () => {
   });
 
   test("Devnet - Mintee nftInfo method calls fetch and gets back correct info", async () => {
-    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2Nzk2NjQwMjQ4NTc";
     const apiUrl = "https://api.mintee.io/";
 
     const mintee = new Mintee({
@@ -83,7 +83,7 @@ describe("Mintee NFT info test", () => {
     }
   });
   test("Mainnet - Mintee nftInfo method calls fetch and gets back correct info", async () => {
-    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2Nzk2NjQwMjQ4NTc";
 
     const mintee = new Mintee({
       apiKey,

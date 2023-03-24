@@ -9,7 +9,6 @@ import {
   nftStatusRoute,
   uploadMetadataRoute,
 } from "./routes";
-
 export default {
   async fetch(
     request: Request,
