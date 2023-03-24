@@ -1,7 +1,7 @@
 {
   "name": "mintee.js",
   "private": false,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "The easiest way to mint NFTS, fastest NFT info retrieval, and the most comprehensive NFT data.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,13 +12,15 @@
     "ui": "vitest --ui"
   },
   "dependencies": {
-    "mintee-utils": "*",
+    "bn.js": "^5.2.1",
     "sinon": "^15.0.2",
-    "vitest": "^0.29.2"
+    "vitest": "^0.29.2",
+    "zod": "^3.21.0"
   },
   "devDependencies": {
-    "@types/sinon": "^10.0.13",
+    "@types/bn.js": "^5.1.1",
     "@types/node": "^14.14.31",
+    "@types/sinon": "^10.0.13",
     "@vitest/ui": "^0.29.2",
     "typescript": "^4.2.3"
   },

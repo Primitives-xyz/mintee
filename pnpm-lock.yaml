@@ -14,12 +14,14 @@ importers:
       typescript: 4.9.5
     devDependencies:
       eslint-config-custom: link:packages/eslint-config-custom
-      prettier: 2.8.6
+      prettier: 2.8.7
       turbo: 1.8.5
 
   apps/api:
     specifiers:
       '@cloudflare/workers-types': ^4.20230228.0
+      '@metaplex-foundation/umi': ^0.6.0
+      '@metaplex-foundation/umi-bundle-defaults': ^0.6.0
       '@noxford1/post': ^1.0.3
       '@planetscale/database': ^1.5.0
       '@prisma/client': 4.11.0
@@ -31,6 +33,8 @@ importers:
       wrangler: 2.12.0
       zod: ^3.21.0
     dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+      '@metaplex-foundation/umi-bundle-defaults': 0.6.0_uo5x52og3wnegiox6i3ccybwue
       '@noxford1/post': link:../../external-packages/post
       '@planetscale/database': 1.6.0
       mintee-utils: link:../../packages/mintee-utils
@@ -194,23 +198,27 @@ importers:
       autoprefixer: 10.4.14_postcss@8.4.21
       encoding: 0.1.13
       postcss: 8.4.21
-      tailwindcss: 3.2.7
+      tailwindcss: 3.2.7_postcss@8.4.21
       typescript: 4.9.4
 
   external-packages/mintee-nft:
     specifiers:
+      '@types/bn.js': ^5.1.1
       '@types/node': ^14.14.31
       '@types/sinon': ^10.0.13
       '@vitest/ui': ^0.29.2
-      mintee-utils: '*'
+      bn.js: ^5.2.1
       sinon: ^15.0.2
       typescript: ^4.2.3
       vitest: ^0.29.2
+      zod: ^3.21.0
     dependencies:
-      mintee-utils: link:../../packages/mintee-utils
+      bn.js: 5.2.1
       sinon: 15.0.2
       vitest: 0.29.2_@vitest+ui@0.29.2
+      zod: 3.21.4
     devDependencies:
+      '@types/bn.js': 5.1.1
       '@types/node': 14.18.38
       '@types/sinon': 10.0.13
       '@vitest/ui': 0.29.2
@@ -1631,7 +1639,7 @@ packages:
     peerDependencies:
       tailwindcss: ^3.0
     dependencies:
-      tailwindcss: 3.2.7
+      tailwindcss: 3.2.7_postcss@8.4.21
     dev: false
 
   /@heroicons/react/2.0.16_react@18.2.0:
@@ -1937,6 +1945,109 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+    dev: false
+
+  /@metaplex-foundation/umi-bundle-defaults/0.6.0_uo5x52og3wnegiox6i3ccybwue:
+    resolution: {integrity: sha512-8DWvhNi7iWDCmxelP5p02QUNnNvtCEnOQabxRy+ybMl7ZA7/HYVA5YlNxcYPJY/82vHNyO/GGVQpmBy6w6+Xdw==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+      '@metaplex-foundation/umi-downloader-http': 0.6.0_6ygy4nximzcawmzkd5ogkuv4l4
+      '@metaplex-foundation/umi-eddsa-web3js': 0.6.0_uo5x52og3wnegiox6i3ccybwue
+      '@metaplex-foundation/umi-http-fetch': 0.6.0_6ygy4nximzcawmzkd5ogkuv4l4
+      '@metaplex-foundation/umi-program-repository': 0.6.0_6ygy4nximzcawmzkd5ogkuv4l4
+      '@metaplex-foundation/umi-rpc-web3js': 0.6.0_uo5x52og3wnegiox6i3ccybwue
+      '@metaplex-foundation/umi-serializer-data-view': 0.6.0_6ygy4nximzcawmzkd5ogkuv4l4
+      '@metaplex-foundation/umi-transaction-factory-web3js': 0.6.0_uo5x52og3wnegiox6i3ccybwue
+      '@solana/web3.js': 1.73.3
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@metaplex-foundation/umi-downloader-http/0.6.0_6ygy4nximzcawmzkd5ogkuv4l4:
+    resolution: {integrity: sha512-kO+rjxwFziRHHwxEO381MIeyhruwSMotmSMwnDcS/rTz+/eYOkM2p/ux3Ya5bRMQendLDU2fOL1fR4O9uHRz/w==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+    dev: false
+
+  /@metaplex-foundation/umi-eddsa-web3js/0.6.0_uo5x52og3wnegiox6i3ccybwue:
+    resolution: {integrity: sha512-8DqXTj5ElEmQ2Q/LRb7WgL2Nun5Y+ywI02hQgGoit2MtjgS5gFewvVp7pn92XL9ccwxZ93uT124pJbriVkZqtw==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+      '@metaplex-foundation/umi-web3js-adapters': 0.6.0_uo5x52og3wnegiox6i3ccybwue
+      '@noble/ed25519': 1.7.3
+      '@solana/web3.js': 1.73.3
+    dev: false
+
+  /@metaplex-foundation/umi-http-fetch/0.6.0_6ygy4nximzcawmzkd5ogkuv4l4:
+    resolution: {integrity: sha512-uG2eeUnkN6YxLGxwy6aX2rUdqTINGc4UVdhrA8BTrdfyt07m/PbYVRbfyEt9KVmkgeE9W946hERNVHItYBg8Rw==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+      node-fetch: 2.6.9
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@metaplex-foundation/umi-program-repository/0.6.0_6ygy4nximzcawmzkd5ogkuv4l4:
+    resolution: {integrity: sha512-u31UWtYjHsncM85lgUwjrFvDvcv3ORZA0HpWnMdHR8ayyIOX9px+N+ekWyVhrbucVTgjD446rYrwliJqXwcujA==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+    dev: false
+
+  /@metaplex-foundation/umi-rpc-web3js/0.6.0_uo5x52og3wnegiox6i3ccybwue:
+    resolution: {integrity: sha512-C11JMCISyTgON62kDZjvqwGwTOVnzk0DULRm4j+tTbf1v2IomKIz0NzoOd1oA9MHLX898x0qosTbM/54NM5R5g==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+      '@metaplex-foundation/umi-web3js-adapters': 0.6.0_uo5x52og3wnegiox6i3ccybwue
+      '@solana/web3.js': 1.73.3
+    dev: false
+
+  /@metaplex-foundation/umi-serializer-data-view/0.6.0_6ygy4nximzcawmzkd5ogkuv4l4:
+    resolution: {integrity: sha512-AX8WSYhSOXZtNiLfJVH8ukHXAjWyMj/CsZHu+iLgGSHopyK2K4wLBm/GIWsrfBAfNLhlpGAG1HQ1fFrZxacaOw==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+    dev: false
+
+  /@metaplex-foundation/umi-transaction-factory-web3js/0.6.0_uo5x52og3wnegiox6i3ccybwue:
+    resolution: {integrity: sha512-GGfI7Ml4RIMKP3WjtBHebMdzhieewnIe0Khx0EbXBfq5In9uzTErzlxzNZ5VQEpe9dQRnAeP3ZURvzyvFQnLvQ==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+      '@metaplex-foundation/umi-web3js-adapters': 0.6.0_uo5x52og3wnegiox6i3ccybwue
+      '@solana/web3.js': 1.73.3
+    dev: false
+
+  /@metaplex-foundation/umi-web3js-adapters/0.6.0_uo5x52og3wnegiox6i3ccybwue:
+    resolution: {integrity: sha512-ZQ/6yNoPyKdiKEqWR4wxchdG0pS9fredOw9r33VzT0d9vEdZOaOrj+RG2mV8HkBxKANtl9T9Xoxmgxp5AK3HhQ==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+      '@solana/web3.js': 1.73.3
+      buffer: 6.0.3
+    dev: false
+
+  /@metaplex-foundation/umi/0.6.0:
+    resolution: {integrity: sha512-tNX+0mt8XuiW1hZlflwJUTnNbRERM9GEWB7vHI6NA8ByennEjRV/rIQZvXxd5YJzX1Zo5aZ3yoV7shK1yMpi9A==}
     dev: false
 
   /@miniflare/cache/2.12.1:
@@ -2701,6 +2812,32 @@ packages:
       '@wallet-standard/features': 1.0.3
     dev: false
 
+  /@solana/web3.js/1.73.3:
+    resolution: {integrity: sha512-vHRMo589XEIpoujpE2sZZ1aMZvfA1ImKfNxobzEFyMb+H5j6mRRUXfdgWD0qJ0sm11e5BcBC7HPeRXJB+7f3Lg==}
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@noble/ed25519': 1.7.3
+      '@noble/hashes': 1.2.0
+      '@noble/secp256k1': 1.7.1
+      '@solana/buffer-layout': 4.0.1
+      agentkeepalive: 4.3.0
+      bigint-buffer: 1.1.5
+      bn.js: 5.2.1
+      borsh: 0.7.0
+      bs58: 4.0.1
+      buffer: 6.0.1
+      fast-stable-stringify: 1.0.0
+      jayson: 3.7.0
+      node-fetch: 2.6.9
+      rpc-websockets: 7.5.1
+      superstruct: 0.14.2
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - utf-8-validate
+    dev: false
+
   /@solana/web3.js/1.73.3_encoding@0.1.13:
     resolution: {integrity: sha512-vHRMo589XEIpoujpE2sZZ1aMZvfA1ImKfNxobzEFyMb+H5j6mRRUXfdgWD0qJ0sm11e5BcBC7HPeRXJB+7f3Lg==}
     dependencies:
@@ -2752,7 +2889,7 @@ packages:
       tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
     dependencies:
       mini-svg-data-uri: 1.4.4
-      tailwindcss: 3.2.7
+      tailwindcss: 3.2.7_postcss@8.4.21
     dev: false
 
   /@tanstack/react-table/8.7.9_biqbaboplfbrettd7655fr4n2y:
@@ -2788,7 +2925,6 @@ packages:
     resolution: {integrity: sha512-qNrYbZqMx0uJAfKnKclPh+dTwK33KfLHYqtyODwd5HnXOjnkhc4qgn3BrK6RWyGZm5+sIFE7Q7Vz6QQtJB7w7g==}
     dependencies:
       '@types/node': 18.15.0
-    dev: false
 
   /@types/body-parser/1.19.2:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
@@ -4832,7 +4968,7 @@ packages:
       eslint: 7.32.0
       eslint-import-resolver-node: 0.3.7
       eslint-import-resolver-typescript: 2.7.1_4heylg5ce4zxl5r7mnxe6vqlki
-      eslint-plugin-import: 2.27.5_y6kkiafr6qpwovhe7z576xteh4
+      eslint-plugin-import: 2.27.5_eslint@7.32.0
       eslint-plugin-jsx-a11y: 6.7.1_eslint@7.32.0
       eslint-plugin-react: 7.31.8_eslint@7.32.0
       eslint-plugin-react-hooks: 4.6.0_eslint@7.32.0
@@ -4879,7 +5015,7 @@ packages:
     dependencies:
       debug: 4.3.4
       eslint: 7.32.0
-      eslint-plugin-import: 2.27.5_y6kkiafr6qpwovhe7z576xteh4
+      eslint-plugin-import: 2.27.5_eslint@7.32.0
       glob: 7.2.3
       is-glob: 4.0.3
       resolve: 1.22.1
@@ -4888,7 +5024,7 @@ packages:
       - supports-color
     dev: false
 
-  /eslint-module-utils/2.7.4_dldfrq3te42d7tdceqb5c7slpy:
+  /eslint-module-utils/2.7.4_rwiw7b2uo76lkopjtpefklygj4:
     resolution: {integrity: sha512-j4GT+rqzCoRKHwURX7pddtIPGySnX9Si/cgMI5ztrcqOPtk5dDEeZ34CQVPphnqkJytlc97Vuk05Um2mJ3gEQA==}
     engines: {node: '>=4'}
     peerDependencies:
@@ -4909,16 +5045,14 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.54.1_jofidmxrjzhj7l6vknpw5ecvfe
       debug: 3.2.7
       eslint: 7.32.0
       eslint-import-resolver-node: 0.3.7
-      eslint-import-resolver-typescript: 2.7.1_4heylg5ce4zxl5r7mnxe6vqlki
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /eslint-plugin-import/2.27.5_y6kkiafr6qpwovhe7z576xteh4:
+  /eslint-plugin-import/2.27.5_eslint@7.32.0:
     resolution: {integrity: sha512-LmEt3GVofgiGuiE+ORpnvP+kAm3h6MLZJ4Q5HCyHADofsb4VzXFsRiWj3c0OFiV+3DWFh0qg3v9gcPlfc3zRow==}
     engines: {node: '>=4'}
     peerDependencies:
@@ -4928,7 +5062,6 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.54.1_jofidmxrjzhj7l6vknpw5ecvfe
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -4936,7 +5069,7 @@ packages:
       doctrine: 2.1.0
       eslint: 7.32.0
       eslint-import-resolver-node: 0.3.7
-      eslint-module-utils: 2.7.4_dldfrq3te42d7tdceqb5c7slpy
+      eslint-module-utils: 2.7.4_rwiw7b2uo76lkopjtpefklygj4
       has: 1.0.3
       is-core-module: 2.11.0
       is-glob: 4.0.3
@@ -6403,13 +6536,13 @@ packages:
       '@types/connect': 3.4.35
       '@types/node': 12.20.55
       '@types/ws': 7.4.7
+      JSONStream: 1.3.5
       commander: 2.20.3
       delay: 5.0.0
       es6-promisify: 5.0.0
       eyes: 0.1.8
       isomorphic-ws: 4.0.1_ws@7.5.9
       json-stringify-safe: 5.0.1
-      JSONStream: 1.3.5
       lodash: 4.17.21
       uuid: 8.3.2
       ws: 7.5.9
@@ -8271,8 +8404,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  /prettier/2.8.6:
-    resolution: {integrity: sha512-mtuzdiBbHwPEgl7NxWlqOkithPyp4VN93V7VeHVWBF+ad3I5avc0RVDT4oImXQy9H/AqxA2NSQH8pSxHW6FYbQ==}
+  /prettier/2.8.7:
+    resolution: {integrity: sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
@@ -9343,10 +9476,12 @@ packages:
       strip-ansi: 6.0.1
     dev: false
 
-  /tailwindcss/3.2.7:
+  /tailwindcss/3.2.7_postcss@8.4.21:
     resolution: {integrity: sha512-B6DLqJzc21x7wntlH/GsZwEXTBttVSl1FtCzC8WP4oBc/NKef7kaax5jeihkkCEWc831/5NDJ9gRNDK6NEioQQ==}
     engines: {node: '>=12.13.0'}
     hasBin: true
+    peerDependencies:
+      postcss: ^8.0.9
     dependencies:
       arg: 5.0.2
       chokidar: 3.5.3

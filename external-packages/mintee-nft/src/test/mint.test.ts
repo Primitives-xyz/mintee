@@ -4,7 +4,7 @@ import { Mintee } from "..";
 
 describe("Mintee mint info test", () => {
   test("Mintee mint method calls fetch with correct arguments devnet", async () => {
-    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2NzkyODA3NTQxODM";
+    const apiKey = "bWFoZWxlZGFpbHlAZ21haWwuY29tOjE2Nzk2NjQwMjE2MjM";
     const apiUrl = "https://api.mintee.io/";
 
     const mintee = new Mintee({
