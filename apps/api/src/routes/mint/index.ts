@@ -9,10 +9,10 @@ export async function mintRoute(
   ctx: ExecutionContext,
   env: Env
 ) {
-  const externalUserId = await getExternalKeyandAPIToken(request, env);
+  const apiTokenStatus = await getExternalKeyandAPIToken(request, env);
   const mintInfo = await mintInfoData(request);
 
-  if (!externalUserId) {
+  if (!apiTokenStatus) {
     return new Response("x-api-key header is required", {
       status: 400,
       headers: corsHeaders,
@@ -23,10 +23,15 @@ export async function mintRoute(
       headers: corsHeaders,
     });
   } else if (mintInfo.data.uri) {
-    return await mintNFTWithUri(externalUserId, mintInfo, ctx, env);
+    return await mintNFTWithUri(apiTokenStatus, mintInfo, ctx, env);
   } else if (mintInfo.data.name) {
     // we need to upload off chain metadata if no uri
-    return await uploadOffChainDataAndMint(externalUserId, mintInfo, ctx, env);
+    return await uploadOffChainDataAndMint(
+      apiTokenStatus.userExternalId,
+      mintInfo,
+      ctx,
+      env
+    );
   }
 
   return new Response("uri or name is required", {

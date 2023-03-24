@@ -68,7 +68,7 @@ export function lookUserUpDB(external_id: string): Promise<apiTokenStatus> {
   const response = new Promise(async (resolve, reject) => {
     const response = await conn
       .execute(
-        "SELECT userExternalId, canMint, active FROM Token WHERE externalKey = ?",
+        "SELECT userExternalId, canMint, active, mintCollectionCount, mintCollectionLimit FROM Token WHERE externalKey = ?",
         [external_id]
       )
       .catch((e) => {

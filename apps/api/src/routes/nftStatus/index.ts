@@ -103,7 +103,7 @@ export async function nftStatusResolver(
             [external_id]
           );
           return trx.execute(
-            "SELECT id, canMint, active, userExternalId FROM Token WHERE externalKey = ?;",
+            "SELECT id, canMint, active, userExternalId, mintCollectionCount, mintCollectionLimit FROM Token WHERE externalKey = ?;",
             [external_id]
           );
         })

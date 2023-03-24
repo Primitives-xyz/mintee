@@ -1,9 +1,10 @@
-import { Env } from "../../utils";
+import { apiTokenStatus } from "../../auth";
+import { corsHeaders, Env } from "../../utils";
 import { mintCollectionNFT } from "./mintCollection";
 import { mintCompressedNFT } from "./mintCompressed";
 
 export async function mintNFTWithUri(
-  externalUserId: string,
+  apiToken: apiTokenStatus,
   mintInfoData: {
     data: any;
     options: any;
@@ -12,8 +13,29 @@ export async function mintNFTWithUri(
   env: Env
 ) {
   if (mintInfoData.data?.isCollection) {
-    return await mintCollectionNFT({ externalUserId, mintInfoData, env, ctx });
+    if (
+      apiToken.mintCollectionCount &&
+      apiToken.mintCollectionLimit &&
+      apiToken.mintCollectionCount < apiToken.mintCollectionLimit
+    )
+      return await mintCollectionNFT({
+        externalUserId: apiToken.userExternalId,
+        mintInfoData,
+        env,
+        ctx,
+      });
+    else {
+      return new Response("You have reached your collection mint limit", {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
   } else {
-    return await mintCompressedNFT({ externalUserId, mintInfoData, env, ctx });
+    return await mintCompressedNFT({
+      externalUserId: apiToken.userExternalId,
+      mintInfoData,
+      env,
+      ctx,
+    });
   }
 }
