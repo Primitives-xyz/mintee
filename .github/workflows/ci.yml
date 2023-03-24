@@ -37,7 +37,7 @@ jobs:
           run: pnpm build --filter...workers
  
         - name: Deploy github actions
-          run: cd apps/api && pnpm run deploy:github-actions
+          run: cd apps/api && pnpm run gh:deploy
   hooks:
       name: Build and Deploy hooks 
       timeout-minutes: 15
@@ -70,4 +70,4 @@ jobs:
           run: pnpm build --filter...webhooks
  
         - name: Deploy github actions
-          run: cd apps/hooks && pnpm run deploy:github-actions
+          run: cd apps/hooks && pnpm run gh:deploy
