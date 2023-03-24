@@ -26,7 +26,6 @@ export default {
         const apiKey = generateExternalApiToken(
           user!.email_addresses[0].email_address
         );
-        console.log("right before sql");
         await conn.transaction(async (trx) => {
           await trx
             .execute(

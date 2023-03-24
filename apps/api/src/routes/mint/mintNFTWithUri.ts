@@ -11,6 +11,8 @@ export async function mintNFTWithUri(
   ctx: ExecutionContext,
   env: Env
 ) {
+  if (!mintInfoData.options.isCollection) {
+  }
   // validate metadata
   const bodyParsePromise = await validateMintCompressBody(mintInfoData).catch(
     (e) => {
@@ -68,9 +70,8 @@ export async function mintNFTWithUri(
       headers: corsHeaders,
     });
   }
-
   // we got a repsonse, but the status is not ok
-  if (mintResponse && !mintResponse.ok) {
+  else if (!mintResponse.ok) {
     return new Response("Error minting NFT, error from factory.", {
       status: 500,
       headers: corsHeaders,
