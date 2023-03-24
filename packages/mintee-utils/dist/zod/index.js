@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.offChainMetadataSchema = exports.mintCompressBodySchema = exports.minteeNFTInputSchema = exports.mintCompressOptionsSchema = exports.validateOffChainBody = exports.validateMintCompressBody = void 0;
+exports.offChainMetadataSchema = exports.mintCompressBodySchema = exports.mintCollectionBodySchema = exports.minteeNFTInputSchema = exports.mintCompressOptionsSchema = exports.validateOffChainBody = exports.validateMintCompressBody = void 0;
 var zod_1 = require("zod");
 var types_1 = require("../types");
 function validateMintCompressBody(json) {
@@ -95,6 +95,7 @@ exports.minteeNFTInputSchema = zod_1.z.object({
     primarySaleHappened: zod_1.z.boolean().optional(),
     isMutable: zod_1.z.boolean().optional(),
     editionNonce: zod_1.z.number().optional(),
+    isCollecttion: zod_1.z.boolean().optional(),
     tokenStandard: zod_1.z.nativeEnum(types_1.TokenStandard)["default"](0).optional(),
     collection: zod_1.z
         .object({
@@ -135,6 +136,44 @@ exports.minteeNFTInputSchema = zod_1.z.object({
         }))
             .optional()
     })
+        .optional()
+});
+exports.mintCollectionBodySchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    symbol: zod_1.z.string().max(10)["default"]("").optional(),
+    description: zod_1.z.string().max(1000).optional(),
+    uri: zod_1.z.string().max(200)["default"](""),
+    sellerFeeBasisPoints: zod_1.z.number().min(0).max(10000)["default"](0),
+    primarySaleHappened: zod_1.z.boolean()["default"](false),
+    isMutable: zod_1.z.boolean()["default"](true),
+    editionNonce: zod_1.z.number().optional(),
+    isCollection: zod_1.z.boolean()["default"](true),
+    /**
+     * Describes the asset class of the token.
+     * It can be one of the following:
+     * - `TokenStandard.NonFungible`: A traditional NFT (master edition).
+     * - `TokenStandard.FungibleAsset`: A fungible token with metadata that can also have attrributes.
+     * - `TokenStandard.Fungible`: A fungible token with simple metadata.
+     * - `TokenStandard.NonFungibleEdition`: A limited edition NFT "printed" from a master edition.
+     * - `TokenStandard.ProgrammableNonFungible`: A master edition NFT with programmable configuration.
+     *
+     * @defaultValue `TokenStandard.NonFungible`
+     */
+    tokenStandard: zod_1.z.nativeEnum(types_1.TokenStandard)["default"](0).optional(),
+    collection: zod_1.z
+        .object({
+        verified: zod_1.z.boolean().optional(),
+        key: zod_1.z.string().max(200).optional()
+    })
+        .optional(),
+    uses: zod_1.z.nativeEnum(types_1.UseMethod).optional(),
+    tokenProgramVersion: zod_1.z.nativeEnum(types_1.TokenProgramVersion)["default"](0).optional(),
+    creators: zod_1.z
+        .array(zod_1.z.object({
+        address: zod_1.z.string().max(200),
+        verified: zod_1.z.boolean().optional(),
+        share: zod_1.z.number().min(0).max(100)
+    }))
         .optional()
 });
 exports.mintCompressBodySchema = zod_1.z.object({

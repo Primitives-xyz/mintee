@@ -35,7 +35,6 @@ export const mintCompressOptionsSchema = z
   .object({
     toWalletAddress: z.string().max(200).optional(),
     network: z.string().max(200).optional(),
-    isCollection: z.boolean().optional(),
   })
   .optional()
   .nullable();
@@ -51,6 +50,7 @@ export const minteeNFTInputSchema = z.object({
   primarySaleHappened: z.boolean().optional(),
   isMutable: z.boolean().optional(),
   editionNonce: z.number().optional(),
+  isCollecttion: z.boolean().optional(),
   tokenStandard: z.nativeEnum(TokenStandard).default(0).optional(),
   collection: z
     .object({
@@ -108,6 +108,50 @@ export type minteeNFTInfo = minteeNFTInput & {
   blockchainAddress: string;
   updateAuthorityAddress: string;
 };
+
+export type minteeCollection = z.infer<typeof mintCollectionBodySchema>;
+
+export const mintCollectionBodySchema = z.object({
+  name: z.string(),
+  symbol: z.string().max(10).default("").optional(),
+  description: z.string().max(1000).optional(),
+  uri: z.string().max(200).default(""),
+  sellerFeeBasisPoints: z.number().min(0).max(10000).default(0),
+  primarySaleHappened: z.boolean().default(false),
+  isMutable: z.boolean().default(true),
+  editionNonce: z.number().optional(),
+  isCollection: z.boolean().default(true),
+  /**
+   * Describes the asset class of the token.
+   * It can be one of the following:
+   * - `TokenStandard.NonFungible`: A traditional NFT (master edition).
+   * - `TokenStandard.FungibleAsset`: A fungible token with metadata that can also have attrributes.
+   * - `TokenStandard.Fungible`: A fungible token with simple metadata.
+   * - `TokenStandard.NonFungibleEdition`: A limited edition NFT "printed" from a master edition.
+   * - `TokenStandard.ProgrammableNonFungible`: A master edition NFT with programmable configuration.
+   *
+   * @defaultValue `TokenStandard.NonFungible`
+   */
+  tokenStandard: z.nativeEnum(TokenStandard).default(0).optional(),
+  collection: z
+    .object({
+      verified: z.boolean().optional(),
+      key: z.string().max(200).optional(),
+    })
+    .optional(),
+  uses: z.nativeEnum(UseMethod).optional(),
+  tokenProgramVersion: z.nativeEnum(TokenProgramVersion).default(0).optional(),
+  creators: z
+    .array(
+      z.object({
+        address: z.string().max(200),
+        verified: z.boolean().optional(),
+        share: z.number().min(0).max(100),
+      })
+    )
+    .optional(),
+});
+
 export const mintCompressBodySchema = z.object({
   name: z.string(),
   symbol: z.string().max(10).default("").optional(),
