@@ -2,7 +2,7 @@ import { getExternalKeyandAPIToken } from "../../auth";
 import { corsHeaders, Env } from "../../utils";
 import { mintInfoData } from "./mintInfoData";
 import { mintNFTWithUri } from "./mintNFTWithUri";
-import { uploadOffChainDataAndMint } from "./uploadOffChaindataAndMint";
+import { uploadOffChainDataAndMint } from "./uploadOffChainDataAndMint";
 
 export async function mintRoute(
   request: Request,
