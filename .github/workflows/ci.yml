@@ -5,8 +5,8 @@ on:
     branches: ["main"]
  
 jobs:
-  build:
-      name: Build and Test
+  api:
+      name: Build and Deploy api
       timeout-minutes: 15
       runs-on: ubuntu-latest
       # To use Remote Caching, uncomment the next lines and follow the steps below.
@@ -34,7 +34,40 @@ jobs:
           run: pnpm install
  
         - name: Build
-          run: pnpm build
+          run: pnpm build --filter...workers
  
         - name: Deploy github actions
-          run: pnpm gh:deploy
+          run: cd apps/api && pnpm run deploy:github-actions
+  hooks:
+      name: Build and Deploy api
+      timeout-minutes: 15
+      runs-on: ubuntu-latest
+      # To use Remote Caching, uncomment the next lines and follow the steps below.
+      # env:
+      #  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      #  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+ 
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v3
+          with:
+            fetch-depth: 2
+ 
+        - uses: pnpm/action-setup@v2.0.1
+          with:
+            version: 6.32.2
+ 
+        - name: Setup Node.js environment
+          uses: actions/setup-node@v3
+          with:
+            node-version: 16
+            cache: 'pnpm'
+ 
+        - name: Install dependencies
+          run: pnpm install
+ 
+        - name: Build
+          run: pnpm build --filter...hooks
+ 
+        - name: Deploy github actions
+          run: cd apps/hooks && pnpm run deploy:github-actions
