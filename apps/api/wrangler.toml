@@ -1,4 +1,4 @@
-name = "mintee"
+name = "api"
 main = "src/index.ts"
 compatibility_date = "2023-03-04"
 account_id = "6523e349bc2b3b61bc5155528f142bd7"

@@ -114,6 +114,7 @@ export declare const minteeNFTInputSchema: z.ZodObject<{
     primarySaleHappened: z.ZodOptional<z.ZodBoolean>;
     isMutable: z.ZodOptional<z.ZodBoolean>;
     editionNonce: z.ZodOptional<z.ZodNumber>;
+    isCollecttion: z.ZodOptional<z.ZodBoolean>;
     tokenStandard: z.ZodOptional<z.ZodDefault<z.ZodNativeEnum<typeof TokenStandard>>>;
     collection: z.ZodOptional<z.ZodObject<{
         verified: z.ZodOptional<z.ZodBoolean>;
@@ -204,6 +205,7 @@ export declare const minteeNFTInputSchema: z.ZodObject<{
     primarySaleHappened?: boolean | undefined;
     isMutable?: boolean | undefined;
     editionNonce?: number | undefined;
+    isCollecttion?: boolean | undefined;
     tokenStandard?: TokenStandard | undefined;
     collection?: {
         verified?: boolean | undefined;
@@ -242,6 +244,7 @@ export declare const minteeNFTInputSchema: z.ZodObject<{
     primarySaleHappened?: boolean | undefined;
     isMutable?: boolean | undefined;
     editionNonce?: number | undefined;
+    isCollecttion?: boolean | undefined;
     tokenStandard?: TokenStandard | undefined;
     collection?: {
         verified?: boolean | undefined;
@@ -277,6 +280,99 @@ export type minteeNFTInfo = minteeNFTInput & {
     blockchainAddress: string;
     updateAuthorityAddress: string;
 };
+export type minteeCollection = z.infer<typeof mintCollectionBodySchema>;
+export declare const mintCollectionBodySchema: z.ZodObject<{
+    name: z.ZodString;
+    symbol: z.ZodOptional<z.ZodDefault<z.ZodString>>;
+    description: z.ZodOptional<z.ZodString>;
+    uri: z.ZodDefault<z.ZodString>;
+    sellerFeeBasisPoints: z.ZodDefault<z.ZodNumber>;
+    primarySaleHappened: z.ZodDefault<z.ZodBoolean>;
+    isMutable: z.ZodDefault<z.ZodBoolean>;
+    editionNonce: z.ZodOptional<z.ZodNumber>;
+    isCollection: z.ZodDefault<z.ZodBoolean>;
+    /**
+     * Describes the asset class of the token.
+     * It can be one of the following:
+     * - `TokenStandard.NonFungible`: A traditional NFT (master edition).
+     * - `TokenStandard.FungibleAsset`: A fungible token with metadata that can also have attrributes.
+     * - `TokenStandard.Fungible`: A fungible token with simple metadata.
+     * - `TokenStandard.NonFungibleEdition`: A limited edition NFT "printed" from a master edition.
+     * - `TokenStandard.ProgrammableNonFungible`: A master edition NFT with programmable configuration.
+     *
+     * @defaultValue `TokenStandard.NonFungible`
+     */
+    tokenStandard: z.ZodOptional<z.ZodDefault<z.ZodNativeEnum<typeof TokenStandard>>>;
+    collection: z.ZodOptional<z.ZodObject<{
+        verified: z.ZodOptional<z.ZodBoolean>;
+        key: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        verified?: boolean | undefined;
+        key?: string | undefined;
+    }, {
+        verified?: boolean | undefined;
+        key?: string | undefined;
+    }>>;
+    uses: z.ZodOptional<z.ZodNativeEnum<typeof UseMethod>>;
+    tokenProgramVersion: z.ZodOptional<z.ZodDefault<z.ZodNativeEnum<typeof TokenProgramVersion>>>;
+    creators: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        address: z.ZodString;
+        verified: z.ZodOptional<z.ZodBoolean>;
+        share: z.ZodNumber;
+    }, "strip", z.ZodTypeAny, {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }, {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }>, "many">>;
+}, "strip", z.ZodTypeAny, {
+    name: string;
+    uri: string;
+    sellerFeeBasisPoints: number;
+    primarySaleHappened: boolean;
+    isMutable: boolean;
+    isCollection: boolean;
+    symbol?: string | undefined;
+    description?: string | undefined;
+    editionNonce?: number | undefined;
+    tokenStandard?: TokenStandard | undefined;
+    collection?: {
+        verified?: boolean | undefined;
+        key?: string | undefined;
+    } | undefined;
+    uses?: UseMethod | undefined;
+    tokenProgramVersion?: TokenProgramVersion | undefined;
+    creators?: {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }[] | undefined;
+}, {
+    name: string;
+    symbol?: string | undefined;
+    description?: string | undefined;
+    uri?: string | undefined;
+    sellerFeeBasisPoints?: number | undefined;
+    primarySaleHappened?: boolean | undefined;
+    isMutable?: boolean | undefined;
+    editionNonce?: number | undefined;
+    isCollection?: boolean | undefined;
+    tokenStandard?: TokenStandard | undefined;
+    collection?: {
+        verified?: boolean | undefined;
+        key?: string | undefined;
+    } | undefined;
+    uses?: UseMethod | undefined;
+    tokenProgramVersion?: TokenProgramVersion | undefined;
+    creators?: {
+        address: string;
+        share: number;
+        verified?: boolean | undefined;
+    }[] | undefined;
+}>;
 export declare const mintCompressBodySchema: z.ZodObject<{
     name: z.ZodString;
     symbol: z.ZodOptional<z.ZodDefault<z.ZodString>>;
