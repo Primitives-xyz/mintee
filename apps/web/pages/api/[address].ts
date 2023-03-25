@@ -20,7 +20,7 @@ export default async function handler(
   // fetch token
   const token = await mp
     .nfts()
-    .findByMint({ mintAddress: tokenPK, loadJsonMetadata: false })
+    .findByMint({ mintAddress: tokenPK })
     .catch((e) => {
       console.log("Error", e);
     });

@@ -96,6 +96,43 @@ importers:
       vitest: 0.29.2
       wrangler: 2.12.0
 
+  apps/lab:
+    specifiers:
+      '@cloudflare/workers-types': ^4.20230228.0
+      '@metaplex-foundation/mpl-essentials': ^0.5.2
+      '@metaplex-foundation/mpl-token-metadata': 3.0.0-alpha.13
+      '@metaplex-foundation/umi': ^0.6.0
+      '@metaplex-foundation/umi-bundle-defaults': ^0.6.0
+      '@noxford1/post': ^1.0.3
+      '@planetscale/database': ^1.5.0
+      '@prisma/client': 4.11.0
+      better-sqlite3: ^8.0.1
+      mintee-utils: '*'
+      prisma: ^4.11.0
+      svix: ^0.82.0
+      typescript: ^4.9.5
+      vitest: ^0.29.2
+      wrangler: 2.12.0
+      zod: ^3.21.0
+    dependencies:
+      '@metaplex-foundation/mpl-essentials': 0.5.2_6ygy4nximzcawmzkd5ogkuv4l4
+      '@metaplex-foundation/mpl-token-metadata': 3.0.0-alpha.13_6ygy4nximzcawmzkd5ogkuv4l4
+      '@metaplex-foundation/umi': 0.6.0
+      '@metaplex-foundation/umi-bundle-defaults': 0.6.0_uo5x52og3wnegiox6i3ccybwue
+      '@noxford1/post': link:../../external-packages/post
+      '@planetscale/database': 1.6.0
+      mintee-utils: link:../../packages/mintee-utils
+      svix: 0.82.0
+      zod: 3.21.4
+    devDependencies:
+      '@cloudflare/workers-types': 4.20230307.0
+      '@prisma/client': 4.11.0_prisma@4.11.0
+      better-sqlite3: 8.2.0
+      prisma: 4.11.0
+      typescript: 4.9.5
+      vitest: 0.29.2
+      wrangler: 2.12.0
+
   apps/web:
     specifiers:
       '@clerk/nextjs': ^4.11.3
@@ -109,6 +146,7 @@ importers:
       '@metaplex-foundation/umi': ^0.6.0
       '@metaplex-foundation/umi-bundle-defaults': ^0.6.0
       '@mintee/wrapped-connection': ^0.0.13
+      '@next/mdx': ^13.2.4
       '@planetscale/database': ^1.6.0
       '@project-serum/anchor': ^0.26.0
       '@solana/spl-account-compression': ^0.1.6
@@ -116,6 +154,7 @@ importers:
       '@stripe/stripe-js': ^1.48.0
       '@tailwindcss/forms': ^0.5.3
       '@tanstack/react-table': ^8.7.9
+      '@types/mdx': ^2.0.3
       '@types/multiparty': ^0.0.33
       '@types/node': 18.11.3
       '@types/react': 18.0.21
@@ -163,6 +202,7 @@ importers:
       '@metaplex-foundation/umi': 0.6.0
       '@metaplex-foundation/umi-bundle-defaults': 0.6.0_zfr3zgrg7e2mo4o3jq5t7ozeay
       '@mintee/wrapped-connection': 0.0.13_encoding@0.1.13
+      '@next/mdx': 13.2.4
       '@planetscale/database': 1.6.0
       '@project-serum/anchor': 0.26.0_encoding@0.1.13
       '@solana/spl-account-compression': 0.1.6_x2vmtgewl3b7iy3vptfr2o6jb4
@@ -196,6 +236,7 @@ importers:
       uploader: 3.9.0
       zod: 3.21.4
     devDependencies:
+      '@types/mdx': 2.0.3
       '@types/multiparty': 0.0.33
       '@types/node': 18.11.3
       '@types/react': 18.0.21
@@ -1936,6 +1977,14 @@ packages:
       - utf-8-validate
     dev: false
 
+  /@metaplex-foundation/mpl-essentials/0.5.2_6ygy4nximzcawmzkd5ogkuv4l4:
+    resolution: {integrity: sha512-/X7p/xI/d5b5Rl3LukJiuWWz2S8OYQOYd1c5bDhIskBNUy3OUTRRMsp+YQhaWQc9hVpqNjjKIpd0myvMDVC/tg==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+    dependencies:
+      '@metaplex-foundation/umi': 0.6.0
+    dev: false
+
   /@metaplex-foundation/mpl-token-metadata/2.9.0_encoding@0.1.13:
     resolution: {integrity: sha512-uicN+g2GyEiFHtGyomPoL+q2rWRDGApe+SrXxuZigJzuThddzohjknmqtqNkOjB8yxE52+gdzGxc5UwJeDzp1Q==}
     dependencies:
@@ -1951,6 +2000,15 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+    dev: false
+
+  /@metaplex-foundation/mpl-token-metadata/3.0.0-alpha.13_6ygy4nximzcawmzkd5ogkuv4l4:
+    resolution: {integrity: sha512-7V57vhUwFFtK6aBcU4W2mGtCVJ63//traRF6IHgFdLh2fJzXJTF+RAV4hhcRdBOv9+JNwa5oy9LBeDmW+xL4/Q==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.6.0
+    dependencies:
+      '@metaplex-foundation/mpl-essentials': 0.5.2_6ygy4nximzcawmzkd5ogkuv4l4
+      '@metaplex-foundation/umi': 0.6.0
     dev: false
 
   /@metaplex-foundation/umi-bundle-defaults/0.6.0_uo5x52og3wnegiox6i3ccybwue:
@@ -2008,7 +2066,7 @@ packages:
       '@metaplex-foundation/umi': 0.6.0
       '@metaplex-foundation/umi-web3js-adapters': 0.6.0_uo5x52og3wnegiox6i3ccybwue
       '@noble/ed25519': 1.7.3
-      '@solana/web3.js': 1.73.3_encoding@0.1.13
+      '@solana/web3.js': 1.73.3
     dev: false
 
   /@metaplex-foundation/umi-http-fetch/0.6.0_3p2n2l4zmbovqhtuxoyx4angqm:
@@ -2049,7 +2107,7 @@ packages:
     dependencies:
       '@metaplex-foundation/umi': 0.6.0
       '@metaplex-foundation/umi-web3js-adapters': 0.6.0_uo5x52og3wnegiox6i3ccybwue
-      '@solana/web3.js': 1.73.3_encoding@0.1.13
+      '@solana/web3.js': 1.73.3
     dev: false
 
   /@metaplex-foundation/umi-serializer-data-view/0.6.0_6ygy4nximzcawmzkd5ogkuv4l4:
@@ -2068,7 +2126,7 @@ packages:
     dependencies:
       '@metaplex-foundation/umi': 0.6.0
       '@metaplex-foundation/umi-web3js-adapters': 0.6.0_uo5x52og3wnegiox6i3ccybwue
-      '@solana/web3.js': 1.73.3_encoding@0.1.13
+      '@solana/web3.js': 1.73.3
     dev: false
 
   /@metaplex-foundation/umi-web3js-adapters/0.6.0_uo5x52og3wnegiox6i3ccybwue:
@@ -2078,7 +2136,7 @@ packages:
       '@solana/web3.js': ^1.72.0
     dependencies:
       '@metaplex-foundation/umi': 0.6.0
-      '@solana/web3.js': 1.73.3_encoding@0.1.13
+      '@solana/web3.js': 1.73.3
       buffer: 6.0.3
     dev: false
 
@@ -2443,6 +2501,20 @@ packages:
     resolution: {integrity: sha512-z+gnX4Zizatqatc6f4CQrcC9oN8Us3Vrq/OLyc98h7K/eWctrnV91zFZodmJHUjx0cITY8uYM7LXD7IdYkg3kg==}
     dependencies:
       glob: 7.1.7
+    dev: false
+
+  /@next/mdx/13.2.4:
+    resolution: {integrity: sha512-inl7u+OEa4Ok3uL052oa8EDw1bUkMGLVKzFfVBIgG19s29gxQvcWYzxa5t438J31ljApjh6Y5k4AD6yLaCAlQw==}
+    peerDependencies:
+      '@mdx-js/loader': '>=0.15.0'
+      '@mdx-js/react': '>=0.15.0'
+    peerDependenciesMeta:
+      '@mdx-js/loader':
+        optional: true
+      '@mdx-js/react':
+        optional: true
+    dependencies:
+      source-map: 0.7.4
     dev: false
 
   /@next/swc-android-arm-eabi/13.2.4:
@@ -3055,7 +3127,6 @@ packages:
 
   /@types/mdx/2.0.3:
     resolution: {integrity: sha512-IgHxcT3RC8LzFLhKwP3gbMPeaK7BM9eBH46OdapPA7yvuIUJ8H6zHZV53J8hGZcTSnt95jANt+rTBNUUc22ACQ==}
-    dev: false
 
   /@types/mime/3.0.1:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}

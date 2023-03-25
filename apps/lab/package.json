@@ -1,0 +1,31 @@
+{
+  "name": "lab",
+  "version": "0.0.0",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20230228.0",
+    "@prisma/client": "4.11.0",
+    "better-sqlite3": "^8.0.1",
+    "prisma": "^4.11.0",
+    "typescript": "^4.9.5",
+    "vitest": "^0.29.2",
+    "wrangler": "2.12.0"
+  },
+  "private": true,
+  "scripts": {
+    "start": "wrangler dev",
+    "deploy": "turbo build --no-cache && wrangler publish",
+    "build": "wrangler publish --dry-run --outdir=dist",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-essentials": "^0.5.2",
+    "@metaplex-foundation/mpl-token-metadata": "3.0.0-alpha.13",
+    "@metaplex-foundation/umi": "^0.6.0",
+    "@metaplex-foundation/umi-bundle-defaults": "^0.6.0",
+    "@noxford1/post": "^1.0.3",
+    "@planetscale/database": "^1.5.0",
+    "mintee-utils": "*",
+    "svix": "^0.82.0",
+    "zod": "^3.21.0"
+  }
+}

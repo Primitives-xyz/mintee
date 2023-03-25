@@ -17,6 +17,7 @@
     "@metaplex-foundation/umi": "^0.6.0",
     "@metaplex-foundation/umi-bundle-defaults": "^0.6.0",
     "@mintee/wrapped-connection": "^0.0.13",
+    "@next/mdx": "^13.2.4",
     "@planetscale/database": "^1.6.0",
     "@project-serum/anchor": "^0.26.0",
     "@solana/spl-account-compression": "^0.1.6",
@@ -51,6 +52,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/mdx": "^2.0.3",
     "@types/multiparty": "^0.0.33",
     "@types/node": "18.11.3",
     "@types/react": "18.0.21",
