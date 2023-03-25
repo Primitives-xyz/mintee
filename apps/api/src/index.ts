@@ -6,7 +6,7 @@ import {
   mintRoute,
   mintTreeRoutes,
   nftInfoRoute,
-  nftStatusRoute,
+  nftStatusResolver,
   uploadMetadataRoute,
 } from "./routes";
 export default {
@@ -26,7 +26,7 @@ export default {
     }
 
     if (url.pathname.startsWith("/nftStatus/")) {
-      return await nftStatusRoute(request, env, ctx, url);
+      return await nftStatusResolver(request, env, ctx, url);
     }
 
     if (url.pathname === "/mintTree") {

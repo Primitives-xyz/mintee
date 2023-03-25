@@ -1,0 +1,26 @@
+name = "lab"
+main = "src/index.ts"
+compatibility_date = "2023-03-04"
+account_id = "6523e349bc2b3b61bc5155528f142bd7"
+workers_dev = true
+node_comp = true
+kv_namespaces = [
+  { binding = "nftInfo", id = "a6295a350c564a20bbda3bac0362cae4", preview_id = "625f622b85844f4189341a495f81b915" },
+  { binding = "apiTokens", id = "2b8d92ceb3384ffba9ae21a1f70db3d3", preview_id="72a383cd3f0a4609b9db72968579ba13" }
+]
+
+[vars]
+rpcUrl = "https://rpc.helius.xyz/?api-key=f30d6a96-5fa2-4318-b2da-0f6d1deb5c83"
+r2Url = "https://offchain.mintee.io/"
+factoryUrl = "https://minte.vercel.app"
+WORKER_KEY = 'PeachTree221'
+
+
+
+[[r2_buckets]]
+binding = 'bucket' # <~ valid JavaScript variable name
+bucket_name = 'apollo'
+preview_bucket_name = 'apollo-dev'
+
+
+
