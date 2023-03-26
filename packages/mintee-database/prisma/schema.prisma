@@ -47,7 +47,7 @@ model NFT {
   network                 Network
   symbol                  String?        @db.VarChar(255)
   uri                     String?        @db.VarChar(255)
-  description             String?        @db.VarChar(255)
+  description             String?        @db.VarChar(10000)
   image                   String?        @db.VarChar(255)
   sellerFeeBasisPoints    Int?           @default(0)
   isMutable               Boolean?       @default(true)
