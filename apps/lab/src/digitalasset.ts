@@ -126,10 +126,8 @@ export function deserializeDigitalAsset(
 
   const metadata = deserializeMetadata(context, metadataAccount);
   const tokenStandard = unwrapSome(metadata.tokenStandard);
-  console.log("after some unwrap");
   if (tokenStandard && isNonFungible(tokenStandard) && !editionAccount) {
     // TODO(loris): Custom error.
-    console.log("WHAT?");
     throw new Error(
       "Edition account must be provided for non-fungible assets."
     );
@@ -141,7 +139,6 @@ export function deserializeDigitalAsset(
   const editionKey = getKeySerializer(context).deserialize(
     editionAccount.data
   )[0];
-  console.log("do we get here?");
   let edition: DigitalAsset["edition"];
   if (
     editionKey === Key.MasterEditionV1 ||
@@ -161,7 +158,6 @@ export function deserializeDigitalAsset(
       `Invalid key "${editionKey}" for edition account.`
     );
   }
-  console.log("YOOOO", digitalAsset, edition);
 
   return { ...digitalAsset, edition };
 }

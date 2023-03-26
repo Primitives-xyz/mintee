@@ -17,9 +17,9 @@ import {
   mapSerializer,
   publicKey,
   transactionBuilder,
-} from '@metaplex-foundation/umi';
-import { findMetadataPda } from '../accounts';
-import { UpdateArgs, UpdateArgsArgs, getUpdateArgsSerializer } from '../types';
+} from "@metaplex-foundation/umi";
+import { findMetadataPda } from "../accounts";
+import { UpdateArgs, UpdateArgsArgs, getUpdateArgsSerializer } from "../types";
 
 // Accounts.
 export type UpdateInstructionAccounts = {
@@ -56,7 +56,7 @@ export type UpdateInstructionData = {
 export type UpdateInstructionDataArgs = { updateArgs: UpdateArgsArgs };
 
 export function getUpdateInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  context: Pick<Context, "serializer">
 ): Serializer<UpdateInstructionDataArgs, UpdateInstructionData> {
   const s = context.serializer;
   return mapSerializer<
@@ -66,10 +66,10 @@ export function getUpdateInstructionDataSerializer(
   >(
     s.struct<UpdateInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['updateArgs', getUpdateArgsSerializer(context)],
+        ["discriminator", s.u8()],
+        ["updateArgs", getUpdateArgsSerializer(context)],
       ],
-      { description: 'UpdateInstructionData' }
+      { description: "UpdateInstructionData" }
     ),
     (value) => ({ ...value, discriminator: 50 } as UpdateInstructionData)
   ) as Serializer<UpdateInstructionDataArgs, UpdateInstructionData>;
@@ -79,7 +79,7 @@ export function getUpdateInstructionDataSerializer(
 export function update(
   context: Pick<
     Context,
-    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
+    "serializer" | "programs" | "eddsa" | "identity" | "payer"
   >,
   input: UpdateInstructionAccounts & UpdateInstructionDataArgs
 ): TransactionBuilder {
@@ -88,8 +88,8 @@ export function update(
 
   // Program ID.
   const programId = context.programs.getPublicKey(
-    'mplTokenMetadata',
-    'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+    "mplTokenMetadata",
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
   );
 
   // Resolved accounts.
@@ -107,14 +107,14 @@ export function update(
   const payerAccount = input.payer ?? context.payer;
   const systemProgramAccount = input.systemProgram ?? {
     ...context.programs.getPublicKey(
-      'splSystem',
-      '11111111111111111111111111111111'
+      "splSystem",
+      "11111111111111111111111111111111"
     ),
     isWritable: false,
   };
   const sysvarInstructionsAccount =
     input.sysvarInstructions ??
-    publicKey('Sysvar1nstructions1111111111111111111111111');
+    publicKey("Sysvar1nstructions1111111111111111111111111");
   const authorizationRulesProgramAccount = input.authorizationRulesProgram ?? {
     ...programId,
     isWritable: false,

@@ -24,6 +24,7 @@
     "@metaplex-foundation/umi-bundle-defaults": "^0.6.0",
     "@noxford1/post": "^1.0.3",
     "@planetscale/database": "^1.5.0",
+    "mintee-database": "*",
     "mintee-utils": "*",
     "svix": "^0.82.0",
     "zod": "^3.21.0"

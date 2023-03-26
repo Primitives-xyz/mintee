@@ -1,140 +1,240 @@
 /* eslint-disable import/no-anonymous-default-export */
 
-import { corsHeaders, Env } from "./utils";
+import { conn, Env } from "./utils";
 import {
   Context,
   PublicKey,
-  RpcBaseOptions,
   chunk,
   publicKey,
   assertAccountExists,
+  RpcGetAccountsOptions,
+  isPublicKey,
   base58PublicKey,
-  parseJsonFromGenericFile,
 } from "@metaplex-foundation/umi";
-import {
-  findLargestTokensByMint,
-  Token,
-} from "@metaplex-foundation/mpl-essentials";
+import { Token } from "@metaplex-foundation/mpl-essentials";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import {
-  deserializeDigitalAssetWithToken,
-  mplTokenMetadata,
-} from "@metaplex-foundation/mpl-token-metadata";
-import { DigitalAsset } from "./digitalasset";
+import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import { deserializeDigitalAsset, DigitalAsset } from "./digitalasset";
 import {
   TokenRecord,
   findMetadataPda,
   findMasterEditionPda,
-  findTokenRecordPda,
 } from "./generated";
-import { minteeNFTInfo } from "mintee-utils";
 import { JsonMetadata } from "mintee-utils/dist/types";
-
+import { prismaModels } from "mintee-database";
 export default {
-  async fetch(
-    request: Request,
+  async scheduled(
+    _controller: ScheduledController,
     env: Env,
-    ctx: ExecutionContext
-  ): Promise<Response> {
-    const url = new URL(request.url);
+    _ctx: ExecutionContext
+  ): Promise<void> {
+    const umi = createUmi(env.rpcUrl).use(mplTokenMetadata());
 
-    if (url.pathname.startsWith("/nftInfo")) {
-      const address = url.pathname.split("/")[2];
-      const umi = createUmi(env.rpcUrl).use(mplTokenMetadata());
-      const pk = publicKey(address);
-
-      // fetch and deserialize data
-      const infoResponseArray = await fetchAllDigitalAssetWithTokenByMint(
-        umi,
-        pk
+    // grab 10 NFTs at a time
+    let tokensLeft = true;
+    let offset = 10;
+    while (tokensLeft) {
+      const nftsWindowCall = await conn.execute(
+        "SELECT * FROM NFT ORDER BY id ASC LIMIT 10 OFFSET ?;",
+        [offset]
       );
 
-      const infoResponse = infoResponseArray[0];
-      const creators =
-        infoResponse.metadata.creators.__option === "Some"
-          ? infoResponse.metadata.creators.value
-          : [];
+      const nftsDBInfo = nftsWindowCall.rows as prismaModels.NFT[];
 
-      const info = {
-        name: infoResponse.metadata.name,
-        symbol: infoResponse.metadata.symbol,
-        uri: infoResponse.metadata.uri,
-        sellerFeeBasisPoints: infoResponse.metadata.sellerFeeBasisPoints,
-        creators: creators.map((creator) => ({
-          address: base58PublicKey(creator.address),
-          verified: creator.verified,
-          share: creator.share,
-        })),
-        primarySaleHappened: infoResponse.metadata.primarySaleHappened,
-        isMutable: infoResponse.metadata.isMutable,
-      } as minteeNFTInfo;
-      if (info.uri) {
-        const json: JsonMetadata = await fetch(info.uri).then((res) =>
-          res.json()
-        );
-        console.log(json);
-        info.attributes = json.attributes;
-        info.externalUrl = json.external_url;
-        info.image = json.image;
-        info.description = json.description;
+      const CronJobUpdatte = nftsDBInfo.filter((token) =>
+        isPublicKey(token.blockchainAddress)
+      );
+
+      const cronTokenObject: {
+        [key: string]: {
+          nftDB: prismaModels.NFT;
+          onChain?: DigitalAsset;
+          offChain?: JsonMetadata;
+        };
+      } = {};
+
+      for (const item of CronJobUpdatte) {
+        cronTokenObject[item.blockchainAddress] = {
+          nftDB: item,
+          onChain: undefined,
+          offChain: undefined,
+        };
       }
-      return new Response(JSON.stringify(info), {
-        status: 200,
-        headers: corsHeaders,
+
+      // quickly alert about invalid token addresses
+      if (CronJobUpdatte.length != nftsDBInfo.length) {
+        console.log("Error: Not all addresses are valid public keys");
+        const nonValidAddresses = nftsDBInfo.filter(
+          (n) => !isPublicKey(n.blockchainAddress)
+        );
+        console.log("The following addresses are not valid public keys:");
+        nonValidAddresses.forEach((n) => console.log(n.blockchainAddress));
+        return;
+      }
+
+      const publicKeys = Object.keys(cronTokenObject).map((key) => {
+        return publicKey(key);
       });
+
+      // prepare offChain request
+      const tokenAddressAndUri: tokenAddAndUri = Object.entries(
+        cronTokenObject
+      ).map(([key, value]) => {
+        return {
+          blockchainAddress: key,
+          uri: value.nftDB.uri,
+        };
+      });
+
+      fetchAllOffChain(tokenAddressAndUri).catch((e) => {
+        console.log("Parent error fetching all off chain data: ", e);
+      });
+
+      // on chain call
+      fetchAllDigitalAsset(umi, publicKeys).catch((e) => {
+        console.log("Parent error fetching all digital assets: ", e);
+      });
+
+      const [offChainData, OnChainData] = await Promise.all([
+        fetchAllOffChain(tokenAddressAndUri),
+        fetchAllDigitalAsset(umi, publicKeys),
+      ]);
+
+      // map the off chain data to cronTokenObject and update database
+      for (const offChainInfoStatus of offChainData) {
+        const onChainData = OnChainData.find((onChain) => {
+          base58PublicKey(onChain.publicKey);
+        });
+
+        if (offChainInfoStatus.status === "rejected") {
+          console.log(
+            "Error: Off chain data not found for token: ",
+            offChainInfoStatus.reason
+          );
+          continue;
+        }
+        const offChainInfo = offChainInfoStatus.value;
+
+        if (!onChainData) {
+          console.log(
+            "Error: On chain data not found for token: ",
+            offChainInfo.blockchainAddress
+          );
+          continue;
+        }
+        cronTokenObject[offChainInfo.blockchainAddress].offChain = offChainInfo;
+        cronTokenObject[offChainInfo.blockchainAddress].onChain = onChainData;
+
+        await conn.execute(
+          "UPDATE NFT SET name = ?, symbol = ?, uri = ?, description = ?, image = ?, sellerFeeBasisPoints = ?, isMutable = ?, tokenStandard = ?, primarySaleHappened = ? WHERE blockchainAddress = ?",
+          [
+            onChainData.metadata.name,
+            onChainData.metadata.symbol,
+            onChainData.metadata.uri,
+            offChainInfo.offChain?.description,
+            offChainInfo.offChain?.image,
+            onChainData.metadata.sellerFeeBasisPoints,
+            onChainData.metadata.isMutable,
+            onChainData.metadata.tokenStandard as any,
+            onChainData.metadata.primarySaleHappened,
+            offChainInfo.blockchainAddress,
+          ]
+        );
+
+        if (nftsWindowCall.rows.length < offset) {
+          tokensLeft = false;
+        }
+
+        offset += 10;
+      }
     }
-    // return error response saying path noth found
-    return new Response("Path not found", {
-      status: 404,
-      headers: corsHeaders,
-    });
   },
 };
 
+type NFTUpdateObject = {
+  offChain: JsonMetadata;
+  onChain: DigitalAsset;
+  database: prismaModels.NFT;
+};
+
+type tokenAddAndUri = {
+  blockchainAddress: string;
+  uri: string | null;
+}[];
 export type DigitalAssetWithToken = DigitalAsset & {
   token: Token;
   tokenRecord?: TokenRecord;
 };
 
-export async function fetchAllDigitalAssetWithTokenByMint(
+async function fetchAllOffChain(tokensAndUri: tokenAddAndUri) {
+  // create an array of promies to fetch all the off chain data
+  const offChainPromises = tokensAndUri.map(async (token) => {
+    if (!token.uri)
+      return {
+        blockchainAddress: token.blockchainAddress,
+        offChain: undefined,
+      };
+    const offChainData = await fetch(token.uri)
+      .then(async (res) => (await res.json()) as any as JsonMetadata)
+      .catch((e) => {
+        console.log("Error fetching off chain data: ", e);
+      });
+
+    if (!offChainData)
+      return {
+        blockchainAddress: token.blockchainAddress,
+        offChain: undefined,
+      };
+
+    return {
+      blockchainAddress: token.blockchainAddress,
+      offChain: offChainData,
+    };
+  });
+  return Promise.allSettled(offChainPromises);
+}
+
+export async function fetchAllDigitalAsset(
   context: Pick<Context, "rpc" | "serializer" | "eddsa" | "programs">,
-  mint: PublicKey,
-  options?: RpcBaseOptions
-): Promise<DigitalAssetWithToken[]> {
-  const largestTokens = await findLargestTokensByMint(context, mint, options);
-  const nonEmptyTokens = largestTokens
-    .filter((token) => token.amount.basisPoints > 0)
-    .map((token) => token.publicKey);
-  const accountsToFetch = [
+  mints: PublicKey[],
+  options?: RpcGetAccountsOptions
+): Promise<DigitalAsset[]> {
+  const accountsToFetch = mints.flatMap((mint) => [
     mint,
     findMetadataPda(context, { mint }),
     findMasterEditionPda(context, { mint }),
-  ];
-  accountsToFetch.push(
-    ...nonEmptyTokens.flatMap((token) => [
-      token,
-      findTokenRecordPda(context, { mint, token }),
-    ])
-  );
+  ]);
+
   const accounts = await context.rpc.getAccounts(accountsToFetch, options);
-  const [mintAccount, metadataAccount, editionAccount, ...tokenAccounts] =
-    accounts;
+  return chunk(accounts, 3).map(
+    ([mintAccount, metadataAccount, editionAccount]) => {
+      assertAccountExists(mintAccount, "Mint");
+      assertAccountExists(metadataAccount, "Metadata");
+      return deserializeDigitalAsset(
+        context,
+        mintAccount,
+        metadataAccount,
+        editionAccount.exists ? editionAccount : undefined
+      );
+    }
+  );
+}
+
+export async function fetchDigitalAsset(
+  context: Pick<Context, "rpc" | "serializer" | "eddsa" | "programs">,
+  mint: PublicKey,
+  options?: RpcGetAccountsOptions
+): Promise<DigitalAsset> {
+  const metadata = findMetadataPda(context, { mint });
+  const edition = findMasterEditionPda(context, { mint });
+  const [mintAccount, metadataAccount, editionAccount] =
+    await context.rpc.getAccounts([mint, metadata, edition], options);
   assertAccountExists(mintAccount, "Mint");
   assertAccountExists(metadataAccount, "Metadata");
-
-  return chunk(tokenAccounts, 2).flatMap(
-    ([tokenAccount, tokenRecordAccount]): DigitalAssetWithToken[] => {
-      if (!tokenAccount.exists) return [];
-      return [
-        deserializeDigitalAssetWithToken(
-          context,
-          mintAccount,
-          metadataAccount,
-          tokenAccount,
-          editionAccount.exists ? editionAccount : undefined,
-          tokenRecordAccount.exists ? tokenRecordAccount : undefined
-        ),
-      ];
-    }
+  return deserializeDigitalAsset(
+    context,
+    mintAccount,
+    metadataAccount,
+    editionAccount.exists ? editionAccount : undefined
   );
 }
