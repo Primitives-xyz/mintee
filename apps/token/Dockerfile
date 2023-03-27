@@ -35,7 +35,6 @@ RUN npm install -g pnpm
 RUN pnpm install
 
 # If we're using Prisma, uncomment to cache the prisma schema
-ADD prisma .
 RUN npx prisma generate
 
 
