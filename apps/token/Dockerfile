@@ -30,6 +30,7 @@ COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY apps/token/crontab /app/crontab 
+COPY apps/token/start.sh /app/start.sh 
 RUN apk add --update python3 make g++\
     && rm -rf /var/cache/apk/*
 RUN npm install -g pnpm    
@@ -63,6 +64,7 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 
 # Copy the crontab file
 COPY --from=installer /app/crontab crontab
+COPY --from=installer /app/start.sh start.sh
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 cron1
