@@ -1,2 +1,2 @@
 #!/bin/sh
-node dist/server
+node apps/token/dist/server
