@@ -51,8 +51,7 @@ RUN addgroup --system --gid 1001 cron1
 RUN adduser --system --uid 1001 cron1
 USER cron 
 COPY --from=installer /app .
+RUN ls
 
-
-COPY --from=installer /app/node_modules/.prisma /app/node_modules/.prisma
 
 CMD node apps/token/dist/server.js
