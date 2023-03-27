@@ -13,7 +13,7 @@ import {
   publicKey,
 } from "@metaplex-foundation/umi";
 //@ts-ignore
-import fetch from "node-fetch";
+
 import Fastify, { FastifyInstance } from "fastify";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { findMetadataPda, findMasterEditionPda } from "./generated";
