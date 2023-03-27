@@ -1,5 +1,5 @@
 FROM node:alpine AS builder
-
+RUN apk add nodejs npm
 # Update
 RUN apk add --no-cache libc6-compat
 RUN apk update
@@ -19,7 +19,7 @@ COPY . .
 RUN turbo prune --scope=token-server --docker
 
 FROM alpine AS installer
-
+RUN apk add nodejs npm
 # Update
 RUN apk add --no-cache libc6-compat
 RUN apk update
