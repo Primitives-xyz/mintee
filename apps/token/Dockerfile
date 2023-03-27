@@ -40,7 +40,6 @@ RUN pnpm install
 COPY --from=builder /app/out/full/ .  
 COPY turbo.json turbo.json
 
-
 RUN  --mount=type=secret,id=DATABASE_URL_TEST DATABASE_URL_TEST=="$(cat /run/secrets/DATABASE_URL_TEST)" pnpm turbo run build --filter=token-server...
 
 FROM node:alpine AS runner
@@ -53,8 +52,5 @@ RUN adduser --system --uid 1001 cron1
 USER cron 
 COPY --from=installer /app .
 RUN ls
-
-
-
 
 CMD node apps/token/dist/server.js

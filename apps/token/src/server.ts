@@ -138,6 +138,8 @@ server.get("/tokenCron", async (request, reply) => {
     }
   }
   console.log("Cron job finished");
+
+  return { cronJob: "done" };
 });
 
 const start = async () => {
