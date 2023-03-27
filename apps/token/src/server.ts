@@ -25,6 +25,14 @@ const server: FastifyInstance = Fastify({});
 const prisma = new PrismaClient();
 prisma.$connect();
 
+server.get("/hello/", async (request, reply) => {
+  return { hello: "world" };
+});
+
+server.get("/", async (request, reply) => {
+  return { hello: "world index" };
+});
+
 server.get("/tokenCron", async (request, reply) => {
   // grab 10 NFTs at a time
   let tokensLeft = true;
