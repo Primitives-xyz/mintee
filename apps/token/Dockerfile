@@ -34,8 +34,6 @@ RUN apk add --update python3 make g++\
 RUN npm install -g pnpm    
 RUN pnpm install
 
-# If we're using Prisma, uncomment to cache the prisma schema
-RUN npx prisma generate
 
 
 # Build the project and its dependencies
