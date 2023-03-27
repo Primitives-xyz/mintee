@@ -34,10 +34,13 @@ RUN apk add --update python3 make g++\
 RUN npm install -g pnpm    
 RUN pnpm install
 
+# If we're using Prisma, uncomment to cache the prisma schema
+ADD prisma .
+RUN npx prisma generate
+
 
 # Build the project and its dependencies
 COPY --from=builder /app/out/full/ .  
-RUN ls
 COPY turbo.json turbo.json
 
 
@@ -51,5 +54,8 @@ RUN addgroup --system --gid 1001 cron1
 RUN adduser --system --uid 1001 cron1
 USER cron 
 COPY --from=installer /app .
+
+
+COPY --from=installer /app/node_modules/.prisma /app/node_modules/.prisma
 
 CMD node apps/token/dist/server.js
