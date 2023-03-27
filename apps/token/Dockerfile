@@ -44,6 +44,7 @@ COPY turbo.json turbo.json
 RUN  --mount=type=secret,id=DATABASE_URL_TEST DATABASE_URL_TEST=="$(cat /run/secrets/DATABASE_URL_TEST)" pnpm turbo run build --filter=token-server...
 
 FROM node:alpine AS runner
+RUN apk update  && apk add openssl && apk add ca-certificates
 WORKDIR /app
 
 # Don't run production as root
@@ -52,6 +53,8 @@ RUN adduser --system --uid 1001 cron1
 USER cron 
 COPY --from=installer /app .
 RUN ls
-
+RUN npm install -g prisma   
+RUN cd packages/mintee-database
+RUN npx prisma generate
 
 CMD node apps/token/dist/server.js
