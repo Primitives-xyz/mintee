@@ -14,26 +14,28 @@ import {
 } from "@metaplex-foundation/umi";
 //@ts-ignore
 
-import Fastify, { FastifyInstance } from "fastify";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { findMetadataPda, findMasterEditionPda } from "./generated";
 import { JsonMetadata } from "mintee-utils";
 import { PrismaClient } from "mintee-database";
 import { prismaModels } from "mintee-database";
-const server: FastifyInstance = Fastify({});
 
 const prisma = new PrismaClient();
 prisma.$connect();
 
-server.get("/hello/", async (request, reply) => {
-  return { hello: "world" };
-});
+const start = async () => {
+  try {
+    console.log("Starting cron job");
+    await cronTokenUpdate();
+    console.log("shutting down cron job");
+    process.exit(0);
+  } catch (err) {
+    process.exit(1);
+  }
+};
+start();
 
-server.get("/", async (request, reply) => {
-  return { hello: "world index" };
-});
-
-server.get("/tokenCron", async (request, reply) => {
+async function cronTokenUpdate() {
   // grab 10 NFTs at a time
   let tokensLeft = true;
   let offset = 10;
@@ -138,23 +140,7 @@ server.get("/tokenCron", async (request, reply) => {
     }
   }
   console.log("Cron job finished");
-
-  return { cronJob: "done" };
-});
-
-const start = async () => {
-  try {
-    await server.listen({ port: 8080 });
-
-    const address = server.server.address();
-    const port = typeof address === "string" ? address : address?.port;
-    console.log(`server listening on ${port}`);
-  } catch (err) {
-    server.log.error(err);
-    process.exit(1);
-  }
-};
-start();
+}
 
 const umi = createUmi(
   "https://rpc.helius.xyz/?api-key=f30d6a96-5fa2-4318-b2da-0f6d1deb5c83"
