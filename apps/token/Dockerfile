@@ -2,7 +2,7 @@ FROM node:alpine AS builder
 RUN apk add nodejs npm
 # Update
 RUN apk add --no-cache libc6-compat
-RUN apk update  && apk add openssl && apk add ca-certificates
+RUN apk update  && apk add openssl && apk add ca-certificates && apk add curl
 WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
@@ -29,6 +29,7 @@ WORKDIR /app
 COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY apps/token/crontab /app/crontab 
 RUN apk add --update python3 make g++\
     && rm -rf /var/cache/apk/*
 RUN npm install -g pnpm    
@@ -43,14 +44,27 @@ COPY turbo.json turbo.json
 RUN  --mount=type=secret,id=DATABASE_URL_TEST DATABASE_URL_TEST=="$(cat /run/secrets/DATABASE_URL_TEST)" pnpm turbo run build --filter=token-server...
 
 FROM node:alpine AS runner
-RUN apk update  && apk add openssl && apk add ca-certificates
+RUN apk update  && apk add openssl && apk add ca-certificates && apk add curl
 WORKDIR /app
+
+
+
+
+# Install and configure supercronic
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64 \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
+
+RUN curl  -fsSLO "$SUPERCRONIC_URL" 
+
+# Copy the crontab file
+COPY --from=installer /app/crontab crontab
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 cron1
 RUN adduser --system --uid 1001 cron1
 USER cron 
 COPY --from=installer /app .
-RUN ls
 
-CMD node apps/token/dist/server.js
+# Start the application
+CMD supercronic crontab
