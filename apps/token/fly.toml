@@ -1,9 +1,8 @@
+# fly.toml file generated for token-c2 on 2023-03-26T20:48:46-06:00
 app = "token-c2"
 
 primary_region = "sea"
-processes = [
+[processes]
   cron = "supercronic /app/crontab"
-]
-
 
 
