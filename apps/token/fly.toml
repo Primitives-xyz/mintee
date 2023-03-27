@@ -1,6 +1,6 @@
-# fly.toml file generated for token on 2023-03-26T16:46:07-06:00
+# fly.toml file generated for token-c2 on 2023-03-26T20:48:46-06:00
 
-app = "token"
+app = "token-c2"
 kill_signal = "SIGINT"
 kill_timeout = 5
 primary_region = "sea"

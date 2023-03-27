@@ -5,6 +5,20 @@ on:
     branches: ["main"]
  
 jobs:
+  fly:
+      name: Build and Deploy fly
+      timeout-minutes: 15
+      runs-on: ubuntu-latest
+      steps: 
+        - name: Check out code
+          uses: actions/checkout@v3
+          with:
+            fetch-depth: 2
+        - uses: actions/checkout@v3
+        - uses: superfly/flyctl-actions/setup-flyctl@master
+        - run: flyctl deploy --dockerfile apps/token/Dockerfile --config apps/token/fly.toml --local-only --remote-only
+          env:
+            FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   api:
       name: Build and Deploy api
       timeout-minutes: 15

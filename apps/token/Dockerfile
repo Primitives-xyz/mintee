@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:18.24.0-alpine3.14 AS builder
 
 # Update
 RUN apk add --no-cache libc6-compat
@@ -18,7 +18,7 @@ CMD turbo --version
 COPY . .
 RUN turbo prune --scope=token-server --docker
 
-FROM node:18-alpine AS installer
+FROM node:18.24.0-alpine3.14 AS installer
 
 # Update
 RUN apk add --no-cache libc6-compat
