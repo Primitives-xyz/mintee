@@ -53,8 +53,8 @@ RUN adduser --system --uid 1001 cron1
 USER cron 
 COPY --from=installer /app .
 RUN ls
-RUN npm install -g prisma   
-RUN cd packages/mintee-database
-RUN npx prisma generate
+
+
+
 
 CMD node apps/token/dist/server.js
