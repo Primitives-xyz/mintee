@@ -2,7 +2,7 @@ FROM node:alpine AS builder
 RUN apk add nodejs npm
 # Update
 RUN apk add --no-cache libc6-compat
-RUN apk update
+RUN apk update  && apk add openssl && apk add ca-certificates
 WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
