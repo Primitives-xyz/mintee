@@ -19,6 +19,11 @@ export default function Header({ userId }: { userId?: string }) {
         <h1 className="sm:text-3xl text-xl font-bold ml-2 tracking-tight">
           Mintee
         </h1>
+        <div className="relative h-12 w-32 ...">
+          <div className="absolute inset-x-0 bottom-0 h-7 text-xs">
+            (By Primitives.xyz)
+          </div>
+        </div>
       </Link>
       <div className="flex space-x-2">
         {!userId ? (

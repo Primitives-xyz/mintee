@@ -11,7 +11,6 @@ RUN npm install -g pnpm
 ENV PNPM_HOME=/app/.pnpm
 ENV PATH=$PATH:$PNPM_HOME
 
-
 # Install, and run turbo
 RUN pnpm install turbo@latest --global
 CMD turbo --version
@@ -36,8 +35,6 @@ RUN apk add --update python3 make g++\
 RUN npm install -g pnpm    
 RUN pnpm install
 
-
-
 # Build the project and its dependencies
 COPY --from=builder /app/out/full/ .  
 COPY turbo.json turbo.json
@@ -47,9 +44,6 @@ RUN  --mount=type=secret,id=DATABASE_URL_TEST DATABASE_URL_TEST=="$(cat /run/sec
 FROM node:alpine AS runner
 RUN apk update  && apk add openssl && apk add ca-certificates && apk add curl
 WORKDIR /app
-
-
-
 
 # Install and configure supercronic
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64 \
