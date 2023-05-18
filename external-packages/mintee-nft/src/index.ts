@@ -164,7 +164,7 @@ export type nftResponse = {
   };
 };
 
-type minteeOptions = {
+export type minteeOptions = {
   network: networkStringLiteral;
   toWallet?: string;
 };
@@ -177,7 +177,7 @@ export type mintCompressedResponse = {
   treeWalletAddress: string;
 };
 
-type JsonMetadata<Uri = string> = {
+export type JsonMetadata<Uri = string> = {
   name?: string;
   symbol?: string;
   description?: string;

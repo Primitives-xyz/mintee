@@ -9,6 +9,7 @@ import {
   nftStatusResolver,
   uploadMetadataRoute,
 } from "./routes";
+import { ExecutionContext } from "@cloudflare/workers-types";
 export default {
   async fetch(
     request: Request,
