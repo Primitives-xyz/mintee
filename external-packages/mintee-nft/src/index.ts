@@ -151,7 +151,7 @@ export class Mintee {
   }
 }
 
-type nftResponse = {
+export type nftResponse = {
   offChain: JsonMetadata<string> | null;
   token: {
     name: string;
