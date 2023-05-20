@@ -91,6 +91,20 @@ export async function fetchAllDigitalAsset(
   );
 }
 
+export async function fetchLatestBlockhash(
+  context: Pick<Context, "rpc" | "serializer" | "eddsa" | "programs">,
+  mints: PublicKey[],
+  options?: RpcGetAccountsOptions
+) {
+  const accountsToFetch = mints.flatMap((mint) => [
+    mint,
+    findMetadataPda(context, { mint }),
+    findMasterEditionPda(context, { mint }),
+  ]);
+
+  return await context.rpc.getLatestBlockhash();
+}
+
 export async function fetchAllDigitalAssetByCreator(
   context: Pick<Context, "rpc" | "serializer" | "eddsa" | "programs">,
   creator: PublicKey,

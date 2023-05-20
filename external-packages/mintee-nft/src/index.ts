@@ -151,7 +151,7 @@ export class Mintee {
   }
 }
 
-type nftResponse = {
+export type nftResponse = {
   offChain: JsonMetadata<string> | null;
   token: {
     name: string;
@@ -164,7 +164,7 @@ type nftResponse = {
   };
 };
 
-type minteeOptions = {
+export type minteeOptions = {
   network: networkStringLiteral;
   toWallet?: string;
 };
@@ -177,7 +177,7 @@ export type mintCompressedResponse = {
   treeWalletAddress: string;
 };
 
-type JsonMetadata<Uri = string> = {
+export type JsonMetadata<Uri = string> = {
   name?: string;
   symbol?: string;
   description?: string;
