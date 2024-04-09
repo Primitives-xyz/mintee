@@ -1,6 +1,6 @@
 import { minteeNFTInfo } from "mintee-utils";
 import { apiTokenStatus, getAuth } from "../../auth";
-import { conn, corsHeaders, Env, getNFTInfo, sha256 } from "../../utils";
+import { conn, corsHeaders, Env, getNFTInfo } from "../../utils";
 import { networkStringLiteral } from "../../utils/nft";
 
 export async function nftStatusResolver(
