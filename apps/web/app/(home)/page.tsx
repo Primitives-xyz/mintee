@@ -60,6 +60,7 @@ export default async function Page() {
                 <Image
                   alt="Original photo of a room with roomGPT.io"
                   src={codePic}
+                  fill
                   className="w-full object-cover h-96 rounded-2xl"
                 />
               </div>
@@ -71,6 +72,7 @@ export default async function Page() {
                 <Image
                   alt="Generated photo of a room with roomGPT.io"
                   src={cfPic}
+                  fill
                   className="w-full object-cover h-96 rounded-2xl sm:mt-0 mt-2"
                 />
               </div>
