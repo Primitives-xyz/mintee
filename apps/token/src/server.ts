@@ -1,24 +1,24 @@
 import {
-  DigitalAsset,
+  type DigitalAsset,
   deserializeDigitalAsset,
   mplTokenMetadata,
 } from "@metaplex-foundation/mpl-token-metadata";
 import {
-  Context,
-  PublicKey,
-  RpcGetAccountsOptions,
-  chunk,
+  type Context,
+  type PublicKey,
+  type RpcGetAccountsOptions,
   assertAccountExists,
   base58PublicKey,
+  chunk,
   publicKey,
 } from "@metaplex-foundation/umi";
 //@ts-ignore
 
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { findMetadataPda, findMasterEditionPda } from "./generated";
-import { JsonMetadata } from "mintee-utils";
 import { PrismaClient } from "mintee-database";
-import { prismaModels } from "mintee-database";
+import type { prismaModels } from "mintee-database";
+import type { JsonMetadata } from "mintee-utils";
+import { findMasterEditionPda, findMetadataPda } from "./generated";
 
 const prisma = new PrismaClient();
 prisma.$connect();
@@ -142,9 +142,7 @@ async function cronTokenUpdate() {
   console.log("Cron job finished");
 }
 
-const umi = createUmi(
-  "https://rpc.helius.xyz/?api-key=f30d6a96-5fa2-4318-b2da-0f6d1deb5c83"
-).use(mplTokenMetadata());
+const umi = createUmi(process.env.RPC_URL ?? "").use(mplTokenMetadata());
 
 async function fetchAllDigitalAsset(
   context: Pick<Context, "rpc" | "serializer" | "eddsa" | "programs">,
@@ -160,9 +158,7 @@ async function fetchAllDigitalAsset(
   const accounts = await context.rpc.getAccounts(accountsToFetch, options);
 
   const newAccounts = accounts.filter((e) => {
-    {
-      return e.exists === true;
-    }
+    return e.exists === true;
   });
 
   return chunk(newAccounts, 3).map(

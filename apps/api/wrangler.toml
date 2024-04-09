@@ -10,7 +10,7 @@ kv_namespaces = [
 ]
 
 [vars]
-rpcUrl = "https://rpc-devnet.helius.xyz/?api-key=f30d6a96-5fa2-4318-b2da-0f6d1deb5c83"
+rpcUrl = ""
 r2Url = "https://offchain.mintee.io/"
 factoryUrl = "https://minte.vercel.app"
 WORKER_KEY = 'PeachTree221'

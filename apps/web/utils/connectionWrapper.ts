@@ -1,6 +1,6 @@
+import { Keypair } from "@solana/web3.js";
 import base58 from "bs58";
 import { WrappedConnection } from "./wrappedConnection";
-import { Keypair } from "@solana/web3.js";
 export function getConnectionWrapper() {
   const apiKey = process.env["API_KEY"];
   if (!apiKey) {
