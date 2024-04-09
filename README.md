@@ -1,4 +1,4 @@
-# Mintee
+# Mintee ⚡️
 
 Minting as a service, at the speed of light.
 
